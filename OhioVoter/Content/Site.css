@@ -1,0 +1,211 @@
+﻿body {
+    padding-top: 5px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+
+.background-blue-dark {
+    background-color: #006ddb;
+}
+
+.background-blue-medium {
+    background-color: #9ebcdb;
+}
+
+.background-blue-light {
+    background-color: #dee9f4;
+}
+
+.background-red {
+    background-color: #db1116;
+}
+
+.header {
+    margin-top: 0px;
+}
+
+.logo-img {
+    width: 75px;
+    height: 75px;
+    float: left;
+}
+
+.logo-title {
+    color: #db1116;
+    font-weight: bold;
+}
+
+.navbar-logo {
+    min-width: 200px;
+}
+
+.navbar-logo-img {
+    width: 50px;
+    height: 50px;
+    float: left;
+}
+
+.navbar-logo-title {
+    color: white;
+    font-weight: bold;
+}
+
+.navbar-main {
+    background-color: #006ddb;
+    border-color: #006ddb;
+}
+
+#navbar-nav-link li a {
+    color: white;
+    font-weight: bold;
+    font-size: 1.25em;
+}
+
+#navbar-nav-link li a:hover {
+    color: #9ebcdb;
+    font-weight: bold;
+}
+
+.panel-left {
+    border-color: #9ebcdb;
+}
+
+.panel-left-body {
+    background-color: #dee9f4;
+    text-align: center;
+}
+
+.panel-left-btn {
+    background-color: #006ddb;
+    color: white;
+}
+
+.panel-left-group {
+    margin-bottom: 10px;
+}
+
+.panel-left-form-label {
+    text-align: right;
+}
+
+.panel-left-form-layout {
+    width: auto;
+}
+
+.panel-left-form-text {
+    text-align: left;
+}
+
+.panel-left-form-text input{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.panel-left-title {
+    background-color: #9ebcdb;
+    padding-top: 10px;
+    padding-bottom: 1px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.panel-main {
+    border-color: #9ebcdb;
+}
+
+.panel-main-body {
+    background-color: #dee9f4;
+    text-align: left;
+}
+
+.panel-main-btn {
+    background-color: #006ddb;
+    color: white;
+}
+
+.panel-main-group {
+    margin-bottom: 20px;
+}
+
+.panel-main-title {
+    background-color: #9ebcdb;
+    padding-top: 10px;
+    padding-bottom: 1px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.panel-page-title {
+    color: #db1116;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+footer {
+    background-color: #006ddb;
+    border-color: #006ddb;
+    border-radius: 4px;
+    color: white;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+
+@media (min-width: 768px) {
+
+    .header {
+        display: inherit;
+    }
+
+    .navbar-logo-img {
+        display: none;
+    }
+
+    .navbar-logo-title {
+        display: none;
+    }
+
+    .navbar-header {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .header {
+        display: none;
+    }
+
+    .navbar-logo-img {
+        display: inherit;
+    }
+
+    .navbar-logo-title {
+        display: inherit;
+    }
+
+    .navbar-header {
+        display: inherit;
+    }
+}
