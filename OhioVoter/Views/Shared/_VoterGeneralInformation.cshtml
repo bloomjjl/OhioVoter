@@ -1,0 +1,36 @@
+﻿@model OhioVoter.ViewModels.SideBar
+
+<div class="panel panel-group panel-left panel-left-group">
+
+    <div class="panel-title panel-left-title">
+        <p>General Information</p>
+    </div>
+
+    <div id="voter-state-information" class="panel-body panel-left-body">
+        <p>
+            <b>State Board of Elections:</b><br />
+            @Model.StateLocation.LocationName <br />
+            @Model.StateLocation.StreetAddress <br />
+            @Model.StateLocation.City, @Model.StateLocation.StateName @Model.StateLocation.ZipCode <br />
+            <a href="@Model.StateLocation.Website" target="_blank"> @Model.StateLocation.Website </a> <br />
+        </p>
+    </div>
+
+    @{
+        if (Model.CountyLocation.City != null && Model.CountyLocation.City != "")
+        {
+            <div id="voter-county-information" class="panel-body panel-left-body">
+                <p>
+                    <b>County Board of Elections:</b><br />
+                    @Model.CountyLocation.LocationName <br />
+                    @Model.CountyLocation.StreetAddress <br />
+                    @Model.CountyLocation.City, @Model.CountyLocation.StateName @Model.CountyLocation.ZipCode <br />
+                    Phone: @Model.CountyLocation.Phone <br />
+                    <a href="@Model.CountyLocation.Website" target="_blank"> @Model.CountyLocation.Website </a> <br />
+                </p>
+            </div>
+        }
+    }
+
+</div>
+

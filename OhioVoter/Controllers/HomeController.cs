@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OhioVoter.Services;
+using OhioVoter.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,9 +12,121 @@ namespace OhioVoter.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            HomePageViewModel viewModel = new HomePageViewModel()
+            {
+                SideBar = GetSideBarViewModel()
+            };
+
+            return View(viewModel);
         }
 
+
+
+
+        private SideBar GetSideBarViewModel()
+        {
+            SessionExtensions instanceSessionExtensions = new SessionExtensions();
+
+            SideBar viewModel = new SideBar()
+            {
+                VoterLocation = instanceSessionExtensions.GetVoterLocationFromSession(),
+                PollingLocation = instanceSessionExtensions.GetPollingLocationFromSession(),
+                CountyLocation = instanceSessionExtensions.GetCountyLocationFromSession(),
+                StateLocation = GetAddressForOhioSecretaryOfState()
+            };
+
+            return viewModel;
+        }
+
+
+
+        public Location GetAddressForOhioSecretaryOfState()
+        {
+            return new Location()
+            {
+                LocationName = "Ohio Secretary of State",
+                StreetAddress = "180 E Broad St., 15th Floor",
+                City = "Columbus",
+                StateName = "Ohio",
+                ZipCode = "43215-3726",
+                Website = "http://www.sos.state.oh.us/elections.aspx"
+            };
+        }
+
+
+
+        public ActionResult Location()
+        {
+            SessionExtensions instanceSessionExtensions = new SessionExtensions();
+            instanceSessionExtensions.ChangeVoterLocationStatusToUpdateVoterLocationForm();
+
+            if (!Request.IsAjaxRequest())
+                return RedirectToAction("Index", new { });
+
+            SideBar viewModel = GetSideBarViewModel();
+            return PartialView("_VoterLocationForm", viewModel);
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Location(Location voterLocation)
+        {
+            // if(modelstate.isvalid)
+            voterLocation.StateAbbreviation = "OH";
+            voterLocation.Status = "Display";
+            GoogleAPIManagement instanceGoogleAPIManagement = new GoogleAPIManagement();
+            SideBar sideBarViewModel = instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
+
+            SessionExtensions instanceSessionExtensions = new SessionExtensions();
+
+            // if (sideBarViewModel.PollingLocation.Status == "Update")
+            if (sideBarViewModel.PollingLocation.City == null || sideBarViewModel.PollingLocation.City == "")
+            {
+                // update polling location in session
+                // .LocationName = "Location not found";
+                UpdateSessionFromSideBarViewModel(sideBarViewModel);
+                instanceSessionExtensions.ChangeVoterLocationStatusToUpdateVoterLocationForm();
+
+                if (!Request.IsAjaxRequest())
+                    return RedirectToAction("Index", new { });
+
+                SideBar formViewModel = GetSideBarViewModel();
+                return PartialView("_VoterLocationForm", formViewModel);
+            }
+
+            instanceSessionExtensions.ChangeVoterLocationStatusToDisplayVoterLocation();
+
+            sideBarViewModel.PollingLocation.GoogleLocationMapAPI = instanceGoogleAPIManagement.GetGoogleMapAPIRequestForVoterAndPollingLocation(sideBarViewModel.VoterLocation, sideBarViewModel.PollingLocation);
+            instanceSessionExtensions.UpdatePollingLocationInSession(sideBarViewModel.PollingLocation);
+            UpdateSessionFromSideBarViewModel(sideBarViewModel);
+
+            if (!Request.IsAjaxRequest())
+                return RedirectToAction("Index", new { });
+
+            // TODO: implement partial view using AJAX
+            SideBar viewModel = GetSideBarViewModel();
+            return PartialView("_VoterLocation", viewModel);
+        }
+
+
+
+        private void UpdateSessionFromSideBarViewModel(SideBar sideBarViewModel)
+        {
+            SessionExtensions instanceSessionExtensions = new SessionExtensions();
+
+            instanceSessionExtensions.UpdateVoterLocationInSession(sideBarViewModel.VoterLocation);
+            instanceSessionExtensions.UpdatePollingLocationInSession(sideBarViewModel.PollingLocation);
+            instanceSessionExtensions.UpdateCountyLocationInSession(sideBarViewModel.CountyLocation);
+        }
+
+
+
+
+
+
+        
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
@@ -26,5 +140,6 @@ namespace OhioVoter.Controllers
 
             return View();
         }
+        
     }
 }

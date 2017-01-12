@@ -1,54 +1,32 @@
-﻿@{
+﻿@model OhioVoter.ViewModels.HomePageViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Home Page";
 }
 
-
 <div class="row">
 
-    <div class="col-sm-4">
+    <div id="side-bar" class="col-sm-4">
 
-        <div class="panel-group panel-left-group">
-            <div class="panel panel-left">
-                <div class="panel-title panel-left-title">
-                    <p>Your Location</p>
-                </div>
-                <div class="panel-body panel-left-body">
-                    <h4> Enter an address to personalize your Ohio voting information. </h4>
-                    <br />
-                    <form class="panel-left-form-text" method="post">
-                        <label> Street Address: </label><br />
-                        <input type="text" name="street" value="ENTER: Street Address" /><br />
-                        <label> City: </label><br />
-                        <input type="text" name="city" value="ENTER: City" /><br />
-                        <label> State: </label><br />
-                        <input type="text" name="state" value="ENTER: State" /><br />
-                        <label> Zip Code: </label><br />
-                        <input type="text" name="zipcode" value="ENER: Zip Code" /><br />
-                        <br />
-                        <button class="btn btn-block panel-left-btn"> Update Your Location </button>
-                    </form>
-                </div>
-            </div>
+        <div id="voter-location">
+            @{
+                if (Model.SideBar.VoterLocation.Status == null || Model.SideBar.VoterLocation.Status == "" || Model.SideBar.VoterLocation.Status == "Update")
+                {
+                    Html.RenderPartial("_VoterLocationForm", Model.SideBar);
+                }
+                else
+                {
+                    Html.RenderPartial("_VoterLocation", Model.SideBar);
+                }
+            }
         </div>
 
-        <div class="panel-group panel-left-group">
-            <div class="panel panel-left">
-                <div class="panel-title panel-left-title">
-                    <p>General Information</p>
-                </div>
-                <div class="panel-body panel-left-body">
-                    <p>
-                        Secretary of State <br />
-                        180 East Broad Street <br />
-                        Columbus, Ohio 43215 <br />
-                        Phone: (614) 466-2655 <br />
-                        <a href="http://www.sos.state.oh.us/SOS/" target="_blank"> www.sos.state.oh.us </a>
-                    </p>
-                </div>
-            </div>
+        <div id="voter-general-information">
+            @{Html.RenderPartial("_VoterGeneralInformation", Model.SideBar);}
         </div>
 
     </div>
+
 
     <div class="col-sm-8">
 

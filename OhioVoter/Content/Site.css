@@ -95,6 +95,14 @@ textarea {
     text-align: center;
 }
 
+.panel-left #voter-map img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .panel-left-btn {
     background-color: #006ddb;
     color: white;
