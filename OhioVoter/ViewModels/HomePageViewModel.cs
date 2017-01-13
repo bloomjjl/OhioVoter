@@ -10,6 +10,7 @@ namespace OhioVoter.ViewModels
     {
         public SideBar SideBar { get; set; }
         public Feed CnnRssFeed { get; set; }
+        public Feed FoxNewsRssFeed { get; set; }
     }
 
 }

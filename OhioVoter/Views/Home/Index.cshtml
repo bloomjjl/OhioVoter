@@ -69,22 +69,8 @@
             @{Html.RenderPartial("_CnnPoliticalRss", Model.CnnRssFeed);}
         </div>
 
-        <div class="fox-political-rss">
-            <div class="panel panel-group panel-main panel-main-group">
-
-                <div class="panel-title panel-main-title">
-                    <p> Fox News Political RSS Feed </p>
-                </div>
-
-                <div class="panel-body panel-main-body">
-
-                    <a href="http://www.foxnews.com/politics.html" target="_blank">
-                        <img src="~/Content/images/news_fox.jpg" width="525" height="259" alt="FOX News">
-                    </a>
-
-                </div>
-
-            </div>
+        <div class="Foxnews-political-rss">
+            @{Html.RenderPartial("_FoxNewsPoliticalRss", Model.FoxNewsRssFeed);}
         </div>
 
     </div>

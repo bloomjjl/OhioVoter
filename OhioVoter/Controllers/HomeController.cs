@@ -18,7 +18,8 @@ namespace OhioVoter.Controllers
             HomePageViewModel viewModel = new HomePageViewModel()
             {
                 SideBar = GetSideBarViewModel(),
-                CnnRssFeed = GetCNNRSSPoliticalFeedViewModel()
+                CnnRssFeed = GetCNNRSSPoliticalFeedViewModel(),
+                FoxNewsRssFeed = GetFoxNewsRSSPoliticalFeedViewModel()
             };
 
             return View(viewModel);
@@ -129,13 +130,25 @@ namespace OhioVoter.Controllers
 
 
         // ********************************************
-        // CNN RSS Feed
+        // RSS Feed
         // ********************************************
         private Feed GetCNNRSSPoliticalFeedViewModel()
         {
             CNNRSSManagement instance = new CNNRSSManagement();
             return instance.GetCNNRSSPoliticalFeed();
         }
+
+
+
+
+        private Feed GetFoxNewsRSSPoliticalFeedViewModel()
+        {
+            FoxNewsRSSManagement instance = new FoxNewsRSSManagement();
+            return instance.GetFoxNewsRSSPoliticalFeed();
+        }
+
+
+
 
 
 

@@ -6,15 +6,14 @@ using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace OhioVoter.Services
 {
-    public class CNNRSSManagement
+    public class FoxNewsRSSManagement
     {
-        public Feed GetCNNRSSPoliticalFeed()
+        public Feed GetFoxNewsRSSPoliticalFeed()
         {
-            string feedUrl = "http://rss.cnn.com/rss/cnn_allpolitics.rss";
+            string feedUrl = "http://feeds.foxnews.com/foxnews/politics";
             int maxItemCount = 5;
             RSSReader reader = new RSSReader();
             Feed feed = reader.GetInformationFromRSSFeed(feedUrl, maxItemCount);
@@ -23,6 +22,7 @@ namespace OhioVoter.Services
         }
 
 
+        
 
 
     }

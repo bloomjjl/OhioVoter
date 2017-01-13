@@ -1,0 +1,24 @@
+﻿@model OhioVoter.ViewModels.RSS.Feed
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p> <img src="@Model.Channel.Element.Image" alt="CNN Image" /> @Model.Channel.Element.Title </p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        @foreach (var item in Model.Items)
+        {
+            <div class="rss-title"><a href="@item.Element.Link" target="_blank">@item.Element.Title</a></div>
+            <div class="rss-pubdate">@item.Element.PubDate</div>
+            <div class="rss-description">@item.Element.Summary</div>
+            <br />
+        }
+
+    </div>
+
+</div>
+
+
+

@@ -207,6 +207,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CNNRSSManagement.cs" />
+    <Compile Include="Services\FoxNewsRSSManagement.cs" />
     <Compile Include="Services\GoogleAPIManagement.cs" />
     <Compile Include="Services\RSSReader.cs" />
     <Compile Include="Services\SessionExtensions.cs" />
@@ -280,6 +281,7 @@
     <Content Include="Views\Shared\_VoterLocation.cshtml" />
     <Content Include="Views\Shared\_VoterGeneralInformation.cshtml" />
     <Content Include="Views\Home\_CnnPoliticalRss.cshtml" />
+    <Content Include="Views\Home\_FoxNewsPoliticalRss.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
