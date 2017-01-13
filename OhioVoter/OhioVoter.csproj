@@ -80,6 +80,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -205,11 +206,14 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CNNRSSManagement.cs" />
     <Compile Include="Services\GoogleAPIManagement.cs" />
+    <Compile Include="Services\RSSReader.cs" />
     <Compile Include="Services\SessionExtensions.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\Google\CivicInfo.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
+    <Compile Include="ViewModels\RSS\Feed.cs" />
     <Compile Include="ViewModels\SideBar.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -275,6 +279,7 @@
     <Content Include="Views\Shared\_VoterLocationForm.cshtml" />
     <Content Include="Views\Shared\_VoterLocation.cshtml" />
     <Content Include="Views\Shared\_VoterGeneralInformation.cshtml" />
+    <Content Include="Views\Home\_CnnPoliticalRss.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

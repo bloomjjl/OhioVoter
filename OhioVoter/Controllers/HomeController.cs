@@ -1,10 +1,13 @@
 ﻿using OhioVoter.Services;
 using OhioVoter.ViewModels;
+using OhioVoter.ViewModels.RSS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 
 namespace OhioVoter.Controllers
 {
@@ -14,7 +17,8 @@ namespace OhioVoter.Controllers
         {
             HomePageViewModel viewModel = new HomePageViewModel()
             {
-                SideBar = GetSideBarViewModel()
+                SideBar = GetSideBarViewModel(),
+                CnnRssFeed = GetCNNRSSPoliticalFeedViewModel()
             };
 
             return View(viewModel);
@@ -124,9 +128,21 @@ namespace OhioVoter.Controllers
 
 
 
+        // ********************************************
+        // CNN RSS Feed
+        // ********************************************
+        private Feed GetCNNRSSPoliticalFeedViewModel()
+        {
+            CNNRSSManagement instance = new CNNRSSManagement();
+            return instance.GetCNNRSSPoliticalFeed();
+        }
 
 
-        
+
+
+
+        // *********************************************
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
