@@ -1,0 +1,40 @@
+﻿@model OhioVoter.ViewModels.Election.Poll
+
+    <div class="panel panel-group panel-main panel-main-group">
+
+        <div class="panel-title panel-main-title">
+            <p> OhioVoter.org Poll </p>
+        </div>
+
+        <div class="panel-body panel-main-body">
+
+            <div class="graph-title">
+                <table>
+                    <tr>
+                        <td class="row-title"><b>Election Date:</b></td>
+                        <td>@Model.ElectionDate.Date.DayOfWeek - @Model.ElectionDate.Date.ToString("MMM dd, yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td class="row-title"><b>Office:</b></td>
+                        <td>@Model.OfficeName</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="graph">
+
+                @foreach (var x in Model.CandidateVotes)
+                {
+                    <div class="graph-row">
+                        <div class="graph-row-img"><img src="~/Content/images/candidate.jpg" /></div>
+                        <div class="graph-row-candidate-name">@x.Candidate</div>
+                        <div class="graph-row-vote-count">@x.VotePercent%</div>
+                        <div class="graph-row-bar" style="width:@x.VotePercent%; background-color:@x.PartyColor;"></div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>

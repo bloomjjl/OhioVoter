@@ -34,20 +34,13 @@
             <h2><p class="panel-page-title"> Voter Bulletin Board </p></h2>
         </div>
 
-        <div class="electioncalendar">
-            @{Html.RenderPartial("_ElectionCalendar", Model.Calendar.ElectionDates);}
+        <div class="election-calendar">
+            @{Html.RenderPartial("_Calendar", Model.Calendar.ElectionDates);}
         </div>
 
-
-        <div class="panel panel-group panel-main panel-main-group">
-            <div class="panel-title panel-main-title">
-                <p> OhioVoter.org Poll </p>
-            </div>
-            <div class="panel-body panel-main-body">
-                <img src="~/Content/images/graph_candidates.jpg" width="525" height="259" alt="graph - total votes each candidate received">
-            </div>
+        <div class="election-poll">
+            @{Html.RenderPartial("_Poll", Model.Poll);}
         </div>
-
 
         <div class="cnn-political-rss">
             @{Html.RenderPartial("_CnnPoliticalRss", Model.CnnRssFeed);}

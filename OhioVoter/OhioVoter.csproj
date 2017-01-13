@@ -215,6 +215,7 @@
     <Compile Include="Services\SessionExtensions.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\Election\Calendar.cs" />
+    <Compile Include="ViewModels\Election\Poll.cs" />
     <Compile Include="ViewModels\Google\CivicInfo.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\RSS\Feed.cs" />
@@ -286,7 +287,8 @@
     <Content Include="Views\Shared\_VoterGeneralInformation.cshtml" />
     <Content Include="Views\Home\_CnnPoliticalRss.cshtml" />
     <Content Include="Views\Home\_FoxNewsPoliticalRss.cshtml" />
-    <Content Include="Views\Home\_ElectionCalendar.cshtml" />
+    <Content Include="Views\Home\_Calendar.cshtml" />
+    <Content Include="Views\Home\_Poll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

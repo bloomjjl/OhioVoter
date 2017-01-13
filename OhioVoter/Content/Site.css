@@ -165,6 +165,55 @@ textarea {
     padding-bottom: 10px;
 }
 
+
+.panel-main-body .graph {
+    width: 100%;
+    border: 1px solid #aeaeae;
+    background-color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.panel-main-body .graph-title table {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.panel-main-body .graph-title .row-title {
+    text-align: right;
+}
+
+.panel-main-body .graph-row {
+    padding: 10px 5px 10px 5px;
+}
+
+.panel-main-body .graph-row-img {
+    float: left;
+    padding-right: 5px;
+}
+
+.panel-main-body .graph-row-img img{
+    height: 50px;
+    width: 50px;
+}
+
+.panel-main-body .graph-row-vote-count {
+    height: 20px;
+}
+
+.panel-main-body .graph-row-candidate-name {
+    height: 20px;
+}
+
+.panel-main-body .graph-row-bar {
+    height: 10px;
+    left: 55px;
+    margin: 1px;
+    display: block;
+    position: relative;
+    background-color: #aeaeae;
+}
+
 .panel-main-btn {
     background-color: #006ddb;
     color: white;
