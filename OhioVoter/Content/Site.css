@@ -90,17 +90,17 @@ textarea {
     border-color: #9ebcdb;
 }
 
-.panel-left-body {
-    background-color: #dee9f4;
-    text-align: center;
-}
-
 .panel-left #voter-map img {
     max-width: 100%;
     height: auto;
     width: auto\9; /* ie8 */
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.panel-left-body {
+    background-color: #dee9f4;
+    text-align: center;
 }
 
 .panel-left-btn {
@@ -146,6 +146,25 @@ textarea {
     text-align: left;
 }
 
+.panel-main-body .btn-calendar {
+    width: 100%;
+    height: auto;
+    white-space: normal;
+}
+
+.panel-main-body .calendar {
+    margin-bottom: 10px;
+}
+
+.panel-main-body .calendar .date {
+    vertical-align: top;
+    padding-right: 10px;
+}
+
+.panel-main-body .calendar .description {
+    padding-bottom: 10px;
+}
+
 .panel-main-btn {
     background-color: #006ddb;
     color: white;
@@ -157,10 +176,14 @@ textarea {
 
 .panel-main-title {
     background-color: #9ebcdb;
-    padding-top: 10px;
-    padding-bottom: 1px;
+    padding: 10px 10px 1px 10px;
     text-align: center;
     font-weight: bold;
+}
+
+.panel-main-title img {
+    max-width: 100%;
+    height: auto;
 }
 
 .panel-page-title {

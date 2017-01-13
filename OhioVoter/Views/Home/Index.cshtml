@@ -34,27 +34,10 @@
             <h2><p class="panel-page-title"> Voter Bulletin Board </p></h2>
         </div>
 
-        <div class="panel panel-group panel-main panel-main-group">
-            <div class="panel-title panel-main-title">
-                <p>Mark Your Calendars</p>
-            </div>
-            <div class="panel-body panel-main-body">
-                <p>
-                    <dl class="dates">
-                        <dt>November 8, 2016</dt>
-                        <dd>General Election Day. Polls open from 6:30 a.m. to 7:30 p.m.</dd>
-                        <dt>November 18, 2016</dt>
-                        <dd>Absentee ballots returned by U.S. Mail must be postmarked no later than Nov. 7 and received by boards of elections by this date to be counted.</dd>
-                        <dd>UOCAVA absentee ballots must be received by boards of elections by this date to be counted.</dd>
-                        <dt>January 1, 2017</dt>
-                        <dd>Applications for absentee ballots for all elections held in 2017 may be accepted.</dd>
-                    </dl>
-                </p>
-                <p>
-                    <a href="#" class="btn panel-main-btn">See More Dates &raquo;</a>
-                </p>
-            </div>
+        <div class="electioncalendar">
+            @{Html.RenderPartial("_ElectionCalendar", Model.Calendar.ElectionDates);}
         </div>
+
 
         <div class="panel panel-group panel-main panel-main-group">
             <div class="panel-title panel-main-title">
@@ -64,6 +47,7 @@
                 <img src="~/Content/images/graph_candidates.jpg" width="525" height="259" alt="graph - total votes each candidate received">
             </div>
         </div>
+
 
         <div class="cnn-political-rss">
             @{Html.RenderPartial("_CnnPoliticalRss", Model.CnnRssFeed);}
