@@ -12,8 +12,15 @@ namespace OhioVoter.ViewModels
         public SideBar SideBar { get; set; }
         public Calendar Calendar { get; set; }
         public Poll Poll { get; set; }
-        public Feed CnnRssFeed { get; set; }
+        public RssFeed RssFeeds { get; set; }
+    }
+
+    public class RssFeed
+    {
         public Feed FoxNewsRssFeed { get; set; }
+        public Feed CnnRssFeed { get; set; }
+        public Feed CnbcRssFeed { get; set; }
+        public Feed OhioSecretaryOfStateRssFeed { get; set; }
     }
 
 }

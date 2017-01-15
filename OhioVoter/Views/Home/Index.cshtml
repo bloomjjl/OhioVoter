@@ -42,12 +42,8 @@
             @{Html.RenderPartial("_Poll", Model.Poll);}
         </div>
 
-        <div class="cnn-political-rss">
-            @{Html.RenderPartial("_CnnPoliticalRss", Model.CnnRssFeed);}
-        </div>
-
-        <div class="Foxnews-political-rss">
-            @{Html.RenderPartial("_FoxNewsPoliticalRss", Model.FoxNewsRssFeed);}
+        <div class="rss-news">
+            @{Html.RenderPartial("_RssFeeds", Model);}
         </div>
 
     </div>

@@ -6,11 +6,11 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    public class ElectionCalendar
+    public class ElectionDate
     {
         [Required]
         [Key]
-        public int ElectionCalendarId { get; set; }
+        public int ElectionDateId { get; set; }
 
         [Required]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]

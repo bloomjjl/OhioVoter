@@ -19,7 +19,7 @@ namespace OhioVoter.Services
     /// An RSS Feed reader server control, it will basically aggregate rss feeds and display the content
     /// </summary>
     /// 
-    public class RSSReader
+    public class RssReader
     {
 
         public Feed GetInformationFromRSSFeed(string feedUrl, int maxItemCount)
@@ -87,9 +87,57 @@ namespace OhioVoter.Services
         {
             return new Element()
             {
-                Image = feed.ImageUrl.OriginalString.ToString(),
-                Title = feed.Title.Text
+                Image = GetImageUrlFromChannelElement(feed),
+                Link_0 = GetLinkFromChannelElement(feed, 0),
+                Link_1 = GetLinkFromChannelElement(feed, 1),
+                Link_2 = GetLinkFromChannelElement(feed, 2),
+                Title = GetTitleFromChannelElement(feed)
             };
+        }
+
+
+
+        private String GetImageUrlFromChannelElement(SyndicationFeed feed)
+        {
+            try
+            {
+                return feed.ImageUrl.OriginalString.ToString();
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
+        }
+
+
+
+        private String GetLinkFromChannelElement(SyndicationFeed feed, int index)
+        {
+            try
+            {
+                return feed.Links[index].Uri.AbsoluteUri.ToString();
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
+        }
+
+
+
+        private String GetTitleFromChannelElement(SyndicationFeed feed)
+        {
+            try
+            {
+                return feed.Title.Text;
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
         }
 
 
@@ -138,10 +186,10 @@ namespace OhioVoter.Services
         {
             Element element = new Element()
             {
-                Title = item.Title.Text,
-                PubDate = item.PublishDate.LocalDateTime,
-                Summary = item.Summary.Text,
-                Link = item.Id.ToString()
+                Title = GetTitleFromItemElement(item),
+                PubDate = GetPublishDateFromItemElement(item),
+                Summary = GetSummaryFromItemElement(item),
+                Id = GetIdFromItemElement(item)
             };
 
             element = RemoveHTMLTagsFromSummaryElement(element);
@@ -150,6 +198,64 @@ namespace OhioVoter.Services
         }
 
 
+
+        private String GetTitleFromItemElement(SyndicationItem item)
+        {
+            try
+            {
+                return item.Title.Text;
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
+        }
+
+
+
+        private DateTime GetPublishDateFromItemElement(SyndicationItem item)
+        {
+            try
+            {
+                return item.PublishDate.LocalDateTime;
+            }
+            catch
+            {
+                // catch if value is null
+                return Convert.ToDateTime("1/01/1900");
+            }
+        }
+
+
+
+        private String GetSummaryFromItemElement(SyndicationItem item)
+        {
+            try
+            {
+                return item.Summary.Text;
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
+        }
+
+
+
+        private String GetIdFromItemElement(SyndicationItem item)
+        {
+            try
+            {
+                return item.Id.ToString();
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
+        }
 
         private Element RemoveHTMLTagsFromSummaryElement(Element element)
         {

@@ -1,0 +1,77 @@
+﻿@model OhioVoter.ViewModels.HomePageViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p> Current Political News </p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        <div class="rss-group">
+
+            <div class="rss-channel">
+                <a href="@Model.RssFeeds.CnbcRssFeed.Channel.Element.Link_1" target="_blank">
+                    <img src="@Model.RssFeeds.CnbcRssFeed.Channel.Element.Image" alt="CNBC Political News" />
+                </a>
+            </div>
+
+            <div class="rss-feed">
+                @foreach (var item in Model.RssFeeds.CnbcRssFeed.Items)
+                {
+                    <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                    <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                    <div class="rss-feed-description">@item.Element.Summary</div>
+                    <br />
+                }
+            </div>
+
+        </div>
+
+        <hr />
+
+        <div class="rss-group">
+
+            <div class="rss-channel">
+                <a href="@Model.RssFeeds.CnnRssFeed.Channel.Element.Link_0" target="_blank">
+                    <img src="@Model.RssFeeds.CnnRssFeed.Channel.Element.Image" alt="CNN Political News" />
+                </a>
+            </div>
+
+            <div class="rss-feed">
+                @foreach (var item in Model.RssFeeds.CnnRssFeed.Items)
+                {
+                    <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                    <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                    <div class="rss-feed-description">@item.Element.Summary</div>
+                    <br />
+                }
+            </div>
+
+        </div>
+
+        <hr />
+
+        <div class="rss-group">
+
+            <div class="rss-channel">
+                <a href="@Model.RssFeeds.FoxNewsRssFeed.Channel.Element.Link_0" target="_blank">
+                    <img src="@Model.RssFeeds.FoxNewsRssFeed.Channel.Element.Image" alt="Fox Political News" />
+                </a>
+            </div>
+
+            <div class="rss-feed">
+                @foreach (var item in Model.RssFeeds.FoxNewsRssFeed.Items)
+                {
+                    <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                    <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                    <div class="rss-feed-description">@item.Element.Summary</div>
+                    <br />
+                }
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

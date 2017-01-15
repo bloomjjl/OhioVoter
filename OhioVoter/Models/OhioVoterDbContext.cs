@@ -9,7 +9,7 @@ namespace OhioVoter.Models
 {
     public class OhioVoterDbContext : DbContext
     {
-        public DbSet<ElectionCalendar> ElectionCalendar { get; set; }
+        public DbSet<ElectionDate> ElectionDates { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

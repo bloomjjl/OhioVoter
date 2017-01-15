@@ -214,6 +214,11 @@ textarea {
     background-color: #aeaeae;
 }
 
+.panel-main-body .rss-channel {
+    padding-bottom: 10px;
+    font-size: 1.5em;
+}
+
 .panel-main-btn {
     background-color: #006ddb;
     color: white;

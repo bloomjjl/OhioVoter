@@ -22,8 +22,7 @@ namespace OhioVoter.Controllers
                 SideBar = GetSideBarViewModel(),
                 Calendar = GetCalendarViewModel(),
                 Poll = GetPollResultsViewModel(),
-                CnnRssFeed = GetCNNRSSPoliticalFeedViewModel(),
-                FoxNewsRssFeed = GetFoxNewsRSSPoliticalFeedViewModel()
+                RssFeeds = GetRssFeedsViewModel()
             };
 
             return View(viewModel);
@@ -161,13 +160,13 @@ namespace OhioVoter.Controllers
 
 
 
-        private List<ElectionCalendar> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
+        private List<ElectionDate> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
         {
             if (startDate <= endDate)
             {
                 using (OhioVoterDbContext db = new OhioVoterDbContext())
                 {
-                    IEnumerable<ElectionCalendar> electionDates = db.ElectionCalendar.ToList();
+                    IEnumerable<ElectionDate> electionDates = db.ElectionDates.ToList();
 
                     return electionDates.Where(x => x.Date >= startDate)
                                         .Where(x => x.Date < endDate)
@@ -176,7 +175,7 @@ namespace OhioVoter.Controllers
                 }
             }
 
-            return new List<ElectionCalendar>();
+            return new List<ElectionDate>();
         }
 
 
@@ -289,20 +288,18 @@ namespace OhioVoter.Controllers
         // ********************************************
         // RSS Feed
         // ********************************************
-        private Feed GetCNNRSSPoliticalFeedViewModel()
+
+        private RssFeed GetRssFeedsViewModel()
         {
-            CNNRSSManagement instance = new CNNRSSManagement();
-            return instance.GetCNNRSSPoliticalFeed();
+            RssManagement rssManager = new RssManagement();
+
+            return new RssFeed()
+            {
+                FoxNewsRssFeed = rssManager.GetFoxNewsRssPoliticalFeed(),
+                CnbcRssFeed = rssManager.GetCnbcRSSPoliticalFeed(),
+                CnnRssFeed = rssManager.GetCnnRssPoliticalFeed()
+            };
         }
-
-
-
-        private Feed GetFoxNewsRSSPoliticalFeedViewModel()
-        {
-            FoxNewsRSSManagement instance = new FoxNewsRSSManagement();
-            return instance.GetFoxNewsRSSPoliticalFeed();
-        }
-
 
 
 

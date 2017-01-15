@@ -10,7 +10,7 @@ namespace OhioVoter.ViewModels.Election
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public IEnumerable<ElectionCalendar> ElectionDates { get; set; }
+        public IEnumerable<ElectionDate> ElectionDates { get; set; }
     }
 
 }
