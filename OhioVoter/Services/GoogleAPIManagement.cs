@@ -9,9 +9,9 @@ using System.Web;
 
 namespace OhioVoter.Services
 {
-    public class GoogleAPIManagement
+    public class GoogleApiManagement
     {
-        private static string _googleAPIKey = "AIzaSyCmAeCrJzlOqmOlPx0q-MuZYZZnOMVfgXU";
+        private static string _googleApiKey = "AIzaSyCmAeCrJzlOqmOlPx0q-MuZYZZnOMVfgXU";
 
 
 
@@ -65,7 +65,7 @@ namespace OhioVoter.Services
         public string GetGoogleCivicInformationAPIRequestForVoterPollingLocation(Location voterLocation)
         {
             string api = "https://www.googleapis.com/civicinfo/v2/voterinfo?";
-            string key = _googleAPIKey;
+            string key = _googleApiKey;
             string andChar = "&";
             string electionIdValue = "2000"; // this value may need to be adjusted
             string voterAddress = voterLocation.FullAddress;
@@ -187,7 +187,7 @@ namespace OhioVoter.Services
         public string GetGoogleMapAPIRequestForVoterAndPollingLocation(Location voterLocation, Location pollingLocation)
         {
             string api = "https://maps.googleapis.com/maps/api/staticmap?";
-            string key = _googleAPIKey;
+            string key = _googleApiKey;
             string andChar = "&";
 
             return api + "center" + voterLocation.FullAddress.ToString() +

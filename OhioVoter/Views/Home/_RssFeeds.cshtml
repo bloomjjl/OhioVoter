@@ -19,7 +19,7 @@
             <div class="rss-feed">
                 @foreach (var item in Model.RssFeeds.CnbcRssFeed.Items)
                 {
-                    <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                    <div class="rss-feed-title"><a href="@item.Element.Link_0" target="_blank">@item.Element.Title</a></div>
                     <div class="rss-feed-pubdate">@item.Element.PubDate</div>
                     <div class="rss-feed-description">@item.Element.Summary</div>
                     <br />

@@ -25,6 +25,11 @@ namespace OhioVoter.Controllers
                 RssFeeds = GetRssFeedsViewModel()
             };
 
+            /*
+            VoteSmartApiManagement voteSmartApi = new VoteSmartApiManagement();
+            string test = voteSmartApi.GetVoteSmartCandidateInformation();
+            */
+
             return View(viewModel);
         }
 
@@ -90,7 +95,7 @@ namespace OhioVoter.Controllers
             // if(modelstate.isvalid)
             voterLocation.StateAbbreviation = "OH";
             voterLocation.Status = "Display";
-            GoogleAPIManagement instanceGoogleAPIManagement = new GoogleAPIManagement();
+            GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
             SideBar sideBarViewModel = instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
 
             SessionExtensions instanceSessionExtensions = new SessionExtensions();

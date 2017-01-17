@@ -189,6 +189,7 @@ namespace OhioVoter.Services
                 Title = GetTitleFromItemElement(item),
                 PubDate = GetPublishDateFromItemElement(item),
                 Summary = GetSummaryFromItemElement(item),
+                Link_0 = GetLinkFromItemElement(item, 0),
                 Id = GetIdFromItemElement(item)
             };
 
@@ -234,6 +235,21 @@ namespace OhioVoter.Services
             try
             {
                 return item.Summary.Text;
+            }
+            catch
+            {
+                // catch if value is null
+                return "";
+            }
+        }
+
+
+
+        private String GetLinkFromItemElement(SyndicationItem item, int index)
+        {
+            try
+            {
+                return item.Links[index].Uri.AbsoluteUri.ToString();
             }
             catch
             {
