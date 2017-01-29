@@ -15,131 +15,24 @@ namespace OhioVoter.Controllers
 {
     public class HomeController : Controller
     {
+        /// <summary>
+        /// get the information to display on page
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
+            LocationController location = new LocationController();
+
             HomePageViewModel viewModel = new HomePageViewModel()
             {
-                SideBar = GetSideBarViewModel(),
+                SideBar = location.GetSideBarViewModel("Home"),
                 Calendar = GetCalendarViewModel(),
                 Poll = GetPollResultsViewModel(),
                 RssFeeds = GetRssFeedsViewModel()
             };
 
-            /*
-            VoteSmartApiManagement voteSmartApi = new VoteSmartApiManagement();
-            string test = voteSmartApi.GetVoteSmartCandidateInformation();
-            */
-
             return View(viewModel);
         }
-
-
-
-
-        private SideBar GetSideBarViewModel()
-        {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-
-            SideBar viewModel = new SideBar()
-            {
-                VoterLocation = instanceSessionExtensions.GetVoterLocationFromSession(),
-                PollingLocation = instanceSessionExtensions.GetPollingLocationFromSession(),
-                CountyLocation = instanceSessionExtensions.GetCountyLocationFromSession(),
-                StateLocation = GetAddressForOhioSecretaryOfState()
-            };
-
-            return viewModel;
-        }
-
-
-
-        public Location GetAddressForOhioSecretaryOfState()
-        {
-            return new Location()
-            {
-                LocationName = "Ohio Secretary of State",
-                StreetAddress = "180 E Broad St., 15th Floor",
-                City = "Columbus",
-                StateName = "OH",
-                ZipCode = "43215-3726",
-                Website = "http://www.sos.state.oh.us/elections.aspx"
-            };
-        }
-
-
-
-        // ********************************************
-        // Sidebar information for supplied address
-        // ********************************************
-
-        // TODO: fix error validation to display errors and messages when Location form submitted
-
-        public ActionResult Location()
-        {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-            instanceSessionExtensions.ChangeVoterLocationStatusToUpdateVoterLocationForm();
-
-            if (!Request.IsAjaxRequest())
-                return RedirectToAction("Index", new { });
-
-            SideBar viewModel = GetSideBarViewModel();
-            return PartialView("_VoterLocationForm", viewModel);
-        }
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Location(Location voterLocation)
-        {
-            // if(modelstate.isvalid)
-            voterLocation.StateAbbreviation = "OH";
-            voterLocation.Status = "Display";
-            GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
-            SideBar sideBarViewModel = instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
-
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-
-            // if (sideBarViewModel.PollingLocation.Status == "Update")
-            if (sideBarViewModel.PollingLocation.City == null || sideBarViewModel.PollingLocation.City == "")
-            {
-                // update polling location in session
-                // .LocationName = "Location not found";
-                UpdateSessionFromSideBarViewModel(sideBarViewModel);
-                instanceSessionExtensions.ChangeVoterLocationStatusToUpdateVoterLocationForm();
-
-                if (!Request.IsAjaxRequest())
-                    return RedirectToAction("Index", new { });
-
-                SideBar formViewModel = GetSideBarViewModel();
-                return PartialView("_VoterLocationForm", formViewModel);
-            }
-
-            instanceSessionExtensions.ChangeVoterLocationStatusToDisplayVoterLocation();
-
-            sideBarViewModel.PollingLocation.GoogleLocationMapAPI = instanceGoogleAPIManagement.GetGoogleMapAPIRequestForVoterAndPollingLocation(sideBarViewModel.VoterLocation, sideBarViewModel.PollingLocation);
-            instanceSessionExtensions.UpdatePollingLocationInSession(sideBarViewModel.PollingLocation);
-            UpdateSessionFromSideBarViewModel(sideBarViewModel);
-
-            if (!Request.IsAjaxRequest())
-                return RedirectToAction("Index", new { });
-
-            // TODO: implement partial view using AJAX
-            SideBar viewModel = GetSideBarViewModel();
-            return PartialView("_VoterLocation", viewModel);
-        }
-
-
-
-        private void UpdateSessionFromSideBarViewModel(SideBar sideBarViewModel)
-        {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-
-            instanceSessionExtensions.UpdateVoterLocationInSession(sideBarViewModel.VoterLocation);
-            instanceSessionExtensions.UpdatePollingLocationInSession(sideBarViewModel.PollingLocation);
-            instanceSessionExtensions.UpdateCountyLocationInSession(sideBarViewModel.CountyLocation);
-        }
-
 
 
 
@@ -150,7 +43,11 @@ namespace OhioVoter.Controllers
 
         // TODO: set up link to allow users to sign up for email reminders for upcoming election dates
 
-        private Calendar GetCalendarViewModel()
+        /// <summary>
+        /// get the election date information to display on page
+        /// </summary>
+        /// <returns></returns>
+        public Calendar GetCalendarViewModel()
         {
             DateTime startDate = DateTime.Today;
             DateTime endDate = startDate.AddDays(30);
@@ -165,7 +62,14 @@ namespace OhioVoter.Controllers
 
 
 
-        private List<ElectionDate> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
+        /// <summary>
+        /// Get election date information from database
+        /// sort and store the election dates for a specified period of time
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public List<ElectionDate> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
         {
             if (startDate <= endDate)
             {
@@ -192,7 +96,13 @@ namespace OhioVoter.Controllers
         // ********************************************
 
         // TODO: set up database and retrieve polling data
+        // TODO: allow user to change the office if location provided
 
+        /// <summary>
+        /// get polling information for users that have filled out the ballot from database
+        /// sort and store the polling results to display on page
+        /// </summary>
+        /// <returns></returns>
         private Poll GetPollResultsViewModel()
         {
             Poll poll = new Poll()
@@ -202,25 +112,27 @@ namespace OhioVoter.Controllers
                 CandidateVotes = GetCandidateVotesFromBallot()
             };
 
-            // sort candidates by highest to lowest votes received
+            // sort candidates by highest to lowest votes received and display if greater than 0.0
             int totalVotesForOffice = GetTotalVotesForOfficeFromBallot(poll.CandidateVotes);
             poll.CandidateVotes = GetPercentageOfVotesEachCandidateReceivedFromBallot(poll.CandidateVotes, totalVotesForOffice);
             poll.CandidateVotes = RemoveCandidatesWithZeroVotesFromList(poll.CandidateVotes);
+            poll.CandidateVotes = poll.CandidateVotes.OrderByDescending(x => x.VoteCount).ToList();
 
             return poll;
         }
 
 
-
+        // ***************
         // moch database
+        // ***************
         private IEnumerable<CandidateVote> GetCandidateVotesFromBallot()
         {
             List<CandidateVote> candidateResults = new List<CandidateVote>()
             {
-                new CandidateVote() { Candidate = "Donald Trump", CoCandidate = "", Party = "Republican", PartyColor = "Red", VoteCount = 2841005 },
                 new CandidateVote() { Candidate = "Hillary Clinton", CoCandidate = "", Party = "Democrat", PartyColor = "Blue", VoteCount = 2394164 },
                 new CandidateVote() { Candidate = "Gary Johnson", CoCandidate = "", Party = "Libertarian", PartyColor = "Yellow", VoteCount = 174498 },
                 new CandidateVote() { Candidate = "Jill Stein", CoCandidate = "", Party = "Green", PartyColor = "Green", VoteCount = 46271 },
+                new CandidateVote() { Candidate = "Donald Trump", CoCandidate = "", Party = "Republican", PartyColor = "Red", VoteCount = 2841005 },
                 new CandidateVote() { Candidate = "Richard Duncan", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 24235 },
                 new CandidateVote() { Candidate = "Evan McMullin", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 12574 },
                 new CandidateVote() { Candidate = "Darrell Castle", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 1887 },
@@ -247,6 +159,11 @@ namespace OhioVoter.Controllers
 
 
 
+        /// <summary>
+        /// get the total number of votes each candidate received
+        /// </summary>
+        /// <param name="candidateVotes"></param>
+        /// <returns></returns>
         private int GetTotalVotesForOfficeFromBallot(IEnumerable<CandidateVote> candidateVotes)
         {
             int count = 0;
@@ -262,6 +179,12 @@ namespace OhioVoter.Controllers
 
 
 
+        /// <summary>
+        /// store the percentage of total votes each candidate received
+        /// </summary>
+        /// <param name="candidateVotes"></param>
+        /// <param name="totalVotes"></param>
+        /// <returns></returns>
         private IEnumerable<CandidateVote> GetPercentageOfVotesEachCandidateReceivedFromBallot(IEnumerable<CandidateVote> candidateVotes, int totalVotes)
         {
             foreach (CandidateVote candidate in candidateVotes)
@@ -278,6 +201,11 @@ namespace OhioVoter.Controllers
 
 
 
+        /// <summary>
+        /// only store the candidates who have an average of the total votes greater than 0.0
+        /// </summary>
+        /// <param name="candidateVotes"></param>
+        /// <returns></returns>
         private IEnumerable<CandidateVote> RemoveCandidatesWithZeroVotesFromList(IEnumerable<CandidateVote> candidateVotes)
         {
             return candidateVotes.Where(c => c.VotePercent > 0.0m);
@@ -294,6 +222,10 @@ namespace OhioVoter.Controllers
         // RSS Feed
         // ********************************************
 
+        /// <summary>
+        /// get the information for rss feeds
+        /// </summary>
+        /// <returns></returns>
         private RssFeed GetRssFeedsViewModel()
         {
             RssManagement rssManager = new RssManagement();
@@ -312,21 +244,6 @@ namespace OhioVoter.Controllers
 
 
 
-        // *********************************************
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
-        
     }
 }

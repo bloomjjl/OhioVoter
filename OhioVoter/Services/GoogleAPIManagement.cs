@@ -19,50 +19,85 @@ namespace OhioVoter.Services
         // Google Civic Info API
         // **************************
 
-        public SideBar GetGoogleCivicInformationForVoterLocation(Location voterLocation)
+        /// <summary>
+        /// validate voter information supplied is valid
+        /// then return voting location information
+        /// </summary>
+        /// <param name="voterLocation"></param>
+        /// <returns></returns>
+        public SideBar GetGoogleCivicInformationForVoterLocation(ViewModels.Location voterLocation)
         {
             try
             {
-                string urlRequest = GetGoogleCivicInformationAPIRequestForVoterPollingLocation(voterLocation);
-
                 // create C# classes from json file
                 // http://json2csharp.com/
 
+                string urlRequest = GetUrlRequestForGoogleCivicInformationFromVoterLocation(voterLocation);
                 WebClient client = new WebClient();
                 string json = client.DownloadString(urlRequest);
-                RootObject googleResult = JToken.Parse(json).ToObject<RootObject>();
+                CivicInfoRootObject googleResult = JToken.Parse(json).ToObject<CivicInfoRootObject>();
 
-                SideBar sideBarViewModel = new SideBar()
-                {
-                    VoterLocation = GetVoterLocationFromGoogleCivicInformation(googleResult),
-                    PollingLocation = GetPollingLocationFromGoogleCivicInformation(googleResult),
-                    CountyLocation = GetCountyLocationFromGoogleCivicInformation(googleResult)
-                };
-
+                SideBar sideBarViewModel = GetSideBarViewModel(googleResult);
                 sideBarViewModel.VoterLocation = ValidateSuppliedVoterLocation(sideBarViewModel.VoterLocation);
                 sideBarViewModel.PollingLocation = ValidatePollingLocation(sideBarViewModel.PollingLocation);
+                sideBarViewModel.CountyLocation = ValidateCountyLocation(sideBarViewModel.CountyLocation);
 
                 return sideBarViewModel;
             }
-            catch
+            catch (Exception e)
             {// return empty object if bad address supplied
-                SideBar sideBarViewModel = new SideBar()
-                {
-                    VoterLocation = voterLocation,
-                    PollingLocation = new Location(),
-                    CountyLocation = new Location(),
-                    StateLocation = new Location()
-                };
+                if (voterLocation == null)
+                    voterLocation = new ViewModels.Location();
 
-                sideBarViewModel.VoterLocation.Message = "Address is not valid.";
-
-                return sideBarViewModel;
+                voterLocation.Status = "Update";
+                voterLocation.Message = "Voter address is not valid.";
+                return GetEmptyVoterLocationViewModel(voterLocation);
             }
         }
 
 
 
-        public string GetGoogleCivicInformationAPIRequestForVoterPollingLocation(Location voterLocation)
+        /// <summary>
+        /// create empty location objects to return
+        /// </summary>
+        /// <param name="voterLocation"></param>
+        /// <returns></returns>
+        private SideBar GetEmptyVoterLocationViewModel(ViewModels.Location voterLocation)
+        {
+            return new SideBar()
+            {
+                VoterLocation = voterLocation,
+                PollingLocation = new ViewModels.Location(),
+                CountyLocation = new ViewModels.Location(),
+                StateLocation = new ViewModels.Location()
+            };
+        }
+
+
+
+        /// <summary>
+        /// get location information for SideBar
+        /// </summary>
+        /// <param name="googleResult"></param>
+        /// <returns></returns>
+        private SideBar GetSideBarViewModel(CivicInfoRootObject googleResult)
+        {
+            return new SideBar()
+            {
+                VoterLocation = GetVoterLocationFromGoogleCivicInformation(googleResult),
+                PollingLocation = GetPollingLocationFromGoogleCivicInformation(googleResult),
+                CountyLocation = GetCountyLocationFromGoogleCivicInformation(googleResult)
+            };
+        }
+
+
+
+        /// <summary>
+        /// get voting information from API for supplied voter location
+        /// </summary>
+        /// <param name="voterLocation"></param>
+        /// <returns></returns>
+        public string GetUrlRequestForGoogleCivicInformationFromVoterLocation(ViewModels.Location voterLocation)
         {
             string api = "https://www.googleapis.com/civicinfo/v2/voterinfo?";
             string key = _googleApiKey;
@@ -70,33 +105,39 @@ namespace OhioVoter.Services
             string electionIdValue = "2000"; // this value may need to be adjusted
             string voterAddress = voterLocation.FullAddress;
 
-            return api + "address=" + voterAddress +
-                   andChar + "electionId=" + electionIdValue +
-                   andChar + "key=" + key;
+            return string.Concat(api, "address=", voterAddress,
+                                 andChar, "electionId=", electionIdValue,
+                                 andChar, "key=", key);
         }
 
 
 
-
-        public Location GetVoterLocationFromGoogleCivicInformation(RootObject googleResult)
+        /// <summary>
+        /// separate and store the voter location information
+        /// </summary>
+        /// <param name="googleResult"></param>
+        /// <returns></returns>
+        public ViewModels.Location GetVoterLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
-            Location voterLocation = new Location()
+            return new ViewModels.Location()
             {
                 StreetAddress = googleResult.normalizedInput.line1.ToString(),
                 City = googleResult.normalizedInput.city.ToString(),
                 StateAbbreviation = googleResult.normalizedInput.state.ToString(),
                 ZipCode = googleResult.normalizedInput.zip.ToString()
             };
-
-            return voterLocation;
         }
 
 
 
-
-        public Location GetPollingLocationFromGoogleCivicInformation(RootObject googleResult)
+        /// <summary>
+        /// separate and store the polling location information
+        /// </summary>
+        /// <param name="googleResult"></param>
+        /// <returns></returns>
+        public ViewModels.Location GetPollingLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
-            Location pollingLocation = new Location()
+            return new ViewModels.Location()
             {
                 LocationName = googleResult.pollingLocations[0].address.locationName.ToString(),
                 StreetAddress = googleResult.pollingLocations[0].address.line1.ToString(),
@@ -104,15 +145,18 @@ namespace OhioVoter.Services
                 StateAbbreviation = googleResult.pollingLocations[0].address.state.ToString(),
                 ZipCode = googleResult.pollingLocations[0].address.zip.ToString()
             };
-
-            return pollingLocation;
         }
 
 
 
-        public Location GetCountyLocationFromGoogleCivicInformation(RootObject googleResult)
+        /// <summary>
+        /// separate and store the county location information
+        /// </summary>
+        /// <param name="googleResult"></param>
+        /// <returns></returns>
+        public ViewModels.Location GetCountyLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
-            Location countyLocation = new Location()
+            return new ViewModels.Location()
             {
                 LocationName = googleResult.state[0].local_jurisdiction.name.ToString(),
                 StreetAddress = googleResult.state[0].local_jurisdiction.electionAdministrationBody.physicalAddress.line1.ToString(),
@@ -123,29 +167,33 @@ namespace OhioVoter.Services
                 Email = googleResult.state[0].local_jurisdiction.electionAdministrationBody.electionOfficials[0].emailAddress.ToString(),
                 Website = googleResult.state[0].local_jurisdiction.electionAdministrationBody.electionInfoUrl.ToString()
             };
-
-            return countyLocation;
         }
 
 
 
-        public Location ValidateSuppliedVoterLocation(Location voterLocation)
+        /// <summary>
+        /// make sure valid city is found in Ohio
+        /// </summary>
+        /// <param name="voterLocation"></param>
+        /// <returns></returns>
+        public ViewModels.Location ValidateSuppliedVoterLocation(ViewModels.Location voterLocation)
         {
             if (voterLocation.City == null || voterLocation.City == "")
             {
                 // city must be found
                 voterLocation.Status = "Update";
-                voterLocation.Message = "Address Supplied is not valid.";
+                voterLocation.Message = "Voter address not found.";
             }
             else if (voterLocation.StateAbbreviation != "OH")
             {
                 // state can only be OHIO
                 voterLocation.Status = "Update";
-                voterLocation.Message = "Address must be in Ohio.";
+                voterLocation.Message = "Voter address must be in Ohio.";
             }
             else
             {
-                voterLocation.Message = "";
+                voterLocation.Status = "Display";
+                voterLocation.Message = string.Empty;
             }
 
             return voterLocation;
@@ -153,23 +201,29 @@ namespace OhioVoter.Services
 
 
 
-        public Location ValidatePollingLocation(Location pollingLocation)
+        /// <summary>
+        /// make sure valid polling location is found in Ohio
+        /// </summary>
+        /// <param name="pollingLocation"></param>
+        /// <returns></returns>
+        public ViewModels.Location ValidatePollingLocation(ViewModels.Location pollingLocation)
         {
             if (pollingLocation.City == null || pollingLocation.City == "")
             {
                 // city must be found
                 pollingLocation.Status = "Update";
-                pollingLocation.Message = "Address Supplied is not valid.";
+                pollingLocation.Message = "Polling address not found.";
             }
             else if (pollingLocation.StateAbbreviation != "OH")
             {
                 // state can only be OHIO
                 pollingLocation.Status = "Update";
-                pollingLocation.Message = "Address must be in Ohio.";
+                pollingLocation.Message = "Polling address must be in Ohio.";
             }
             else
             {
-                pollingLocation.Message = "";
+                pollingLocation.Status = "Display";
+                pollingLocation.Message = string.Empty;
             }
 
             return pollingLocation;
@@ -178,25 +232,193 @@ namespace OhioVoter.Services
 
 
 
+        public ViewModels.Location ValidateCountyLocation(ViewModels.Location countyLocation)
+        {// Tests Generated
+            if (countyLocation.StateAbbreviation == null || countyLocation.City == null || countyLocation.City == "")
+            {
+                // city must be found
+                countyLocation.Status = "Update";
+                countyLocation.Message = "County address not found.";
+            }
+            else if (countyLocation.StateAbbreviation != "OH")
+            {
+                // state can only be OHIO
+                countyLocation.Status = "Update";
+                countyLocation.Message = "County address must be in Ohio.";
+            }
+            else
+            {
+                countyLocation.Status = "Display";
+                countyLocation.Message = string.Empty;
+            }
+
+            return countyLocation;
+        }
+
+
 
 
         // **************************
         // Google Map API
         // **************************
 
-        public string GetGoogleMapAPIRequestForVoterAndPollingLocation(Location voterLocation, Location pollingLocation)
-        {
+        /// <summary>
+        /// get the map information to display the voter location and polling location
+        /// </summary>
+        /// <param name="voterLocation"></param>
+        /// <param name="pollingLocation"></param>
+        /// <returns></returns>
+        public string GetGoogleMapAPIRequestForVoterAndPollingLocation(ViewModels.Location voterLocation, ViewModels.Location pollingLocation)
+        {// Tests Generated
             string api = "https://maps.googleapis.com/maps/api/staticmap?";
             string key = _googleApiKey;
             string andChar = "&";
 
-            return api + "center" + voterLocation.FullAddress.ToString() +
-                   andChar + "size=300x300" +
-                   andChar + "maptype=roadmap" +
-                   andChar + "markers=color:red%7Clabel:H%7C" + voterLocation.FullAddress.ToString() +
-                   andChar + "markers=color:blue%7Clabel:P%7C" + pollingLocation.FullAddress.ToString() +
-                   andChar + "key=" + key;
+            return string.Concat(api, "center", voterLocation.FullAddress.ToString(),
+                                 andChar, "size=300x300",
+                                 andChar, "maptype=roadmap",
+                                 andChar, "markers=color:red%7Clabel:H%7C", voterLocation.FullAddress.ToString(),
+                                 andChar, "markers=color:blue%7Clabel:P%7C", pollingLocation.FullAddress.ToString(),
+                                 andChar, "key=", key);
         }
+
+
+
+
+
+        // ****************************
+        // Google Zip Code API
+        // ****************************
+
+        /// <summary>
+        /// use google maps to get the state abbreviation based on the zip code
+        /// </summary>
+        /// <param name="zipCode"></param>
+        /// <returns></returns>
+        public string GetStateAbbreviationForSuppliedZipCode(string zipCode)
+        {// Tests Generated
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+
+                string urlRequest = GetUrlRequestForStateAbbreviationFromZipCode(zipCode);
+                WebClient client = new WebClient();
+                string urlResponse = client.DownloadString(urlRequest);
+                AddressObject googleResult = JToken.Parse(urlResponse).ToObject<AddressObject>();
+
+                return GetStateAbbreviationFromGoogleAddressObject(googleResult);
+            }
+            catch (Exception e)
+            {// bad address supplied
+                return "NA";
+            }
+        }
+
+
+
+        /// <summary>
+        /// get the api for a location based on the zip code
+        /// </summary>
+        /// <param name="zipCode"></param>
+        /// <returns></returns>
+        public string GetUrlRequestForStateAbbreviationFromZipCode(string zipCode)
+        {// Tests Generated
+            string api = "http://maps.googleapis.com/maps/api/geocode/json?";
+            string andChar = "&";
+            string address = "address=";
+            string sensor = "sensor=true";
+
+            return string.Concat(api, 
+                                 andChar, address, zipCode,
+                                 andChar, sensor);
+        }
+
+
+
+
+
+
+        // ***********************************************
+        // Google Street Address And Zip Code API
+        // ***********************************************
+
+        /// <summary>
+        /// Look up the state based on the street address and zip code
+        /// </summary>
+        /// <param name="streetAddress"></param>
+        /// <param name="zipCode"></param>
+        /// <returns></returns>
+        public string GetStateAbbreviationForSuppliedStreetAddressAndZipCode(string streetAddress, string zipCode)
+        {// Tests Generated
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+
+                string urlRequest = GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode);
+                WebClient client = new WebClient();
+                string urlResponse = client.DownloadString(urlRequest);
+                AddressObject googleResult = JToken.Parse(urlResponse).ToObject<AddressObject>();
+
+                return GetStateAbbreviationFromGoogleAddressObject(googleResult);
+            }
+            catch (Exception e)
+            {// bad address supplied
+                return "NA";
+            }
+        }
+
+
+
+        /// <summary>
+        /// get the api for a location based on the street address and zip code
+        /// </summary>
+        /// <param name="zipCode"></param>
+        /// <returns></returns>
+        public string GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(string streetAddress, string zipCode)
+        {// Tests Generated
+            string api = "http://maps.googleapis.com/maps/api/geocode/json?";
+            string andChar = "&";
+            string address = "address=";
+            string sensor = "sensor=true";
+
+            return string.Concat(api,
+                                 andChar, address, streetAddress, " ", zipCode,
+                                 andChar, sensor);
+        }
+
+
+
+        /// <summary>
+        /// get the state abbreviation from the googleResult
+        /// </summary>
+        /// <param name="googleResult"></param>
+        /// <returns></returns>
+        public string GetStateAbbreviationFromGoogleAddressObject(AddressObject googleResult)
+        {// Tests Generated
+            if (googleResult.results[0].partial_match == true)
+                return "NA";
+
+            for(int i = 0; i < googleResult.results[0].address_components.Count; i++)
+            {
+                if (googleResult.results[0].address_components[i].short_name != null &&
+                    googleResult.results[0].address_components[i].short_name != "")
+                {
+                    for (int j = 0; j < googleResult.results[0].address_components[i].types.Count; j++)
+                    {
+                        if (googleResult.results[0].address_components[i].types[j] != null &&
+                            googleResult.results[0].address_components[i].types[j] == "administrative_area_level_1")
+                        {
+                            return googleResult.results[0].address_components[i].short_name.ToString();
+                        }
+                    }
+                }
+            }
+
+            return "NA";
+        }
+
 
 
     }

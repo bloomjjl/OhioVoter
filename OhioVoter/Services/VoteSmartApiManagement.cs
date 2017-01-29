@@ -1,8 +1,16 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using OhioVoter.ViewModels;
+using OhioVoter.ViewModels.VoteSmart;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.ServiceModel.Syndication;
+using System.Text;
 using System.Web;
+using System.Xml;
 
 namespace OhioVoter.Services
 {
@@ -12,163 +20,178 @@ namespace OhioVoter.Services
 
 
 
-        public String GetVoteSmartCandidateInformation()
-        {
+        /// <summary>
+        /// get list of candidates that are an exact match to the supplied candidate name
+        /// </summary>
+        /// <param name="candidateName"></param>
+        /// <returns></returns>
+        public List<Candidate> GetVoteSmartMatchingCandidateListFromSuppliedLastName(string suppliedLastName)
+        {// Tests Generated
             try
             {
                 // create C# classes from json file
                 // http://json2csharp.com/
+                // http://xmltocsharp.azurewebsites.net/
 
-                string stateId = "OH";
-                string localId = "3292";
-                string hamiltonCountyLocalId = "3292";
-                string cincinnatiCityLocalId = "930";
-                string officeTypeId = "P";
-                string levelId = "F";
-                string officeLevelId = levelId;
-                string branchId = "B";
-                string officeId = "1";
-                string lastName = "Obama";
-                string districtId = "30922";
-                string electionDistrictId = "25657"; // district 1
-                string officeDistrictId = "30643"; // office district 1
-                string electionYear = "";
-                string stageId = "";
-                string candidateId = "27009"; // David Mann
+                string urlRequest = GetUrlRequestForAllOfficialsWithMatchingLastName(suppliedLastName);
+                XmlDocument xmlDoc = MakeRequest(urlRequest);
+                List<Candidate> candidates = ProcessResponseForCandidateList(xmlDoc);
 
-
-                // LOCAL
-
-                string urlRequest = GetCountiesForSuppliedState(stateId);
-                WebClient client = new WebClient();
-                string json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetCitiesForSuppliedState(stateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetCandidatesForSpecifiedLocation(hamiltonCountyLocalId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetCandidatesForSpecifiedLocation(cincinnatiCityLocalId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // OFFICES
-
-                urlRequest = GetAllOfficeTypes();
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetAllBranchesOfGovernment();
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetAllLevelsOfGovernment();
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetAllOfficesForSpecifiedType(officeTypeId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetAllOfficesForSpecifiedLevel(levelId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetAllOfficesForSpecifiedTypeAndLevel(officeTypeId, officeLevelId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // ERROR??
-                urlRequest = GetAllOfficesForSpecifiedBranchAndLevel(branchId, levelId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // OFFICIALS
-
-                urlRequest = GetAllOfficialsForSpecifiedState(stateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // ERROR??
-                urlRequest = GetAllOfficialsForSpecifiedOfficeAndState(officeId, stateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // ERROR??
-                urlRequest = GetAllOfficialsForSpecifiedOfficeTypeAndState(officeTypeId, stateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetAllOfficialsWithMatchingLastName(lastName);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // similar last name
-                // used by VoteSmart to look up candidates
-                urlRequest = GetAllOfficialsWithLastName(lastName);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                districtId = "31565"; // officeDistrictId
-                urlRequest = GetAllOfficialsByDistrict(districtId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // STATES
-
-                urlRequest = GetAllStates();
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                urlRequest = GetInformationForSpecifiedState(stateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // ADDRESS
-
-                // ERROR??
-                urlRequest = GetCampaignOfficeInformationForSpecifiedCandidate(candidateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                // CANDIDATEBIO
-
-                urlRequest = GetBiographyInformationForSpecifiedCandidate(candidateId);
-                client = new WebClient();
-                json = client.DownloadString(urlRequest);
-                //RootObject votesmartResult = JToken.Parse(json).ToObject<RootObject>();
-
-                return "";
+                return candidates;
             }
-            catch
-            {// return empty object if bad address supplied
-                return "";
+            catch (Exception e)
+            {// return empty object if bad information supplied
+                return new List<Candidate>();
             }
         }
 
+
+
+        /// <summary>
+        /// get list of candidates that are similar to the supplied candidate name
+        /// </summary>
+        /// <param name="candidateName"></param>
+        /// <returns></returns>
+        public List<Candidate> GetVoteSmartSimilarCandidateListFromSuppliedLastName(string suppliedLastName)
+        {// Tests Generated
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+                // http://xmltocsharp.azurewebsites.net/
+
+                string urlRequest = GetUrlRequestForAllOfficialsWithSimilarLastName(suppliedLastName);
+                XmlDocument xmlDoc = MakeRequest(urlRequest);
+                List<Candidate> candidates = ProcessResponseForCandidateList(xmlDoc);
+
+                return candidates;
+            }
+            catch (Exception e)
+            {// return empty object if bad information supplied
+                return new List<Candidate>();
+            }
+        }
+
+
+
+
+        public XmlDocument MakeRequest(string requestUrl)
+        {// Tests Generated
+            try
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(requestUrl);
+                return (xmlDoc);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+
+
+        public List<Candidate> ProcessResponseForCandidateList(XmlDocument xmlDoc)
+        {// Tests Generated
+            if (xmlDoc == null)
+                return new List<Candidate>();
+
+            XmlNodeList candidates = xmlDoc.GetElementsByTagName("candidate");
+
+            List<Candidate> candidatelist = new List<Candidate>();
+
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                candidatelist.Add(new Candidate()
+                {
+                    CandidateId = candidates[i].SelectSingleNode("candidateId").InnerText,
+                    FirstName = candidates[i].SelectSingleNode("firstName").InnerText,
+                    LastName = candidates[i].SelectSingleNode("lastName").InnerText
+                });
+            };
+
+            return candidatelist;
+        }
+
+
+        /*
+        private List<Candidate> GetListOfCandidates(XmlDocument urlResponse)
+        {
+            List<Candidate> candidates = new List<Candidate>();
+            string xml = urlResponse.InnerXml.ToString();
+
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+            { 
+                // LinePosition < 
+                foreach (var candidate in xml)
+                {
+                    Candidate c = new Candidate();
+
+                    reader.ReadToFollowing("candidate");
+
+                    // int line = reader.LineNumber();
+                    // int postion = reader.LinePosition();
+                    
+                    // Create another reader that contains just the current candidate node.
+                    XmlReader inner = reader.ReadSubtree();
+                    
+                    inner.ReadToDescendant("candidateId");
+                    c.CandidateId = reader.ReadElementContentAsString();
+                    
+                    inner.ReadToDescendant("firstName");
+                    c.FirstName = reader.ReadElementContentAsString();
+
+                    inner.ReadToDescendant("lastName");
+                    c.LastName = reader.ReadElementContentAsString();
+
+                    // call Close on the inner reader and
+                    // continue processing using the original reader.
+                    inner.Close();
+
+                    candidates.Add(c);
+                };
+            }          
+              
+            return candidates;
+        }
+        */
+
+
+        /*
+        private Candidate GetCandidateInformation(XmlReader reader)
+        {
+            Candidate candidate = new Candidate();
+
+            try
+            {
+                reader.ReadToFollowing("candidate");
+
+                reader.ReadStartElement("candidateId");
+                candidate.CandidateId = reader.ReadElementContentAsString();
+
+                reader.ReadStartElement("firstName");
+                candidate.FirstName = reader.ReadElementContentAsString();
+
+                reader.ReadStartElement("lastName");
+                candidate.LastName = reader.ReadElementContentAsString();
+
+                return candidate;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.Read();
+
+                return candidate;
+            }
+        }
+        */
+
+
+
+        // ***************************************************************
+        // ***************************************************************
+        // ***************************************************************
 
         /// <summary>
         ///     VoteSmart API Class: Local
@@ -180,16 +203,16 @@ namespace OhioVoter.Services
         ///     list of counties
         ///     (localId,name,url)
         /// </returns>
-        public string GetCountiesForSuppliedState(string stateId = "OH")
-        {
+        public string GetUrlRequestForCountiesForSuppliedState(string stateId = "OH")
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Local.getCounties?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "stateId=" + stateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "stateId=", stateId);
         }
 
 
@@ -204,16 +227,16 @@ namespace OhioVoter.Services
         ///     List of cities
         ///     (localId,name,url)
         /// </returns>
-        public string GetCitiesForSuppliedState(string stateId = "OH")
-        {
+        public string GetUrlRequestForCitiesForSuppliedState(string stateId = "OH")
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Local.getCities?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "stateId=" + stateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "stateId=", stateId);
         }
 
 
@@ -226,16 +249,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of candidates with their name,location,office,party
         /// </returns>
-        public string GetCandidatesForSpecifiedLocation(string localId)
-        {
+        public string GetUrlRequestForCandidatesForSpecifiedLocation(string localId)
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Local.getOfficials?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "localId=" + localId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "localId=", localId);
         }
 
 
@@ -248,15 +271,15 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of office types
         /// </returns>
-        public string GetAllOfficeTypes()
-        {
+        public string GetUrlRequestForAllOfficeTypes()
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Office.getTypes?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key;
+            return string.Concat(api, path,
+                                 andChar, "key=", key);
         }
 
 
@@ -269,15 +292,15 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of branches of government
         /// </returns>
-        public string GetAllBranchesOfGovernment()
-        {
+        public string GetUrlRequestForAllBranchesOfGovernment()
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Office.getBranches?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key;
+            return string.Concat(api, path,
+                                 andChar, "key=", key);
         }
 
 
@@ -290,15 +313,15 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of levels of government
         /// </returns>
-        public string GetAllLevelsOfGovernment()
-        {
+        public string GetUrlRequestForAllLevelsOfGovernment()
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Office.getLevels?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key;
+            return string.Concat(api, path,
+                                 andChar, "key=", key);
         }
 
 
@@ -311,16 +334,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of offices
         /// </returns>
-        public string GetAllOfficesForSpecifiedType(string officeTypeId)
-        {
+        public string GetUrlRequestForAllOfficesForSpecifiedType(string officeTypeId)
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Office.getOfficesByType?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "officeTypeId=" + officeTypeId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "officeTypeId=", officeTypeId);
         }
 
 
@@ -333,16 +356,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of offices
         /// </returns>
-        public string GetAllOfficesForSpecifiedLevel(string levelId)
-        {
+        public string GetUrlRequestForAllOfficesForSpecifiedLevel(string levelId)
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Office.getOfficesByLevel?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "levelId=" + levelId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "levelId=", levelId);
         }
 
 
@@ -356,17 +379,17 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of offices
         /// </returns>
-        public string GetAllOfficesForSpecifiedTypeAndLevel(string officeTypeId, string officeLevelId)
+        public string GetUrlRequestForAllOfficesForSpecifiedTypeAndLevel(string officeTypeId, string officeLevelId)
         {
             string api = "http://api.votesmart.org/";
             string path = "Office.getOfficesByTypeLevel?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "officeTypeId=" + officeTypeId +
-                   andChar + "officeLevelId=" + officeLevelId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "officeTypeId=", officeTypeId,
+                                 andChar, "officeLevelId=", officeLevelId);
         }
 
 
@@ -382,17 +405,17 @@ namespace OhioVoter.Services
         /// </returns>        
         /// 
         /// <errorMessage>Unknown error.</errorMessage>
-        public string GetAllOfficesForSpecifiedBranchAndLevel(string branchId, string levelId)
+        public string GetUrlRequestForAllOfficesForSpecifiedBranchAndLevel(string branchId, string levelId)
         {
             string api = "http://api.votesmart.org/";
             string path = "Office.getOfficesByBranchLevel?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "branchId=" + branchId +
-                   andChar + "levelId=" + levelId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "branchId=", branchId,
+                                 andChar, "levelId=", levelId);
         }
 
 
@@ -406,16 +429,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of officials
         /// </returns>
-        public string GetAllOfficialsForSpecifiedState(string stateId = "OH")
+        public string GetUrlRequestForAllOfficialsForSpecifiedState(string stateId = "OH")
         {
             string api = "http://api.votesmart.org/";
             string path = "Officials.getStatewide?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "stateId=" + stateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "stateId=", stateId);
         }
 
 
@@ -432,17 +455,17 @@ namespace OhioVoter.Services
         /// </returns>
         /// 
         /// <errorMessage>No officials found matching this criteria.</errorMessage>
-        public string GetAllOfficialsForSpecifiedOfficeAndState(string officeId, string stateId = "OH")
+        public string GetUrlRequestForAllOfficialsForSpecifiedOfficeAndState(string officeId, string stateId = "OH")
         {
             string api = "http://api.votesmart.org/";
             string path = "Officials.getByOfficeState?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "officeId=" + officeId +
-                   andChar + "stateId=" + stateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "officeId=", officeId,
+                                 andChar, "stateId=", stateId);
         }
 
 
@@ -459,17 +482,17 @@ namespace OhioVoter.Services
         /// </returns>
         /// 
         /// <errorMessage>No candidates found matching this criteria.</errorMessage>
-        public string GetAllOfficialsForSpecifiedOfficeTypeAndState(string officeTypeId, string stateId = "OH")
+        public string GetUrlRequestForAllOfficialsForSpecifiedOfficeTypeAndState(string officeTypeId, string stateId = "OH")
         {
             string api = "http://api.votesmart.org/";
             string path = "Officials.getByOfficeTypeState?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "officeTypeId=" + officeTypeId +
-                   andChar + "stateId=" + stateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "officeTypeId=", officeTypeId,
+                                 andChar, "stateId=", stateId);
         }
 
 
@@ -482,16 +505,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of officials
         /// </returns>
-        public string GetAllOfficialsWithMatchingLastName(string lastName)
-        {
+        public string GetUrlRequestForAllOfficialsWithMatchingLastName(string lastName)
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Officials.getByLastname?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "lastName=" + lastName;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "lastName=", lastName);
         }
 
 
@@ -504,16 +527,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of officials
         /// </returns>
-        public string GetAllOfficialsWithLastName(string lastName)
-        {
+        public string GetUrlRequestForAllOfficialsWithSimilarLastName(string lastName)
+        {// Tests Generated
             string api = "http://api.votesmart.org/";
             string path = "Officials.getByLevenshtein?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "lastName=" + lastName;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "lastName=", lastName);
         }
 
 
@@ -526,16 +549,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of officials
         /// </returns>
-        public string GetAllOfficialsByDistrict(string districtId)
+        public string GetUrlRequestForAllOfficialsByDistrict(string districtId)
         {
             string api = "http://api.votesmart.org/";
             string path = "Officials.getByDistrict?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "districtId=" + districtId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "districtId=", districtId);
         }
 
 
@@ -549,17 +572,17 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of officials
         /// </returns>
-        public string GetAllOfficialsByDistrict(string zip5, string zip4)
+        public string GetUrlRequestForAllOfficialsByDistrict(string zip5, string zip4)
         {
             string api = "http://api.votesmart.org/";
             string path = "Officials.getByZip?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "zip5=" + zip5 +
-                   andChar + "zip4=" + zip4;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "zip5=", zip5,
+                                 andChar, "zip4=", zip4);
         }
 
 
@@ -572,15 +595,15 @@ namespace OhioVoter.Services
         /// <returns>
         ///     List of states
         /// </returns>
-        public string GetAllStates()
+        public string GetUrlRequestForAllStates()
         {
             string api = "http://api.votesmart.org/";
             string path = "State.getStateIDs?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key;
+            return string.Concat(api, path,
+                                 andChar, "key=", key);
         }
 
 
@@ -594,16 +617,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     state object
         /// </returns>
-        public string GetInformationForSpecifiedState(string stateId = "OH")
+        public string GetUrlRequestForInformationForSpecifiedState(string stateId = "OH")
         {
             string api = "http://api.votesmart.org/";
             string path = "State.getState?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "stateId=" + stateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "stateId=", stateId);
         }
 
 
@@ -618,16 +641,16 @@ namespace OhioVoter.Services
         /// </returns>
         /// 
         /// <errorMessage>Campaign address no longer available or candidate does not exist.</errorMessage>
-        public string GetCampaignOfficeInformationForSpecifiedCandidate(string candidateId)
+        public string GetUrlRequestForCampaignOfficeInformationForSpecifiedCandidate(string candidateId)
         {
             string api = "http://api.votesmart.org/";
             string path = "Address.getCampaign?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "candidateId=" + candidateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "candidateId=", candidateId);
         }
 
 
@@ -640,16 +663,16 @@ namespace OhioVoter.Services
         /// <returns>
         ///     Candidate object campaign office information
         /// </returns>
-        public string GetBiographyInformationForSpecifiedCandidate(string candidateId)
+        public string GetUrlRequestForBiographyInformationForSpecifiedCandidate(string candidateId)
         {
             string api = "http://api.votesmart.org/";
             string path = "CandidateBio.getBio?";
             string key = _votesmartApiKey;
             string andChar = "&";
 
-            return api + path +
-                   andChar + "key=" + key +
-                   andChar + "candidateId=" + candidateId;
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "candidateId=", candidateId);
         }
 
 

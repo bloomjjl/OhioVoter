@@ -197,7 +197,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CandidateController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -214,12 +216,16 @@
     <Compile Include="Services\SessionExtensions.cs" />
     <Compile Include="Services\VoteSmartApiManagement.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\CandidatePageViewModel.cs" />
     <Compile Include="ViewModels\Election\Calendar.cs" />
     <Compile Include="ViewModels\Election\Poll.cs" />
+    <Compile Include="ViewModels\Google\Address.cs" />
     <Compile Include="ViewModels\Google\CivicInfo.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\RSS\Feed.cs" />
     <Compile Include="ViewModels\SideBar.cs" />
+    <Compile Include="ViewModels\VoteSmart\Candidate.cs" />
+    <Compile Include="ViewModels\VoteSmart\Office.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -259,8 +265,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -288,10 +292,12 @@
     <Content Include="Views\Home\_Calendar.cshtml" />
     <Content Include="Views\Home\_Poll.cshtml" />
     <Content Include="Views\Home\_RssFeeds.cshtml" />
+    <Content Include="Views\Candidate\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutWithSideBar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="ViewModels\VoteSmart\" />
+    <Folder Include="Views\Location\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

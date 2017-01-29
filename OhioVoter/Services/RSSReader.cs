@@ -21,21 +21,25 @@ namespace OhioVoter.Services
     /// 
     public class RssReader
     {
-
+        /// <summary>
+        /// get the channel and specified amount of items from the supplied rss feed
+        /// </summary>
+        /// <param name="feedUrl"></param>
+        /// <param name="maxItemCount"></param>
+        /// <returns></returns>
         public Feed GetInformationFromRSSFeed(string feedUrl, int maxItemCount)
         {
             XmlReader reader = XmlReader.Create(feedUrl);
             SyndicationFeed feed = SyndicationFeed.Load(reader);
             reader.Close();
 
-            Feed displayFeed = GetInformationFromRSSFeedToDisplay(feed, maxItemCount);
-
-            return displayFeed;
+            return GetInformationFromRSSFeedToDisplay(feed, maxItemCount);
         }
 
 
+
         /// <summary>
-        /// 
+        /// Make sure feed object is valid. Then get the channel and specified amount of items from feed
         /// </summary>
         /// <param name="feed"></param>
         /// <returns></returns>
@@ -46,17 +50,21 @@ namespace OhioVoter.Services
             if (itemCount == -1)
                 return new Feed();
 
-            Feed displayFeed = new Feed()
+            return new Feed()
             {
                 Channel = GetChannelFromRSSFeed(feed),
                 Items = GetItemsFromRSSFeed(feed, itemCount)
             };
-
-            return displayFeed;
         }
 
 
 
+        /// <summary>
+        /// make sure there are items to display and set the max limit to get from feed
+        /// </summary>
+        /// <param name="feedItemCount"></param>
+        /// <param name="maxItemCount"></param>
+        /// <returns></returns>
         private int GetNumberOfItemsToDisplay(int? feedItemCount, int maxItemCount)
         {
             if (feedItemCount == null)
@@ -73,6 +81,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// store the channel object from feed
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <returns></returns>
         private Channel GetChannelFromRSSFeed(SyndicationFeed feed)
         {
             return new Channel()
@@ -83,6 +96,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// separate and store the channel elements
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <returns></returns>
         private Element GetElementInformationForChannel(SyndicationFeed feed)
         {
             return new Element()
@@ -97,6 +115,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// make sure URL is valid
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <returns></returns>
         private String GetImageUrlFromChannelElement(SyndicationFeed feed)
         {
             try
@@ -106,12 +129,18 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
 
 
+        /// <summary>
+        /// make sure the link is valid
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         private String GetLinkFromChannelElement(SyndicationFeed feed, int index)
         {
             try
@@ -121,12 +150,17 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
 
 
+        /// <summary>
+        /// make sure the title is valid
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <returns></returns>
         private String GetTitleFromChannelElement(SyndicationFeed feed)
         {
             try
@@ -136,12 +170,18 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
 
 
+        /// <summary>
+        /// sort the items for the feed by PubDate and store based on the itemCount 
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <param name="itemCount"></param>
+        /// <returns></returns>
         private IEnumerable<Item> GetItemsFromRSSFeed(SyndicationFeed feed, int itemCount)
         {
             List<Item> sortedItems = GetListOfAllItemsInRssFeed(feed).OrderByDescending(x => x.Element.PubDate).ToList();
@@ -157,6 +197,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// store all the items for the feed
+        /// </summary>
+        /// <param name="feed"></param>
+        /// <returns></returns>
         private List<Item> GetListOfAllItemsInRssFeed(SyndicationFeed feed)
         {
             List<Item> items = new List<Item>();
@@ -172,6 +217,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// store the item object
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private Item GetItemFromRssFeed(SyndicationItem item)
         {
             return new Item()
@@ -182,6 +232,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// separate and store the item elements
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private Element GetItemInformationForCurrentItemInRssFeed(SyndicationItem item)
         {
             Element element = new Element()
@@ -200,6 +255,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// make sure title is valid
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private String GetTitleFromItemElement(SyndicationItem item)
         {
             try
@@ -209,12 +269,17 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
 
 
+        /// <summary>
+        /// make sure date is valid
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private DateTime GetPublishDateFromItemElement(SyndicationItem item)
         {
             try
@@ -230,6 +295,11 @@ namespace OhioVoter.Services
 
 
 
+        /// <summary>
+        /// make sure summary is valid
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private String GetSummaryFromItemElement(SyndicationItem item)
         {
             try
@@ -239,12 +309,18 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
 
 
+        /// <summary>
+        /// make sure a link is valid
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         private String GetLinkFromItemElement(SyndicationItem item, int index)
         {
             try
@@ -254,12 +330,17 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
 
 
+        /// <summary>
+        /// Make sure an Id is valid
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private String GetIdFromItemElement(SyndicationItem item)
         {
             try
@@ -269,13 +350,20 @@ namespace OhioVoter.Services
             catch
             {
                 // catch if value is null
-                return "";
+                return string.Empty;
             }
         }
 
+
+
+        /// <summary>
+        /// Remove the HTML tags so they don't display on webpage
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         private Element RemoveHTMLTagsFromSummaryElement(Element element)
         {
-            element.Summary = Regex.Replace(element.Summary.ToString(), @"<[^>]*>", string.Empty);
+            element.Summary = Regex.Replace(element.Summary.ToString(), @"<[^>]*?>", string.Empty);
             return element;
         }
 

@@ -19,11 +19,8 @@
             @Html.HiddenFor(x => x.VoterLocation.StateAbbreviation)
             @Html.HiddenFor(x => x.VoterLocation.ZipCode)
 
-            @* reset validation to display location form when user clicks button *@
-
-            @Html.Hidden(Model.VoterLocation.Status, "Update")
-
-            <button id="btn-show-voter-location-form" type="button" class="btn btn-block panel-left-btn" onclick="ShowVoterLocationForm();"> Update Your Location </button>
+            @*<button id="btn-show-voter-location-form" type="button" class="btn btn-block panel-left-btn" onclick="ShowVoterLocationForm();"> Update Your Location </button>*@
+            @Html.ActionLink("Update Your Location", "Update", "Location", new { controllerName=Model.ControllerName }, new { @class="btn btn-block panel-left-btn"} )
 
         </div>
 

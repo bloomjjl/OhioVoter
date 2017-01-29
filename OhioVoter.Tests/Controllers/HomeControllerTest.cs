@@ -6,14 +6,17 @@ using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhioVoter;
 using OhioVoter.Controllers;
+using OhioVoter.ViewModels.Election;
+using OhioVoter.Models;
 
 namespace OhioVoter.Tests.Controllers
 {
     [TestClass]
     public class HomeControllerTest
     {
+        /*
         [TestMethod]
-        public void Index()
+        public void Test_Index()
         {
             // Arrange
             HomeController controller = new HomeController();
@@ -24,31 +27,41 @@ namespace OhioVoter.Tests.Controllers
             // Assert
             Assert.IsNotNull(result);
         }
+        */
 
+        /*
         [TestMethod]
-        public void About()
+        public void Test_GetCalendarViewModel()
         {
             // Arrange
             HomeController controller = new HomeController();
 
             // Act
-            ViewResult result = controller.About() as ViewResult;
-
-            // Assert
-            Assert.AreEqual("Your application description page.", result.ViewBag.Message);
-        }
-
-        [TestMethod]
-        public void Contact()
-        {
-            // Arrange
-            HomeController controller = new HomeController();
-
-            // Act
-            ViewResult result = controller.Contact() as ViewResult;
+            Calendar result = controller.GetCalendarViewModel() as Calendar;
 
             // Assert
             Assert.IsNotNull(result);
         }
+        */
+
+        /*
+        [TestMethod]
+        public void Test_GetListOfUpcomingElectionDates()
+        {
+            // Arrange
+            HomeController controller = new HomeController();
+            DateTime startDate = DateTime.Today;
+            DateTime endDate = startDate.AddDays(5);
+
+            // Act
+            List<ElectionDate> result = controller.GetListOfUpcomingElectionDates(startDate, endDate) as List<ElectionDate>;
+
+            // Assert
+            Assert.IsNotNull(result);
+        }
+        */
+
+
+
     }
 }

@@ -8,6 +8,7 @@ namespace OhioVoter.ViewModels
 {
     public class SideBar
     {
+        public string ControllerName { get; set; }
         public Location VoterLocation { get; set; }
         public Location PollingLocation { get; set; }
         public Location CountyLocation { get; set; }
@@ -22,20 +23,18 @@ namespace OhioVoter.ViewModels
 
         public string LocationName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter a street address in Ohio.")]
         [Display(Name = "Street Address")]
         public string StreetAddress { get; set; }
 
-        [Required]
+        [Required()]
         public string City { get; set; }
 
         public string StateName { get; set; }
 
-        [Required]
-        [Display(Name = "State")]
         public string StateAbbreviation { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter a zip code in Ohio.")]
         [Display(Name = "Zip Code")]
         public string ZipCode { get; set; }
 

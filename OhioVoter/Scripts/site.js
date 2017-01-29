@@ -5,7 +5,7 @@ $(function () {
     $('#btn-show-voter-location-form').click(function () {
         $.ajax({
             // /ControllerName/ActionName
-            url: "/Home/Location",
+            url: "/Home/Index",
             success: function (data) {
                 // your data could be what ever you returned in your action method 
                 // (a View or Json or ...)

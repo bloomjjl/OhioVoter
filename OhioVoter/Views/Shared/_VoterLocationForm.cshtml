@@ -8,7 +8,7 @@
 
     <div class="panel-body panel-left-body">
 
-        @using (Html.BeginForm("Location", "Home", FormMethod.Post))
+        @using (Html.BeginForm("Update", "Location", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
@@ -30,6 +30,8 @@
                     @Html.EditorFor(x => x.VoterLocation.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(x => x.VoterLocation.ZipCode, "", new { @class = "text-danger" })
                 </div>
+
+                @Html.HiddenFor(x => x.ControllerName)
 
                 <button type="submit" class="btn btn-block panel-left-btn"> Update Your Location </button>
 

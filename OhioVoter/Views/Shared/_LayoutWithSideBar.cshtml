@@ -37,10 +37,26 @@
             </div>
         </div>
     </div>
-
     <div class="container body-content">
 
-        @RenderBody()
+        <div class="row">
+
+            <div id="side-bar" class="col-sm-4">
+
+                <div id="voter-location">
+                    @{Html.RenderAction("DisplayVoter", "Location");}
+                </div>
+
+                <div id="voter-general-information">
+                    @{Html.RenderAction("DisplayGeneral", "Location");}
+                </div>
+
+
+            </div>
+
+            @RenderBody()
+
+        </div>
 
         <footer>
             <p>&copy; @DateTime.Now.Year - OhioVoter.org</p>

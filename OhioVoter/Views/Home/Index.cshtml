@@ -2,6 +2,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Home Page";
+
 }
 
 <div class="row">
@@ -9,24 +10,16 @@
     <div id="side-bar" class="col-sm-4">
 
         <div id="voter-location">
-            @{
-                if (Model.SideBar.VoterLocation.Status == null || Model.SideBar.VoterLocation.Status == "" || Model.SideBar.VoterLocation.Status == "Update")
-                {
-                    Html.RenderPartial("_VoterLocationForm", Model.SideBar);
-                }
-                else
-                {
-                    Html.RenderPartial("_VoterLocation", Model.SideBar);
-                }
-            }
+            @*{Html.RenderAction("DisplayVoterLocationSideBar", Model.SideBar.ControllerName, Model.SideBar);}*@
+            @{Html.RenderAction("DisplayVoterLocationSideBar", "Location", Model.SideBar);}
         </div>
 
         <div id="voter-general-information">
-            @{Html.RenderPartial("_VoterGeneralInformation", Model.SideBar);}
+            @*{Html.RenderAction("DisplayGeneralLocationSideBar", Model.SideBar.ControllerName, Model.SideBar);}*@
+            @{Html.RenderAction("DisplayGeneralLocationSideBar", "Location", Model.SideBar);}
         </div>
 
     </div>
-
 
     <div class="col-sm-8">
 
