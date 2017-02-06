@@ -1,4 +1,5 @@
-﻿@model OhioVoter.ViewModels.HomePageViewModel
+﻿@model OhioVoter.ViewModels.Home.HomeViewModel
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Home Page";
@@ -10,13 +11,11 @@
     <div id="side-bar" class="col-sm-4">
 
         <div id="voter-location">
-            @*{Html.RenderAction("DisplayVoterLocationSideBar", Model.SideBar.ControllerName, Model.SideBar);}*@
-            @{Html.RenderAction("DisplayVoterLocationSideBar", "Location", Model.SideBar);}
+            @{Html.RenderAction("DisplayVoterLocationSideBar", "Location", Model.SideBarViewModel);}
         </div>
 
         <div id="voter-general-information">
-            @*{Html.RenderAction("DisplayGeneralLocationSideBar", Model.SideBar.ControllerName, Model.SideBar);}*@
-            @{Html.RenderAction("DisplayGeneralLocationSideBar", "Location", Model.SideBar);}
+            @{Html.RenderAction("DisplayGeneralLocationSideBar", "Location", Model.SideBarViewModel);}
         </div>
 
     </div>
@@ -36,7 +35,7 @@
         </div>
 
         <div class="rss-news">
-            @{Html.RenderPartial("_RssFeeds", Model);}
+            @{Html.RenderPartial("_RssFeeds", Model.RssFeeds);}
         </div>
 
     </div>

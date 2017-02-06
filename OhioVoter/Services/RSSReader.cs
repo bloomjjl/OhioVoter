@@ -1,4 +1,4 @@
-﻿using OhioVoter.ViewModels.RSS;
+﻿using OhioVoter.ViewModels.Rss;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -25,72 +25,11 @@ namespace OhioVoter.ViewModels.VoteSmart
 
 
 
-/*    public class CandidateList
-    {
-        public GeneralInfo generalInfo { get; set; }
-        public List<Candidate> candidate { get; set; }
-    }
-
-
-    public class GeneralInfo
-    {
-        public string title { get; set; }
-        public string linkBack { get; set; }
-    }
-*/
-
-    [XmlRoot(ElementName = "generalInfo")]
-    public class GeneralInfo
-    {
-        [XmlElement(ElementName = "title")]
-        public string Title { get; set; }
-        [XmlElement(ElementName = "linkBack")]
-        public string LinkBack { get; set; }
-    }
-
-
-
-/*    public class Candidate
-    {
-        public string candidateId { get; set; }
-        public string firstName { get; set; }
-        public string nickName { get; set; }
-        public string middleName { get; set; }
-        public string preferredName { get; set; }
-        public string lastName { get; set; }
-        public string suffix { get; set; }
-        public string title { get; set; }
-        public string ballotName { get; set; }
-        public string electionParties { get; set; }
-        public string electionStatus { get; set; }
-        public string electionStage { get; set; }
-        public string electionDistrictId { get; set; }
-        public string electionDistrictName { get; set; }
-        public string electionOffice { get; set; }
-        public string electionofficeId { get; set; }
-        public string electionStateId { get; set; }
-        public string electionOfficeTypeId { get; set; }
-        public string electionYear { get; set; }
-        public string electionSpecial { get; set; }
-        public string electionDate { get; set; }
-        public string officeParties { get; set; }
-        public string officeStatus { get; set; }
-        public string officeDistrictId { get; set; }
-        public string officeDistrictName { get; set; }
-        public string officeStateId { get; set; }
-        public string officeId { get; set; }
-        public string officeName { get; set; }
-        public string officeTypeId { get; set; }
-        public string runningMateId { get; set; }
-        public string runningMateName { get; set; }
-    }
-*/
-
     [XmlRoot(ElementName="candidate")]
     public class Candidate
     {
 		[XmlElement(ElementName="candidateId")]
-		public string CandidateId { get; set; }
+		public string ElectionCandidateId { get; set; }
 		[XmlElement(ElementName="firstName")]
 		public string FirstName { get; set; }
 		[XmlElement(ElementName="nickName")]

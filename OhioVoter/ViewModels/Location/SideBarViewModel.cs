@@ -4,18 +4,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace OhioVoter.ViewModels
+namespace OhioVoter.ViewModels.Location
 {
-    public class SideBar
+    public class SideBarViewModel
     {
         public string ControllerName { get; set; }
-        public Location VoterLocation { get; set; }
-        public Location PollingLocation { get; set; }
-        public Location CountyLocation { get; set; }
-        public Location StateLocation { get; set; }
+        public LocationViewModel VoterLocation { get; set; }
+        public LocationViewModel PollingLocation { get; set; }
+        public LocationViewModel CountyLocation { get; set; }
+        public LocationViewModel StateLocation { get; set; }
     }
 
-    public class Location
+
+    public class LocationViewModel
     {
         public string Status { get; set; }
 
@@ -27,8 +28,12 @@ namespace OhioVoter.ViewModels
         [Display(Name = "Street Address")]
         public string StreetAddress { get; set; }
 
+        public string Neighborhood { get; set; }
+
         [Required()]
         public string City { get; set; }
+
+        public string County { get; set; }
 
         public string StateName { get; set; }
 
@@ -36,7 +41,12 @@ namespace OhioVoter.ViewModels
 
         [Required(ErrorMessage = "Please enter a zip code in Ohio.")]
         [Display(Name = "Zip Code")]
+        [StringLength(5, MinimumLength = 5, ErrorMessage = "Zip Code Must Be 5 Digits")]
         public string ZipCode { get; set; }
+
+        public string ZipCodeSuffix { get; set; }
+
+        public string Country { get; set; }
 
         public string Website { get; set; }
 

@@ -1,0 +1,34 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p>Candidate Lookup</p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        @using (Html.BeginForm("Name", "Candidate", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div id="candidate_election_date" class="form-group election-day">
+                <p>Election Date: @Model.ElectionDate.Date.ToShortDateString()</p>
+            </div>
+
+            <div id="candidate_Election_list" class="form-group election-day">
+                @Html.LabelFor(x => x.CandidateDropDownList.SelectedCandidateId, htmlAttributes: new { @class = "control-label" })
+                @Html.DropDownListFor(x => x.CandidateDropDownList.SelectedCandidateId,
+                                      Model.CandidateDropDownList.CandidateNames,
+                                      "--Select--",
+                                      new { @class = "form-control", @onchange = "$(this.form).submit();", @id = "candidate_lookup_list" })
+                @Html.ValidationMessageFor(x => x.CandidateDropDownList.SelectedCandidateId, "", new { @class = "text-danger" })
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+

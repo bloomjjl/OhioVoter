@@ -1,6 +1,8 @@
-﻿using OhioVoter.Services;
+﻿using OhioVoter;
+using OhioVoter.Models;
+using OhioVoter.Services;
 using OhioVoter.ViewModels;
-using OhioVoter.ViewModels.VoteSmart;
+using OhioVoter.ViewModels.Candidate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +14,17 @@ namespace OhioVoter.Controllers
     public class CandidateController : Controller
     {
         // GET: Candidate
-        public ActionResult Index()
+        public ActionResult Index(int? candidateId = 0)
         {
-            LocationController location = new LocationController();
+            if (candidateId == null || candidateId < 0)
+                candidateId = 0;
 
-            CandidatePageViewModel viewModel = new CandidatePageViewModel()
+            CandidateViewModel viewModel = new CandidateViewModel()
             {
-                SideBar = location.GetSideBarViewModel("Candidate"),
-                Candidates = GetCadidateViewModel()
+                Candidate = GetCandidateSummaryViewModel((int) candidateId),
+                SideBarViewModel = GetSideBarViewModel(),
+                ElectionDate = GetFirstActiveElectionDate(),
+                CandidateDropDownList = GetCandidateDropDownListViewModel()
             };
 
             return View(viewModel);
@@ -27,237 +32,734 @@ namespace OhioVoter.Controllers
 
 
 
-        // ********************************************
-        // Sidebar information for supplied address
-        // ********************************************
-
-
-
-        /// <summary>
-        /// get the voter location information from session to display in the sidebar
-        /// </summary>
-        /// <returns></returns>
-        private SideBar GetSideBarViewModel()
+        private CandidateSummary GetCandidateSummaryViewModel(int candidateId)
         {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-
-            SideBar viewModel = new SideBar()
+            if (candidateId != 0)
             {
-                VoterLocation = instanceSessionExtensions.GetVoterLocationFromSession(),
-                PollingLocation = instanceSessionExtensions.GetPollingLocationFromSession(),
-                CountyLocation = instanceSessionExtensions.GetCountyLocationFromSession(),
-                StateLocation = GetAddressForOhioSecretaryOfState()
-            };
-
-            return viewModel;
-        }
-
-
-
-        /// <summary>
-        /// Secretary of State will always be from Ohio
-        /// store location information for Ohio SOS
-        /// </summary>
-        /// <returns></returns>
-        public Location GetAddressForOhioSecretaryOfState()
-        {
-            return new Location()
-            {
-                Status = "Display",
-                LocationName = "OHIO SECRETARY OF STATE",
-                StreetAddress = "180 E. BROAD ST., 15TH FLOOR",
-                City = "COLUMBUS",
-                StateName = "OH",
-                ZipCode = "43215-3726",
-                Website = "http://www.sos.state.oh.us/elections.aspx"
-            };
-        }
-
-
-
-        // TODO: fix error validation to display errors and messages when Location form submitted
-
-        /// <summary>
-        /// update voter location information displayed
-        /// </summary>
-        /// <returns></returns>
-        [ChildActionOnly]
-        public ActionResult DisplayVoter()
-        {
-            SideBar sideBarViewModel = GetSideBarViewModel();
-
-            if (ValidateSideBarLocations(sideBarViewModel))
-            {
-                return PartialView("_VoterLocation", sideBarViewModel);
+                ElectionVotingDate date = GetFirstActiveElectionDate();
+                return GetCandidateSummaryInformationForSelectedCandidateId(candidateId, date);
             }
-            return PartialView("_VoterLocationForm", sideBarViewModel);
+            else
+            {
+                return new CandidateSummary();
+            }
         }
 
 
 
-        /// <summary>
-        /// update general information displayed
-        /// </summary>
-        /// <returns></returns>
-        [ChildActionOnly]
-        public ActionResult DisplayGeneral()
+        private ViewModels.Location.SideBarViewModel GetSideBarViewModel()
         {
-            SideBar sideBarViewModel = GetSideBarViewModel();
-            return PartialView("_VoterGeneralInformation", sideBarViewModel);
+            LocationController location = new LocationController();
+            return location.GetSideBarViewModel("Candidate");
         }
 
 
 
-        /// <summary>
-        /// display information based on the voter location stored in the session
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Location()
+        private CandidateDropDownList GetCandidateDropDownListViewModel()
         {
-            UpdateSessionToShowVoterLocationForm();
-
-            if (!Request.IsAjaxRequest())
-                return RedirectToAction("Index", new { });
-
-            SideBar viewModel = GetSideBarViewModel();
-            return PartialView("_VoterLocationForm", viewModel);
+            int dateId = GetFirstActiveElectionDateId(); // set default to zero to select first date found
+            return GetCandidatesForDropDownList(dateId);
         }
 
 
 
+        // ********************************************
+        // update candidates displayed from Candidate List based on name provided
+        // ********************************************
+
+
+
         /// <summary>
-        /// update page based on the voter location provided from form
+        /// Update page based on supplied candidate last name
         /// </summary>
-        /// <param name="voterLocation"></param>
+        /// <param name="lastName"></param>
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Location(Location voterLocation)
+        public ActionResult Name(CandidateViewModel model)
         {
-            voterLocation.StateAbbreviation = "OH"; // address must be in Ohio
+            // get selected name from model
+            // first name, last name, candidate id, votesmart id
+            int candidateId = model.CandidateDropDownList.SelectedCandidateId;
+/*            ElectionVotingDate date = GetFirstActiveElectionDate();
+            CandidateSummary candidate = GetCandidateSummaryInformationForSelectedCandidateId(candidateId, date);
 
-            SideBar sideBarViewModel = GetSideBarViewModelFromGoogleCivicInformationAPI(voterLocation);
-            sideBarViewModel.StateLocation = GetAddressForOhioSecretaryOfState();
 
-            if (ValidateSideBarLocations(sideBarViewModel))
+            // set these two values for testing purposes
+            int year = candidate.VotingDate.Year;
+            string stageId = "";
+
+            // get a list of candidates for supplied name
+            List<ViewModels.VoteSmart.Candidate> VoteSmartCandidates = new List<ViewModels.VoteSmart.Candidate>();
+            //            VoteSmartCandidates = GetVoteSmartCadidateViewModel(lastName, year, stageId);
+            //            List<ElectionCandidate> candidates = new List<ElectionCandidate>();
+
+            // return list of names to view
+            model.Candidate = candidate;
+            */
+            return RedirectToAction("Index", new { candidateId = candidateId });
+        }
+
+
+
+
+
+        /// <summary>
+        /// Get all the candidate information for active elections
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<CandidateSummary> GetSummaryInformationForAllCandidatesForUpcomingElections()
+        {
+            // From Database: get list of all active election dates (ElectionVotingDate)
+            // (ElectionDateId,Date)
+            List<Models.ElectionVotingDate> electionDatesDb = GetActiveElectionDatesFromDatabase();
+
+            // get election information for all dates
+            List<CandidateSummary> candidates = GetCandidateSummaryInformationForAllDates(electionDatesDb);
+
+            // get office names for officeId
+            List<Models.ElectionOffice> officeList = GetCompleteListOfPossibleOfficeNamesFromDatabase();
+            candidates = GetOfficeNamesForAllDates(candidates, officeList);
+
+            // get candidate/runningmate names for candidateId
+            List<Models.ElectionCandidate> candidateList = GetCompleteListOfPossibleCandidateNamesFromDatabase();
+            candidates = GetCandidateNamesForAllDates(candidates, candidateList);
+            candidates = GetRunningMateNamesForAllDates(candidates, candidateList);
+
+
+            return candidates;
+        }
+
+
+    
+
+
+
+
+        public List<CandidateSummary> GetCandidateSummaryInformationForAllDates(List<Models.ElectionVotingDate> electionDates)
+        {
+            if (electionDates == null)
+                return new List<CandidateSummary>();
+
+            List<CandidateSummary> candidates = new List<CandidateSummary>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
             {
-                UpdateSessionToDisplayVoterLocationInformation();
+                for (int i = 0; i < electionDates.Count; i++)
+                {
+                    List<Models.ElectionVotingDateOfficeCandidate> dbCandidates = new List<Models.ElectionVotingDateOfficeCandidate>();
+                    int dateId = electionDates[i].ElectionVotingDateId;
+                    dbCandidates = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).ToList();
 
-                sideBarViewModel.PollingLocation.GoogleLocationMapAPI = GetGoogleMapForPollingLocation(sideBarViewModel.VoterLocation, sideBarViewModel.PollingLocation);
-                UpdateSessionFromSideBarViewModel(sideBarViewModel);
-                //return PartialView("_VoterLocation", sideBarViewModel);
-                return RedirectToAction("Index", "Home");
+                    for (int j = 0; j < dbCandidates.Count; j++)
+                    {
+                        candidates.Add(new CandidateSummary()
+                        {
+                            ElectionVotingDateId = dateId,
+                            VotingDate = electionDates[i].Date,
+                            OfficeId = dbCandidates[j].OfficeId,
+                            CandidateId = dbCandidates[j].CandidateId,
+                            //CandidateFirstName = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { FirstName = x.FirstName }).ToString(),
+                            //CandidateMiddleName = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { MiddleName = x.MiddleName }).ToString(),
+                            //CandidateLastName = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { LastName = x.LastName }).ToString(),
+                            //CandidateSuffix = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { Suffix = x.Suffix }).ToString(),
+                            CertifiedCandidateId = dbCandidates[j].CertifiedCandidateId,
+                            PartyId = dbCandidates[j].PartyId,
+                            OfficeHolderId = dbCandidates[j].OfficeHolderId,
+                            RunningMateId = dbCandidates[j].RunningMateId,
+                            //RunningMateFirstName = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { FirstName = x.FirstName }).ToString(),
+                            //RunningMateMiddleName = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { MiddleName = x.MiddleName }).ToString(),
+                            //RunningMateLastName = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { LastName = x.LastName }).ToString(),
+                            //RunningMateSuffix = db.ElectionCandidates.Where(x => x.ElectionCandidateId == dbCandidates[j].CandidateId).Select(x => new { Suffix = x.Suffix }).ToString()
+                        });
+                    }
+                }
             }
 
-            UpdateSessionToShowVoterLocationForm();
-            //return PartialView("_VoterLocationForm", sideBarViewModel);
-            return RedirectToAction("Index", new { });
+            return candidates;
+        }
+
+
+
+        public CandidateSummary GetCandidateSummaryInformationForSelectedCandidateId(int candidateLookUpId, ElectionVotingDate date)
+        {
+            Models.ElectionVotingDateOfficeCandidate dbElectionCandidate = GetCandidateSummaryForCurrentElectionDate(candidateLookUpId, date.ElectionVotingDateId);
+            Models.ElectionCandidate dbCandidate = GetCandidateNameForCandidateIdFromDatabase(dbElectionCandidate.CandidateId);
+            Models.ElectionCandidate dbRunningMate = GetCandidateNameForCandidateIdFromDatabase(dbElectionCandidate.RunningMateId);
+            Models.ElectionOffice dbOffice = GetOfficeInformationForOfficeId(dbElectionCandidate.OfficeId);
+
+            return new CandidateSummary()
+            {
+                CandidateId = dbCandidate.ElectionCandidateId,
+                VoteSmartCandidateId = dbCandidate.VoteSmartCandidateId,
+                CandidateFirstName = dbCandidate.FirstName,
+                CandidateMiddleName = dbCandidate.MiddleName,
+                CandidateLastName = dbCandidate.LastName,
+                CandidateSuffix = dbCandidate.Suffix,
+
+                RunningMateId = dbRunningMate.ElectionCandidateId,
+                VoteSmartRunningMateId = dbRunningMate.VoteSmartCandidateId,
+                RunningMateFirstName = dbRunningMate.FirstName,
+                RunningMateMiddleName = dbRunningMate.MiddleName,
+                RunningMateLastName = dbRunningMate.LastName,
+                RunningMateSuffix = dbRunningMate.Suffix,
+
+                OfficeId = dbElectionCandidate.OfficeId,
+                VoteSmartOfficeId = dbOffice.VoteSmartOfficeId,
+                OfficeName = dbOffice.OfficeName,
+                OfficeTerm = dbOffice.Term,
+
+                OfficeHolderId = dbElectionCandidate.OfficeHolderId,
+                PartyId = dbElectionCandidate.PartyId,
+                PartyName = GetPartyNameForPartyIdFromDatabase(dbElectionCandidate.PartyId.ToString()),
+                CertifiedCandidateId = dbElectionCandidate.CertifiedCandidateId,
+
+                ElectionVotingDateId = date.ElectionVotingDateId,
+                VotingDate = date.Date
+            };
+        }
+
+
+
+        public Models.ElectionVotingDateOfficeCandidate GetCandidateSummaryForCurrentElectionDate(int candidateLookUpId, int dateId)
+        {
+            // is candidate == runningmate??
+            Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, dateId);
+            if (dbElectionRunningMate != null && dbElectionRunningMate.RunningMateId != 0 && dbElectionRunningMate.RunningMateId.ToString() != "")
+            {
+                return dbElectionRunningMate;
+            }
+            else
+            {
+                return GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, dateId);
+            }
+        }
+
+
+
+        public Models.ElectionVotingDateOfficeCandidate GetCandidateSummaryForCurrentElectionDateFromDatabase(int candidateLookUpId, int dateId)
+        {
+            List<Models.ElectionVotingDateOfficeCandidate> dbCandidate = new List<Models.ElectionVotingDateOfficeCandidate>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbCandidate = db.ElectionVotingDateOfficeCandidates.Where(x => x.CandidateId == candidateLookUpId).Where(x => x.ElectionVotingDateId == dateId).ToList();
+            }
+
+            if (dbCandidate == null || dbCandidate.Count == 0)
+                return new Models.ElectionVotingDateOfficeCandidate();
+
+            return dbCandidate[0];
+        }
+
+
+
+        public Models.ElectionVotingDateOfficeCandidate GetRunningMateSummaryForCurrentElectionDateFromDatabase(int candidateLookUpId, int dateId)
+        {
+            List<Models.ElectionVotingDateOfficeCandidate> dbRunningMate = new List<Models.ElectionVotingDateOfficeCandidate>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbRunningMate = db.ElectionVotingDateOfficeCandidates.Where(x => x.RunningMateId == candidateLookUpId).Where(x => x.ElectionVotingDateId == dateId).ToList();
+            }
+
+            if (dbRunningMate == null || dbRunningMate.Count == 0)
+                return new Models.ElectionVotingDateOfficeCandidate();
+
+            return dbRunningMate[0];
+        }
+
+
+
+
+
+        public List<Models.ElectionOffice> GetCompleteListOfPossibleOfficeNamesFromDatabase()
+        {
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                return db.ElectionOffices.ToList();
+            }
+        }
+
+
+        public List<Models.ElectionCandidate> GetCompleteListOfPossibleCandidateNamesFromDatabase()
+        {
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                return db.ElectionCandidates.ToList();
+            }
+        }
+
+
+
+        public Models.ElectionCandidate GetCandidateNameForCandidateIdFromDatabase(int candidateId)
+        {
+            List<Models.ElectionCandidate> dbCandidate = new List<Models.ElectionCandidate>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbCandidate = db.ElectionCandidates.Where(x => x.ElectionCandidateId == candidateId).ToList();
+            }
+
+            if (dbCandidate == null || dbCandidate.Count == 0)
+                return new Models.ElectionCandidate();
+
+            return dbCandidate[0];
+        }
+
+
+
+        public List<CandidateSummary> GetOfficeNamesForAllDates(List<CandidateSummary> candidates, List<Models.ElectionOffice> officeList)
+        {
+            for(int i = 0; i < candidates.Count; i++)
+            {
+                for(int j = 0; j < officeList.Count; j++)
+                {
+                    if(candidates[i].OfficeId == officeList[j].ElectionOfficeId)
+                    {
+                        candidates[i].OfficeName = officeList[j].OfficeName;
+                        candidates[i].OfficeTerm = officeList[j].Term;
+                        candidates[i].VoteSmartOfficeId = officeList[j].VoteSmartOfficeId;
+                        j = officeList.Count;
+                    }
+                }
+            }
+
+            return candidates;
+        }
+
+
+
+        public List<CandidateSummary> GetCandidateNamesForAllDates(List<CandidateSummary> candidates, List<Models.ElectionCandidate> candidateList)
+        {
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                for (int j = 0; j < candidateList.Count; j++)
+                {
+                    if (candidates[i].CandidateId == candidateList[j].ElectionCandidateId)
+                    {
+                        candidates[i].CandidateFirstName = candidateList[j].FirstName;
+                        candidates[i].CandidateMiddleName = candidateList[j].MiddleName;
+                        candidates[i].CandidateLastName = candidateList[j].LastName;
+                        candidates[i].CandidateSuffix = candidateList[j].Suffix;
+                        candidates[i].VoteSmartCandidateId = candidateList[j].VoteSmartCandidateId;
+                        j = candidateList.Count;
+                    }
+                }
+            }
+
+            return candidates;
+        }
+
+
+
+        public List<CandidateSummary> GetRunningMateNamesForAllDates(List<CandidateSummary> candidates, List<Models.ElectionCandidate> candidateList)
+        {
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                for (int j = 0; j < candidateList.Count; j++)
+                {
+                    if (candidates[i].RunningMateId == candidateList[j].ElectionCandidateId)
+                    {
+                        candidates[i].RunningMateFirstName = candidateList[j].FirstName;
+                        candidates[i].RunningMateMiddleName = candidateList[j].MiddleName;
+                        candidates[i].RunningMateLastName= candidateList[j].LastName;
+                        candidates[i].RunningMateSuffix = candidateList[j].Suffix;
+                        candidates[i].VoteSmartRunningMateId = candidateList[j].VoteSmartCandidateId;
+                        j = candidateList.Count;
+                    }
+                }
+            }
+
+            return candidates;
+        }
+
+
+
+        private int GetFirstActiveElectionDateId()
+        {
+            List<Models.ElectionVotingDate> dates = GetActiveElectionDatesFromDatabase();
+
+            if (dates[0].ElectionVotingDateId == 0)
+                return 0;
+
+            return dates[0].ElectionVotingDateId;
+        }
+
+
+
+        private Models.ElectionVotingDate GetFirstActiveElectionDate()
+        {
+            List<Models.ElectionVotingDate> dates = GetActiveElectionDatesFromDatabase();
+
+            if (dates == null || dates[0].ElectionVotingDateId == 0)
+                return new Models.ElectionVotingDate();
+
+            return dates[0];
+        }
+
+
+        // Election Date Drop Down List
+
+        private ElectionDateDropDownList GetActiveElectionDatesForDropDownList()
+        {
+            return new ElectionDateDropDownList()
+            {
+                Date = GetActiveElectionDateListItems()
+            };
+        }
+
+
+
+        private IEnumerable<SelectListItem> GetActiveElectionDateListItems()
+        {
+            List<Models.ElectionVotingDate> dbDates = GetActiveElectionDatesFromDatabase();
+            List<SelectListItem> dates = new List<SelectListItem>();
+
+            for (int i = 0; i < dbDates.Count; i++)
+            {
+                dates.Add(new SelectListItem()
+                {
+                    Value = dbDates[i].ElectionVotingDateId.ToString(),
+                    Text = dbDates[i].Date.ToShortDateString()
+                });
+            }
+
+            return dates;
         }
 
 
 
         /// <summary>
-        /// make sure valid information is provided for all locations
+        /// get a list of active election dates from database
         /// </summary>
-        /// <param name="sideBarViewModel"></param>
         /// <returns></returns>
-        private bool ValidateSideBarLocations(SideBar sideBarViewModel)
+        public List<Models.ElectionVotingDate> GetActiveElectionDatesFromDatabase()
         {
-            return sideBarViewModel.VoterLocation.Status == "Display" &&
-                   sideBarViewModel.PollingLocation.Status == "Display" &&
-                   sideBarViewModel.CountyLocation.Status == "Display" &&
-                   sideBarViewModel.StateLocation.Status == "Display" ?
-                   true : false;
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                return db.ElectionVotingDates.Where(x => x.Active == true).OrderBy(x => x.Date).ToList();
+            }
         }
 
 
 
-        /// <summary>
-        /// voter location form needs to be displayed
-        /// </summary>
-        private void UpdateSessionToShowVoterLocationForm()
+        // *********************
+        // Office Drop Down List
+        // *********************
+
+
+
+        public OfficeDropDownList GetOfficesForDropDownList(int dateId)
         {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-            instanceSessionExtensions.ChangeVoterLocationStatusToUpdateVoterLocationForm();
+            return new OfficeDropDownList()
+            {
+                OfficeNames = GetOfficeListItems(dateId)
+            };
+        }
+        
+
+
+        private IEnumerable<SelectListItem> GetOfficeListItems(int dateId)
+        {
+            if (dateId <= 0)
+                return new List<SelectListItem>();
+
+            List<int> dbOfficeIds = GetOfficesForCurrentDateFromDatabase(dateId);
+            List<Models.ElectionOffice> dbOffices = GetOfficeNamesForOfficeId(dbOfficeIds);
+            List <SelectListItem> offices = new List<SelectListItem>();
+
+            for (int i = 0; i < dbOffices.Count; i++)
+            {
+                string OfficeName = dbOffices[i].OfficeName;
+
+                if (dbOffices[i].Term != null && dbOffices[i].Term != "")
+                {
+                    OfficeName = string.Format("{0} ({1})", dbOffices[i].OfficeName, dbOffices[i].Term);
+                }
+
+                offices.Add(new SelectListItem()
+                {
+                    Value = dbOffices[i].ElectionOfficeId.ToString(),
+                    Text = OfficeName
+                });
+            }
+
+            return offices;
         }
 
 
 
-        /// <summary>
-        /// voter information can be displayed
-        /// </summary>
-        private void UpdateSessionToDisplayVoterLocationInformation()
+        private List<int> GetOfficesForCurrentDateFromDatabase(int dateId)
         {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-            instanceSessionExtensions.ChangeVoterLocationStatusToUpdateVoterLocationForm();
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                //List<Models.ElectionVotingDateOfficeCandidate> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).Distinct().ToList();
+                List<int> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                                                                           .Select(x => x.OfficeId)
+                                                                           .ToList();
+                return dbOffices.Distinct().ToList();
+            }
         }
 
 
 
+        private List<Models.ElectionOffice> GetOfficeNamesForOfficeId(List<int> officeIds)
+        {
+            List<Models.ElectionOffice> dbOffices = new List<ElectionOffice>();
+            List<Models.ElectionOffice> offices = new List<ElectionOffice>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbOffices = db.ElectionOffices.ToList();
+            }
+
+            for (int i = 0; i < officeIds.Count; i++)
+            {
+                for (int j = 0; j < dbOffices.Count; j++)
+                {
+                    if (officeIds[i] == dbOffices[j].ElectionOfficeId)
+                    {
+                        offices.Add(new Models.ElectionOffice()
+                        {
+                            ElectionOfficeId = dbOffices[j].ElectionOfficeId,
+                            OfficeName = dbOffices[j].OfficeName,
+                            Term = dbOffices[j].Term
+                        });
+
+                        j = dbOffices.Count;
+                    }
+                }
+            }
+
+            return offices.OrderBy(x => x.OfficeName).OrderBy(x => x.ElectionOfficeId).ToList();
+        }
+
+
+
+        private Models.ElectionOffice GetOfficeInformationForOfficeId(int officeId)
+        {
+            List<Models.ElectionOffice> dbOffice = new List<ElectionOffice>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbOffice = db.ElectionOffices.Where(x => x.ElectionOfficeId == officeId).ToList();
+            }
+
+            if (dbOffice == null || dbOffice.Count == 0)
+                return new Models.ElectionOffice();
+
+            return dbOffice[0];
+        }
+
+
+
+
+
+
+        // ************************
+        // Candidate Drop Down List
+        // ************************
+
+
+
+        private CandidateDropDownList GetCandidatesForDropDownList(int dateId)
+        {
+            return new CandidateDropDownList()
+            {
+                CandidateNames = GetCandidateListItems(dateId)
+            };
+        }
+
+
+
+        private IEnumerable<SelectListItem> GetCandidateListItems(int dateId)
+        {
+            if (dateId <= 0)
+                return new List<SelectListItem>();
+
+            List<int> dbCandidateIds = GetCandidatesForCurrentDateFromDatabase(dateId);
+            List<Models.ElectionCandidate> dboCandidates = GetCandidateNamesForCandidateId(dbCandidateIds);
+            List<SelectListItem> candidates = new List<SelectListItem>();
+
+            for (int i = 0; i < dboCandidates.Count; i++)
+            {
+                string candidateName = string.Format("{0} {1}", dboCandidates[i].FirstName, dboCandidates[i].LastName);
+
+                candidates.Add(new SelectListItem()
+                {
+                    Value = dboCandidates[i].ElectionCandidateId.ToString(),
+                    Text = candidateName
+                });
+            }
+
+            return candidates;
+
+        }
+
+
+        private List<int> GetCandidatesForCurrentDateFromDatabase(int dateId)
+        {
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                List<Models.ElectionVotingDateOfficeCandidate> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).ToList();
+                return dbOffices.Select(x => x.CandidateId).Distinct().ToList();
+            }
+        }
+
+
+
+        private List<Models.ElectionCandidate> GetCandidateNamesForCandidateId(List<int> candidateIds)
+        {
+            List<Models.ElectionCandidate> dbCandidates = new List<ElectionCandidate>();
+            List<Models.ElectionCandidate> candidates = new List<ElectionCandidate>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbCandidates = db.ElectionCandidates.ToList();
+            }
+
+            for (int i = 0; i < candidateIds.Count; i++)
+            {
+                for (int j = 0; j < dbCandidates.Count; j++)
+                {
+                    if (candidateIds[i] == dbCandidates[j].ElectionCandidateId)
+                    {
+                        candidates.Add(new Models.ElectionCandidate()
+                        {
+                            ElectionCandidateId = dbCandidates[j].ElectionCandidateId,
+                            FirstName = dbCandidates[j].FirstName,
+                            LastName = dbCandidates[j].LastName
+                        });
+
+                        j = dbCandidates.Count;
+                    }
+                }
+            }
+
+            return candidates.OrderBy(x => x.MiddleName).OrderBy(x => x.FirstName).OrderBy(x => x.LastName).ToList();
+        }
+
+
+
+        public string GetPartyNameForPartyIdFromDatabase(string partyId)
+        {
+            List<Models.ElectionParty> dbParty = new List<Models.ElectionParty>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                 dbParty = db.ElectionParties.Where(x => x.PartyId == partyId).ToList();
+            }
+
+            if (dbParty == null || dbParty.Count == 0)
+                return "";
+
+            return dbParty[0].PartyName;
+        }
+
+
+
+
+
+
+        // *********************
+        // Display Partial Views
+        // *********************
+
+
+
+        [ChildActionOnly]
+        public ActionResult DisplayCandidateDisplayView(CandidateViewModel model)
+        {
+            return model.Candidate.CandidateId <= 0 ? 
+                    PartialView("_CandidateLookUp", model) :
+                    PartialView("_CandidateSummary", model);
+        }
+        
+
+
+        [ChildActionOnly]
+        public ActionResult DisplayCandidateOfficeView(CandidateViewModel model)
+        {
+            return model.Candidate.CandidateId > 0 ?
+                    PartialView("_Office") :
+                    PartialView("_Office");
+        }
+
+
+
+
+        // ***********************************************************
+        // ***********************************************************
+        // ***********************************************************
+
+
+
         /// <summary>
-        /// get the civic information from google api for voter location
+        /// Get a list of candidates based on supplied last name
         /// </summary>
-        /// <param name="voterLocation"></param>
+        /// <param name="lastName"></param>
         /// <returns></returns>
-        private SideBar GetSideBarViewModelFromGoogleCivicInformationAPI(Location voterLocation)
+        public List<Models.ElectionCandidate> GetCandidatesWithMatchingSuppliedLastName(string lastName)
         {
-            GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
-            return instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
+            List<Models.ElectionCandidate> candidates = new List<ElectionCandidate>();
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                candidates = db.ElectionCandidates.ToList();
+                candidates = candidates.Where(x => x.LastName == lastName).ToList();
+            }
+
+            return candidates;
         }
 
 
+        /*
+        public List<Candidate> GetListOfCandidatesWithMatchingFirstAndLastNameFromVoteSmart(string firstName, string lastName, int year, string stageId)
+        {
+            List<Candidate> candidates = new List<Candidate>();
+//            List<Candidate> candidates = GetVoteSmartCadidateViewModel(lastName, year, stageId);
+            List<Candidate> filteredCandidates = new List<Candidate>();
+
+            for(int i = 0; i < candidates.Count; i++)
+            {
+                if (candidates[i].FirstName == firstName)
+                {
+                    Candidate candidate = new Candidate()
+                    {
+                        ElectionCandidateId = candidates[i].ElectionCandidateId,
+                        FirstName = candidates[i].FirstName,
+                        LastName = candidates[i].LastName
+                    };
+                    filteredCandidates.Add(candidate);
+                }
+            }
+
+            return candidates;
+        }
+        */
+
+        
 
         /// <summary>
-        /// get google map for voter location and polling location
+        /// get list of candidates from VoteSmart API matching supplied last name
         /// </summary>
-        /// <param name="voterLocation"></param>
-        /// <param name="pollingLocation"></param>
+        /// <param name="lastName"></param>
         /// <returns></returns>
-        private string GetGoogleMapForPollingLocation(Location voterLocation, Location pollingLocation)
-        {
-            GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
-            return instanceGoogleAPIManagement.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
-        }
-
-
-
-        /// <summary>
-        /// update the values stored in the session based on the voter location provided
-        /// </summary>
-        /// <param name="sideBarViewModel"></param>
-        private void UpdateSessionFromSideBarViewModel(SideBar sideBarViewModel)
-        {
-            SessionExtensions instanceSessionExtensions = new SessionExtensions();
-
-            instanceSessionExtensions.UpdateVoterLocationInSession(sideBarViewModel.VoterLocation);
-            instanceSessionExtensions.UpdatePollingLocationInSession(sideBarViewModel.PollingLocation);
-            instanceSessionExtensions.UpdateCountyLocationInSession(sideBarViewModel.CountyLocation);
-        }
-
-
-
-        // ********************************************
-        // Candidate List based on provided name
-        // ********************************************
-
-
-        public List<Candidate> GetCadidateViewModel(string lastName)
-        {
-            List<Candidate> candidates = GetListOfCandidatesWithMatchingLastNameFromVoteSmart(lastName);
-            return candidates.Concat(GetListOfCandidatesWithSimilarLastNameFromVoteSmart(lastName)).ToList();
-        }
-
-
-
-        public List<Candidate> GetListOfCandidatesWithMatchingLastNameFromVoteSmart(string lastName)
+        public List<ViewModels.VoteSmart.Candidate> GetListOfCandidatesWithMatchingLastNameFromVoteSmart(string lastName, int year, string stageId)
         {
             VoteSmartApiManagement voteSmartApi = new VoteSmartApiManagement();
-            return voteSmartApi.GetVoteSmartMatchingCandidateListFromSuppliedLastName(lastName);
+            return voteSmartApi.GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear(lastName, year, stageId);
         }
+        
 
 
-
-        public List<Candidate> GetListOfCandidatesWithSimilarLastNameFromVoteSmart(string lastName)
+        /// <summary>
+        /// get list of candidates from VoteSmart API similar to supplied last name
+        /// </summary>
+        /// <param name="lastName"></param>
+        /// <returns></returns>
+        public List<ViewModels.VoteSmart.Candidate> GetListOfCandidatesWithSimilarLastNameFromVoteSmart(string lastName)
         {
             VoteSmartApiManagement voteSmartApi = new VoteSmartApiManagement();
             return voteSmartApi.GetVoteSmartSimilarCandidateListFromSuppliedLastName(lastName);

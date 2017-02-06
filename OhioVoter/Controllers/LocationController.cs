@@ -1,8 +1,10 @@
 ﻿using OhioVoter.Services;
 using OhioVoter.ViewModels;
+using OhioVoter.ViewModels.Location;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -22,11 +24,24 @@ namespace OhioVoter.Controllers
         /// </summary>
         /// <returns></returns>
         [ChildActionOnly]
-        public ActionResult DisplayVoterLocationSideBar(SideBar sideBarViewModel)
+        public ActionResult DisplayVoterLocationSideBar(SideBarViewModel sideBar)
         {// Tests Generated
-            return ValidateSideBarLocations(sideBarViewModel) ?
-                    PartialView("_VoterLocation", sideBarViewModel) :
-                    PartialView("_VoterLocationForm", sideBarViewModel);
+            if (ValidateLocation(sideBar.VoterLocation))
+            {
+                if(ValidateLocation(sideBar.PollingLocation))
+                {
+                    return PartialView("_VoterLocation", sideBar);
+                }
+                else
+                {
+                    sideBar.PollingLocation.StreetAddress = "Location not found.";
+                    return PartialView("_VoterLocation", sideBar);
+                }
+            }
+            else
+            {
+                return PartialView("_VoterLocationForm", sideBar);
+            }
         }
 
 
@@ -36,9 +51,9 @@ namespace OhioVoter.Controllers
         /// </summary>
         /// <returns></returns>
         [ChildActionOnly]
-        public ActionResult DisplayGeneralLocationSideBar(SideBar sideBarViewModel)
+        public ActionResult DisplayGeneralLocationSideBar(SideBarViewModel sideBar)
         {// Tests Generated
-            return PartialView("_VoterGeneralInformation", sideBarViewModel);
+            return PartialView("_VoterGeneralInformation", sideBar);
         }
 
 
@@ -47,11 +62,11 @@ namespace OhioVoter.Controllers
         /// get the voter location information from session to display in the sidebar
         /// </summary>
         /// <returns></returns>
-        public SideBar GetSideBarViewModel(string controllerName)
+        public SideBarViewModel GetSideBarViewModel(string controllerName)
         {// Tests not generated because of session testing null reference error
             SessionExtensions session = new SessionExtensions();
 
-            SideBar viewModel = new SideBar()
+            SideBarViewModel sideBar = new SideBarViewModel()
             {
                 ControllerName = controllerName,
                 VoterLocation = session.GetVoterLocationFromSession(),
@@ -60,7 +75,7 @@ namespace OhioVoter.Controllers
                 StateLocation = GetAddressForOhioSecretaryOfState()
             };
 
-            return viewModel;
+            return sideBar;
         }
 
 
@@ -70,16 +85,17 @@ namespace OhioVoter.Controllers
         /// store location information for Ohio SOS
         /// </summary>
         /// <returns></returns>
-        public Location GetAddressForOhioSecretaryOfState()
+        public LocationViewModel GetAddressForOhioSecretaryOfState()
         {// Tests Generated
-            return new Location()
+            return new LocationViewModel()
             {
                 Status = "Display",
                 LocationName = "OHIO SECRETARY OF STATE",
                 StreetAddress = "180 E. BROAD ST., 15TH FLOOR",
                 City = "COLUMBUS",
                 StateAbbreviation = "OH",
-                ZipCode = "43215-3726",
+                ZipCode = "43215",
+                ZipCodeSuffix = "3726",
                 Website = "http://www.sos.state.oh.us/elections.aspx"
             };
         }
@@ -105,39 +121,53 @@ namespace OhioVoter.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Update(Location voterLocation, string controllerName)
+        public ActionResult Update(LocationViewModel voterLocation, string controllerName)
         {// Tests not generated because of session testing null reference error
-            // validate supplied street address and zip code are in OHIO
-            if (ValidateVoterLocationInOhio(voterLocation) == false)
+            voterLocation = CheckFormFieldsAreValid(voterLocation);
+            if (voterLocation.Status == "Update")
             {
-                ModelState.AddModelError("", "Valid Ohio Address Required");
+                UpdateSessionInformationForVoterLocation(voterLocation);
                 return RedirectToAction("Index", controllerName);
             }
 
-            voterLocation.StateAbbreviation = "OH"; // address must be in Ohio
+            LocationViewModel completeVoterLocation = GetAllLocationInformationForSuppliedStreetAddressAndZipCode(voterLocation);
 
-            SideBar sideBarViewModel = GetSideBarViewModelFromGoogleCivicInformationAPI(voterLocation);
-            sideBarViewModel.StateLocation = GetAddressForOhioSecretaryOfState();
-
-            if (ValidateSideBarLocations(sideBarViewModel))
+            // make sure google found a location matching the provided zip code
+            if (voterLocation.ZipCode != completeVoterLocation.ZipCode)
             {
-                UpdateSessionStatusToDisplayVoterLocationInformation();
+                voterLocation.Message = "Street address and/or zip code are not valid.";
+                UpdateSessionInformationForVoterLocation(voterLocation);
+                return RedirectToAction("Index", controllerName);
+            }
 
-                sideBarViewModel.PollingLocation.GoogleLocationMapAPI = GetGoogleMapForPollingLocation(sideBarViewModel.VoterLocation, sideBarViewModel.PollingLocation);
-                UpdateSessionFromSideBarViewModel(sideBarViewModel);
-                //return PartialView("_VoterLocation", sideBarViewModel);
+            completeVoterLocation = CheckLocationIsValid(completeVoterLocation);
+
+            // validate supplied street address and zip code are in OHIO
+            if (completeVoterLocation.Status == "Update")
+            {
+                UpdateSessionInformationForVoterLocation(completeVoterLocation);
+                return RedirectToAction("Index", controllerName);
+            }
+
+            SideBarViewModel sideBar = GetSideBarViewModelFromGoogleCivicInformationAPI(completeVoterLocation);
+            sideBar.StateLocation = GetAddressForOhioSecretaryOfState();
+            sideBar = CheckEachLocationInSideBarIsValid(sideBar);
+
+            if (sideBar.VoterLocation.Status == "Display")
+            {
+                sideBar.PollingLocation.GoogleLocationMapAPI = GetGoogleMapForPollingLocation(sideBar.VoterLocation, sideBar.PollingLocation);
+                UpdateSessionFromSideBarViewModel(sideBar);
                 return RedirectToAction("Index", controllerName);
             }
 
             UpdateSessionStatusToShowVoterLocationForm();
-            //return PartialView("_VoterLocationForm", sideBarViewModel);
             return RedirectToAction("Index", controllerName);
         }
 
 
 
 
-        public bool ValidateVoterLocationInOhio(Location voterLocation)
+        public bool ValidateVoterLocationInOhio(LocationViewModel voterLocation)
         {// Tests not generated because of session testing null reference error
             // street address and zip code must be provided
             if (string.IsNullOrWhiteSpace(voterLocation.StreetAddress) == true || string.IsNullOrWhiteSpace(voterLocation.ZipCode) == true)
@@ -171,6 +201,12 @@ namespace OhioVoter.Controllers
 
 
 
+        public LocationViewModel GetAllLocationInformationForSuppliedStreetAddressAndZipCode(LocationViewModel location)
+        {
+            GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
+            return instanceGoogleAPIManagement.GetAllLocationInformationForSuppliedAddress(location);
+        }
+
 
         /// <summary>
         /// make sure street address and zip code is in Ohio
@@ -191,61 +227,172 @@ namespace OhioVoter.Controllers
         /// </summary>
         /// <param name="sideBarViewModel"></param>
         /// <returns></returns>
-        public bool ValidateSideBarLocations(SideBar sideBarViewModel)
+        public bool ValidateSideBarLocations(SideBarViewModel sideBar)
         {// Tests Generated
-            return ValidateVoterLocation(sideBarViewModel.VoterLocation) &&
-                   ValidatePollingLocation(sideBarViewModel.PollingLocation) &&
-                   ValidateCountyLocation(sideBarViewModel.CountyLocation) &&
-                   ValidateStateLocation(sideBarViewModel.StateLocation) ?
+            return ValidateLocation(sideBar.VoterLocation) &&
+                   ValidateLocation(sideBar.PollingLocation) &&
+                   ValidateLocation(sideBar.CountyLocation) &&
+                   ValidateLocation(sideBar.StateLocation) ?
                    true : false;
         }
 
 
 
-        public bool ValidateVoterLocation(Location location)
+
+        public SideBarViewModel CheckEachLocationInSideBarIsValid(SideBarViewModel sideBar)
+        {
+            sideBar.VoterLocation = CheckLocationIsValid(sideBar.VoterLocation);
+            sideBar.PollingLocation = CheckLocationIsValid(sideBar.PollingLocation);
+            sideBar.CountyLocation = CheckLocationIsValid(sideBar.CountyLocation);
+            sideBar.StateLocation = CheckLocationIsValid(sideBar.StateLocation);
+
+            return sideBar;
+        }
+
+
+
+        public LocationViewModel CheckLocationIsValid(LocationViewModel location)
+        {
+            location.Message = "";
+            location.Status = "Display";
+
+            // check street address and zip code
+            location = CheckFormFieldsAreValid(location);
+            if (location.Status == "Update")
+                return location;
+
+            // check state
+            if (!ValidateStateIsOhio(location.StateAbbreviation))
+            {
+                location.Message = "Address must be in Ohio.";
+                location.Status = "Update";
+                return location;
+            }
+
+            // check city
+            if (!ValidateCityIsFound(location.City))
+            {
+                location.Message = "Invalid address.";
+                location.Status = "Update";
+                return location;
+            }
+
+            return location;
+        }
+
+
+        public LocationViewModel CheckFormFieldsAreValid(LocationViewModel location)
+        {
+            location.Message = "";
+            location.Status = "Display";
+
+            // check street
+            if (!ValidateStreetAddressIsFound(location.StreetAddress))
+            {
+                location.Message = "Street address must be provided.";
+                location.Status = "Update";
+                return location;
+            }
+
+            // check zipcode
+            if (!ValidateZipCodeIsFound(location.ZipCode))
+            {
+                location.Message = "Zip code must be provided.";
+                location.Status = "Update";
+                return location;
+            }
+            else if (!ValidateZipCodeIsCorrectFormat(location.ZipCode))
+            {
+                location.Message = "Zip code must be 5 numbers.";
+                location.Status = "Update";
+                return location;
+            }
+
+            return location;
+        }
+
+
+        public bool ValidateStateIsOhio(string stateAbbreviation)
+        {
+            return stateAbbreviation == "OH" ? true : false;
+        }
+
+
+        public bool ValidateStreetAddressIsFound(string streetAddress )
+        {
+            return streetAddress == null || streetAddress == "" ? false : true;
+        }
+
+
+        public bool ValidateZipCodeIsFound(string zipCode)
+        {
+            return zipCode == null || zipCode == "" ? false : true;
+        }
+
+
+        public bool ValidateZipCodeIsCorrectFormat(string zipCode)
+        {
+            return zipCode.Length == 5 && Regex.IsMatch(zipCode, @"^\d+$")? true : false;
+        }
+
+
+
+        public bool ValidateCityIsFound(string city)
+        {
+            return city == null || city == "" ? false : true;
+        }
+
+        public bool ValidateLocation(LocationViewModel location)
         {// Tests Generated
-            return location.Status != null &&
-                   location.Status != "" &&
-                   location.Status == "Display" &&
-                   location.StreetAddress != null &&
-                   location.StreetAddress != "" &&
-                   location.StateAbbreviation != null &&
-                   location.StateAbbreviation != "" &&
-                   location.ZipCode != null ?
+            // status 
+            if(location.Status == "Update")
+                return false;
+
+            return location.Message == null || location.Message == "" ?
                    true : false;
         }
 
 
 
-        public bool ValidatePollingLocation(Location location)
+        public bool ValidateVoterLocation(LocationViewModel location)
         {// Tests Generated
+            // status 
             return location.Status != null &&
                    location.Status != "" &&
                    location.Status == "Display" &&
-                   location.StreetAddress != null &&
-                   location.StreetAddress != "" ?
+                   location.Message == "" ?
                    true : false;
         }
 
 
 
-        public bool ValidateCountyLocation(Location location)
+        public bool ValidatePollingLocation(LocationViewModel location)
         {// Tests Generated
             return location.Status != null &&
                    location.Status != "" &&
                    location.Status == "Display" &&
-                   location.City != null &&
-                   location.City != "" ?
+                   location.Message == "" ?
                    true : false;
         }
 
 
-        public bool ValidateStateLocation(Location location)
+
+        public bool ValidateCountyLocation(LocationViewModel location)
         {// Tests Generated
             return location.Status != null &&
                    location.Status != "" &&
                    location.Status == "Display" &&
-                   location.StateAbbreviation == "OH" ?
+                   location.Message == "" ?
+                   true : false;
+        }
+
+
+        public bool ValidateStateLocation(LocationViewModel location)
+        {// Tests Generated
+            return location.Status != null &&
+                   location.Status != "" &&
+                   location.Status == "Display" &&
+                   location.Message == "" ?
                    true : false;
         }
 
@@ -254,7 +401,7 @@ namespace OhioVoter.Controllers
         /// <summary>
         /// voter location form needs to be displayed
         /// </summary>
-        public void UpdateSessionInformationForVoterLocation(Location voterLocation)
+        public void UpdateSessionInformationForVoterLocation(LocationViewModel voterLocation)
         {// Tests not generated because of session testing null reference error
             SessionExtensions session = new SessionExtensions();
             session.UpdateVoterLocationInSession(voterLocation);
@@ -279,7 +426,7 @@ namespace OhioVoter.Controllers
         public void UpdateSessionStatusToDisplayVoterLocationInformation()
         {// Tests not generated because of session testing null reference error
             SessionExtensions session = new SessionExtensions();
-            session.ChangeVoterLocationStatusToUpdateVoterLocationForm();
+            session.ChangeVoterLocationStatusToDisplayVoterLocation();
         }
 
 
@@ -289,7 +436,7 @@ namespace OhioVoter.Controllers
         /// </summary>
         /// <param name="voterLocation"></param>
         /// <returns></returns>
-        public SideBar GetSideBarViewModelFromGoogleCivicInformationAPI(Location voterLocation)
+        public SideBarViewModel GetSideBarViewModelFromGoogleCivicInformationAPI(LocationViewModel voterLocation)
         {// Tests Generated
             GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
             return instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
@@ -303,7 +450,7 @@ namespace OhioVoter.Controllers
         /// <param name="voterLocation"></param>
         /// <param name="pollingLocation"></param>
         /// <returns></returns>
-        public string GetGoogleMapForPollingLocation(Location voterLocation, Location pollingLocation)
+        public string GetGoogleMapForPollingLocation(LocationViewModel voterLocation, LocationViewModel pollingLocation)
         {// Tests Generated
             GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
             return instanceGoogleAPIManagement.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -315,7 +462,7 @@ namespace OhioVoter.Controllers
         /// update the values stored in the session based on the voter location provided
         /// </summary>
         /// <param name="sideBarViewModel"></param>
-        public void UpdateSessionFromSideBarViewModel(SideBar sideBarViewModel)
+        public void UpdateSessionFromSideBarViewModel(SideBarViewModel sideBarViewModel)
         {// Tests not generated because of session testing null reference error
             SessionExtensions session = new SessionExtensions();
 

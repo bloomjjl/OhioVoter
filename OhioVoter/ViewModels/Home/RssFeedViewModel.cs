@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace OhioVoter.ViewModels.Rss
+namespace OhioVoter.ViewModels.Home
 {
-    public class Feed
+    public class RssFeedViewModel
     {
         public Channel Channel { get; set; }
         public IEnumerable<Item> Items { get; set; }

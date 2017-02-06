@@ -16,22 +16,48 @@ namespace OhioVoter.Tests.Services
         private static string _votesmartApiKey = "1c5073e4c73532c7d2daf51651023d8f";
 
 
-
-        // *****************************************************
-        // GetVoteSmartMatchingCandidateListFromSuppliedLastName
-        // *****************************************************
+        // *********************************************************
+        // GetVoteSmartElectionInformationFromSuppliedZipCodeAndYear
+        // *********************************************************
 
 
 
         [TestMethod]
-        public void Test_GetVoteSmartMatchingCandidateListFromSuppliedLastName_ValidNameProvided()
+        public void Test_GetVoteSmartElectionInformationFromSuppliedZipCodeAndYear_ValidNameProvided()
         {
             // Arrange
             VoteSmartApiManagement service = new VoteSmartApiManagement();
-            string lastName = "Smith";
+            string zipCode = "45069";
+            string zipCodeSuffix = "3915";
+            int year = 2016;
 
             // Act
-            List<Candidate> result = service.GetVoteSmartMatchingCandidateListFromSuppliedLastName(lastName);
+            Elections result = service.GetVoteSmartElectionInformationFromSuppliedZipCodeAndYear(zipCode, zipCodeSuffix, year);
+
+            // Assert
+            Assert.AreNotEqual(0, result.Election.Count);
+            Assert.AreEqual("OH", result.Election[0].StateId);
+        }
+
+
+
+        // *****************************************************************************
+        // GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear
+        // *****************************************************************************
+
+
+
+        [TestMethod]
+        public void Test_GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear_ValidNameAndYearProvided()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string lastName = "Strickland";
+            int year = 2016;
+            string stageId = "";
+
+            // Act
+            List<Candidate> result = service.GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear(lastName, year, stageId);
 
             // Assert
             Assert.AreNotEqual(0, result.Count);
@@ -41,14 +67,16 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetVoteSmartMatchingCandidateListFromSuppliedLastName_NullNameProvided()
+        public void Test_GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear_NullNameProvided()
         {
             // Arrange
             VoteSmartApiManagement service = new VoteSmartApiManagement();
             string lastName = null;
+            int year = DateTime.Today.Year;
+            string stageId = "";
 
             // Act
-            List<Candidate> result = service.GetVoteSmartMatchingCandidateListFromSuppliedLastName(lastName);
+            List<Candidate> result = service.GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear(lastName, year, stageId);
 
             // Assert
             Assert.AreEqual(0, result.Count);
@@ -57,14 +85,16 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetVoteSmartMatchingCandidateListFromSuppliedLastName_EmptyNameProvided()
+        public void Test_GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear_EmptyNameProvided()
         {
             // Arrange
             VoteSmartApiManagement service = new VoteSmartApiManagement();
             string lastName = "";
+            int year = DateTime.Today.Year;
+            string stageId = "";
 
             // Act
-            List<Candidate> result = service.GetVoteSmartMatchingCandidateListFromSuppliedLastName(lastName);
+            List<Candidate> result = service.GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear(lastName, year, stageId);
 
             // Assert
             Assert.AreEqual(0, result.Count);
@@ -205,10 +235,10 @@ namespace OhioVoter.Tests.Services
             List<Candidate> result = service.ProcessResponseForCandidateList(xmlDoc);
 
             // Assert
-            Assert.AreEqual("152042", result[0].CandidateId);
+            Assert.AreEqual("152042", result[0].ElectionCandidateId);
             Assert.AreEqual("Erin", result[0].FirstName);
             Assert.AreEqual("Oban", result[0].LastName);
-            Assert.AreEqual("174396", result[1].CandidateId);
+            Assert.AreEqual("174396", result[1].ElectionCandidateId);
             Assert.AreEqual("Shawn", result[1].FirstName);
             Assert.AreEqual("Oban", result[1].LastName);
         }
@@ -735,6 +765,140 @@ namespace OhioVoter.Tests.Services
         }
 
 
+
+        // *****************************************************
+        // GetUrlRequestForDistrictInformationForSuppliedZipCode
+        // *****************************************************
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForDistrictInformationForSuppliedZipCode_ValidZipCodeAndSuffix()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = "45224";
+            string zipCodeSuffix = "2636";
+
+            // Act
+            string result = service.GetUrlRequestForDistrictInformationForSuppliedZipCode(zipCode, zipCodeSuffix);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/District.getByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix), result);
+        }
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForDistrictInformationForSuppliedZipCode_NullZipCodeAndSuffix()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = null;
+            string zipCodeSuffix = null;
+
+            // Act
+            string result = service.GetUrlRequestForDistrictInformationForSuppliedZipCode(zipCode, zipCodeSuffix);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/District.getByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix), result);
+        }
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForDistrictInformationForSuppliedZipCode_NullSuffix()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = "45224";
+            string zipCodeSuffix = null;
+
+            // Act
+            string result = service.GetUrlRequestForDistrictInformationForSuppliedZipCode(zipCode, zipCodeSuffix);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/District.getByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix), result);
+        }
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForDistrictInformationForSuppliedZipCode_EmptyZipCodeAndSuffix()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = "";
+            string zipCodeSuffix = "";
+
+            // Act
+            string result = service.GetUrlRequestForDistrictInformationForSuppliedZipCode(zipCode, zipCodeSuffix);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/District.getByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix), result);
+        }
+
+
+
+        // ************************************************************
+        // GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear
+        // ************************************************************
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear_ValidZipCodeAndSuffixAndYear()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = "45069";
+            string zipCodeSuffix = "3915";
+            int year = 2016;
+
+            // Act
+            string result = service.GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear(zipCode, zipCodeSuffix, year);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/Election.getElectionByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix, "&year=", year), result);
+        }
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear_NoYearProvided()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = "45069";
+            string zipCodeSuffix = "3915";
+            int year = DateTime.Today.Year;
+            int noYear = 0;
+
+            // Act
+            string result = service.GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear(zipCode, zipCodeSuffix, noYear);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/Election.getElectionByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix, "&year=", year), result);
+        }
+
+
+
+        [TestMethod]
+        public void Test_GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear_NegativeYearProvided()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string zipCode = "45069";
+            string zipCodeSuffix = "3915";
+            int year = DateTime.Today.Year;
+            int noYear = -2016;
+
+            // Act
+            string result = service.GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear(zipCode, zipCodeSuffix, noYear);
+
+            // Assert
+            Assert.AreEqual(string.Concat("http://api.votesmart.org/Election.getElectionByZip?&key=", _votesmartApiKey, "&zip5=", zipCode, "&zip4=", zipCodeSuffix, "&year=", year), result);
+        }
 
 
 

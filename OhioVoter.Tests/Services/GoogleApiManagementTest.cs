@@ -20,10 +20,10 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location countyLocation = GetValidCountyLocation();
+            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
 
             // Act
-            ViewModels.Location result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Display", result.Status);
@@ -37,11 +37,11 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location countyLocation = GetValidCountyLocation();
+            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
             countyLocation.StateAbbreviation = "AR";
 
             // Act
-            ViewModels.Location result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -55,11 +55,11 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location countyLocation = GetValidCountyLocation();
+            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
             countyLocation.StateAbbreviation = null;
 
             // Act
-            ViewModels.Location result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -73,11 +73,11 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location countyLocation = GetValidCountyLocation();
+            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
             countyLocation.City = null;
 
             // Act
-            ViewModels.Location result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -91,10 +91,10 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location countyLocation = new ViewModels.Location();
+            ViewModels.Location.LocationViewModel countyLocation = new ViewModels.Location.LocationViewModel();
 
             // Act
-            ViewModels.Location result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -108,8 +108,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location voterLocation = GetValidVoterLocation();
-            ViewModels.Location pollingLocation = GetValidPollingLocation();
+            ViewModels.Location.LocationViewModel voterLocation = GetValidVoterLocation();
+            ViewModels.Location.LocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -128,8 +128,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location voterLocation = new ViewModels.Location();
-            ViewModels.Location pollingLocation = GetValidPollingLocation();
+            ViewModels.Location.LocationViewModel voterLocation = new ViewModels.Location.LocationViewModel();
+            ViewModels.Location.LocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -148,8 +148,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location voterLocation = GetValidVoterLocation();
-            ViewModels.Location pollingLocation = new ViewModels.Location();
+            ViewModels.Location.LocationViewModel voterLocation = GetValidVoterLocation();
+            ViewModels.Location.LocationViewModel pollingLocation = new ViewModels.Location.LocationViewModel();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -168,8 +168,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location voterLocation = new ViewModels.Location();
-            ViewModels.Location pollingLocation = new ViewModels.Location();
+            ViewModels.Location.LocationViewModel voterLocation = new ViewModels.Location.LocationViewModel();
+            ViewModels.Location.LocationViewModel pollingLocation = new ViewModels.Location.LocationViewModel();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -364,8 +364,14 @@ namespace OhioVoter.Tests.Services
 
 
 
+        // ******************************************************
+        // GetUrlRequestForFullAddressFromStreetAddressAndZipCode
+        // ******************************************************
+
+
+
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_ValidStreetAddressAndZipCode()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_ValidStreetAddressAndZipCode()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -373,7 +379,7 @@ namespace OhioVoter.Tests.Services
             string zipCode = "65210";
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
@@ -382,7 +388,7 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_BlankStreetAddress()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_BlankStreetAddress()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -390,7 +396,7 @@ namespace OhioVoter.Tests.Services
             string zipCode = "65210";
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
@@ -399,7 +405,7 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_BlankZipCode()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_BlankZipCode()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -407,7 +413,7 @@ namespace OhioVoter.Tests.Services
             string zipCode = "";
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
@@ -416,7 +422,7 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_BlankStreetAddressAndZipCode()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_BlankStreetAddressAndZipCode()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -424,7 +430,7 @@ namespace OhioVoter.Tests.Services
             string zipCode = "";
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
@@ -433,7 +439,7 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_NullStreetAddress()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_NullStreetAddress()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -441,7 +447,7 @@ namespace OhioVoter.Tests.Services
             string zipCode = "65210";
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
@@ -450,7 +456,7 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_NullZipCode()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_NullZipCode()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -458,7 +464,7 @@ namespace OhioVoter.Tests.Services
             string zipCode = null;
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
@@ -467,7 +473,7 @@ namespace OhioVoter.Tests.Services
 
 
         [TestMethod]
-        public void Test_GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode_NullStreetAddressAndZipCode()
+        public void Test_GetUrlRequestForFullAddressFromStreetAddressAndZipCode_NullStreetAddressAndZipCode()
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
@@ -475,11 +481,17 @@ namespace OhioVoter.Tests.Services
             string zipCode = null;
 
             // Act
-            string result = service.GetUrlRequestForStateAbbreviationFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
+            string result = service.GetUrlRequestForFullAddressFromStreetAddressAndZipCode(streetAddress, zipCode) as string;
 
             // Assert
             Assert.AreEqual(string.Concat("http://maps.googleapis.com/maps/api/geocode/json?&", "address=", streetAddress, " ", zipCode, "&sensor=true"), result);
         }
+
+
+
+        // *******************************************
+        // GetStateAbbreviationFromGoogleAddressObject
+        // *******************************************
 
 
 
@@ -624,9 +636,9 @@ namespace OhioVoter.Tests.Services
         // **************************************************************
 
 
-        private static ViewModels.Location GetValidVoterLocation()
+        private static ViewModels.Location.LocationViewModel GetValidVoterLocation()
         {
-            return new ViewModels.Location()
+            return new ViewModels.Location.LocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "9282 Gregg Drive",
@@ -638,9 +650,9 @@ namespace OhioVoter.Tests.Services
 
 
 
-        private static ViewModels.Location GetValidPollingLocation()
+        private static ViewModels.Location.LocationViewModel GetValidPollingLocation()
         {
-            return new ViewModels.Location()
+            return new ViewModels.Location.LocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "9113 CINCINNATI DAYTON RD",
@@ -651,9 +663,9 @@ namespace OhioVoter.Tests.Services
         }
 
 
-        private static ViewModels.Location GetValidCountyLocation()
+        private static ViewModels.Location.LocationViewModel GetValidCountyLocation()
         {
-            return new ViewModels.Location()
+            return new ViewModels.Location.LocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "1802 Princeton Rd., Ste 600",
@@ -665,9 +677,9 @@ namespace OhioVoter.Tests.Services
 
 
 
-        private static ViewModels.Location GetValidStateLocation()
+        private static ViewModels.Location.LocationViewModel GetValidStateLocation()
         {
-            return new ViewModels.Location()
+            return new ViewModels.Location.LocationViewModel()
             {
                 Status = "Display",
                 StateAbbreviation = "OH"

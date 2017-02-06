@@ -1,4 +1,4 @@
-﻿using OhioVoter.ViewModels.RSS;
+﻿using OhioVoter.ViewModels.Rss;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,9 +62,7 @@ namespace OhioVoter.Services
         {
             string feedUrl = "https://www.sos.state.oh.us/sos/sosfeeds.aspx?hungry=yes";
             RssReader reader = new RssReader();
-            Feed feed = reader.GetInformationFromRSSFeed(feedUrl, _maxItemCount);
-
-            return feed;
+            return reader.GetInformationFromRSSFeed(feedUrl, _maxItemCount);
         }
 
     }

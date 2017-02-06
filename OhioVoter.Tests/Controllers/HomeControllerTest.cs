@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhioVoter;
 using OhioVoter.Controllers;
-using OhioVoter.ViewModels.Election;
+using OhioVoter.ViewModels.Home;
 using OhioVoter.Models;
 
 namespace OhioVoter.Tests.Controllers

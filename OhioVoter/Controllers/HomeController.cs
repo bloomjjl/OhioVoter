@@ -1,8 +1,6 @@
-﻿using OhioVoter.Models;
-using OhioVoter.Services;
+﻿using OhioVoter.Services;
 using OhioVoter.ViewModels;
-using OhioVoter.ViewModels.Election;
-using OhioVoter.ViewModels.RSS;
+using OhioVoter.ViewModels.Home;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +21,12 @@ namespace OhioVoter.Controllers
         {
             LocationController location = new LocationController();
 
-            HomePageViewModel viewModel = new HomePageViewModel()
+            HomeViewModel viewModel = new HomeViewModel()
             {
-                SideBar = location.GetSideBarViewModel("Home"),
+                SideBarViewModel = location.GetSideBarViewModel("Home"),
                 Calendar = GetCalendarViewModel(),
                 Poll = GetPollResultsViewModel(),
-                RssFeeds = GetRssFeedsViewModel()
+                RssFeeds = GetRssFeedViewModel()
             };
 
             return View(viewModel);
@@ -47,12 +45,12 @@ namespace OhioVoter.Controllers
         /// get the election date information to display on page
         /// </summary>
         /// <returns></returns>
-        public Calendar GetCalendarViewModel()
+        public CalendarViewModel GetCalendarViewModel()
         {
             DateTime startDate = DateTime.Today;
             DateTime endDate = startDate.AddDays(30);
 
-            return new Calendar()
+            return new CalendarViewModel()
             {
                 StartDate = startDate,
                 EndDate = endDate,
@@ -69,25 +67,43 @@ namespace OhioVoter.Controllers
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <returns></returns>
-        public List<ElectionDate> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
+        public IEnumerable<ElectionDate> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
         {
-            if (startDate <= endDate)
-            {
-                using (OhioVoterDbContext db = new OhioVoterDbContext())
-                {
-                    IEnumerable<ElectionDate> electionDates = db.ElectionDates.ToList();
+            if (startDate > endDate)
+                return new List<ElectionDate>();
 
-                    return electionDates.Where(x => x.Date >= startDate)
-                                        .Where(x => x.Date < endDate)
-                                        .OrderBy(x => x.Date)
-                                        .ToList();
-                }
+            List<Models.ElectionDate> electionDates = new List<Models.ElectionDate>();
+            using (Models.OhioVoterDbContext db = new Models.OhioVoterDbContext())
+            {
+                electionDates = db.ElectionDates.Where(x => x.Date >= startDate)
+                                                .Where(x => x.Date < endDate)
+                                                .OrderBy(x => x.Date)
+                                                .ToList();
             }
 
-            return new List<ElectionDate>();
+            return CopyElectionDatesToViewModel(electionDates);
         }
 
 
+
+        public IEnumerable<ElectionDate> CopyElectionDatesToViewModel(List<Models.ElectionDate> electionDates)
+        {
+            List<ElectionDate> dates = new List<ElectionDate>();
+
+            for (int i = 0; i < electionDates.Count; i++)
+            {
+                dates.Add(new ElectionDate()
+                {
+                    DateId = electionDates[i].ElectionDateId,
+                    Date = electionDates[i].Date,
+                    Description = electionDates[i].Description
+                });
+            }
+
+            IEnumerable<ElectionDate> iDates = dates;
+
+            return iDates;
+        }
 
 
 
@@ -103,9 +119,9 @@ namespace OhioVoter.Controllers
         /// sort and store the polling results to display on page
         /// </summary>
         /// <returns></returns>
-        private Poll GetPollResultsViewModel()
+        private PollViewModel GetPollResultsViewModel()
         {
-            Poll poll = new Poll()
+            PollViewModel poll = new PollViewModel()
             {
                 ElectionDate = Convert.ToDateTime("11/08/2016"),
                 OfficeName = "President",
@@ -226,19 +242,115 @@ namespace OhioVoter.Controllers
         /// get the information for rss feeds
         /// </summary>
         /// <returns></returns>
-        private RssFeed GetRssFeedsViewModel()
+        public RssFeeds GetRssFeedViewModel()
         {
-            RssManagement rssManager = new RssManagement();
-
-            return new RssFeed()
+            return new RssFeeds()
             {
-                FoxNewsRssFeed = rssManager.GetFoxNewsRssPoliticalFeed(),
-                CnbcRssFeed = rssManager.GetCnbcRSSPoliticalFeed(),
-                CnnRssFeed = rssManager.GetCnnRssPoliticalFeed()
+                FoxNewsRssFeed = CopyFoxNewsRssPoliticalFeedToViewModel(),
+                CnbcRssFeed = CopyCnbcRssPoliticalFeedToViewModel(),
+                CnnRssFeed = CopyCnnRssPoliticalFeedToViewModel()
             };
         }
 
 
+
+        public RssFeedViewModel CopyFoxNewsRssPoliticalFeedToViewModel()
+        {
+            RssManagement rssManager = new RssManagement();
+            return CopyRssFeedToViewModel(rssManager.GetFoxNewsRssPoliticalFeed());
+        }
+
+
+
+        public RssFeedViewModel CopyCnbcRssPoliticalFeedToViewModel()
+        {
+            RssManagement rssManager = new RssManagement();
+            return CopyRssFeedToViewModel(rssManager.GetCnbcRSSPoliticalFeed());
+        }
+
+
+
+        public RssFeedViewModel CopyCnnRssPoliticalFeedToViewModel()
+        {
+            RssManagement rssManager = new RssManagement();
+            return CopyRssFeedToViewModel(rssManager.GetCnnRssPoliticalFeed());
+        }
+
+
+
+        public RssFeedViewModel CopyRssFeedToViewModel(ViewModels.Rss.Feed feed)
+        {
+            return new RssFeedViewModel()
+            {
+                Channel = CopyRssChannelToViewModel(feed),
+                Items = CopyAllItemsToViewModel(feed)
+            };
+
+        }
+
+
+
+        public Channel CopyRssChannelToViewModel(ViewModels.Rss.Feed feed)
+        {
+            return new Channel()
+                {
+                    Element = CopyElementForChannel(feed)
+                };
+        }
+
+
+
+        public Element CopyElementForChannel(ViewModels.Rss.Feed feed)
+        {
+            return new Element()
+            {
+                Image = feed.Channel.Element.Image,
+                Link_0 = feed.Channel.Element.Link_0,
+                Link_1 = feed.Channel.Element.Link_1,
+                Link_2 = feed.Channel.Element.Link_2,
+                Title = feed.Channel.Element.Title
+            };
+        }
+
+
+
+        public IEnumerable<Item> CopyAllItemsToViewModel(ViewModels.Rss.Feed feed)
+        {
+            List<Item> items = new List<Item>();
+
+            foreach (var item in feed.Items)
+            {
+                items.Add(CopyCurrentItemToViewModel(item));
+            };
+
+            return items;
+        }
+
+
+
+        public Item CopyCurrentItemToViewModel(ViewModels.Rss.Item item)
+        {
+            return new Item()
+            {
+                Element = CopyElementforItem(item)
+            };
+        }
+
+
+
+        private Element CopyElementforItem(ViewModels.Rss.Item item)
+        {
+            Element element = new Element()
+            {
+                Title = item.Element.Title,
+                PubDate = item.Element.PubDate,
+                Summary = item.Element.Summary,
+                Link_0 = item.Element.Link_0,
+                Id = item.Element.Id
+            };
+
+            return element;
+        }
 
 
 

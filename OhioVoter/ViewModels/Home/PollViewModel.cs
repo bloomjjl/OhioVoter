@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace OhioVoter.ViewModels.Election
+namespace OhioVoter.ViewModels.Home
 {
-    public class Poll
+    public class PollViewModel
     {
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime ElectionDate { get; set; }

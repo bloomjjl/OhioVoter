@@ -1,0 +1,39 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p>Candidate Lookup</p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+            <div id="candidate_election_list" class="form-group election-day">
+                <p>
+                    @Model.Candidate.CandidateName <br />
+                    @Model.Candidate.PartyName <br />
+                    @Model.Candidate.OfficeHolderId
+                </p>
+            </div>
+
+            <div>
+                @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @class = "btn btn-block panel-main-btn" })
+
+                @Html.ActionLink("Compare Second Candidate", "", "", new { candidateId = 0 }, new { @class = "btn btn-block panel-main-btn" })
+
+
+                @*
+    <button type="submit" class="btn btn-block panel-main-btn">
+        Display Candidate Information
+        <span class="glyphicon glyphicon-search"></span>
+    </button>
+                *@
+            </div>
+
+    </div>
+
+</div>
+
+
+
+

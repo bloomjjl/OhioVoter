@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OhioVoter.Controllers;
-using OhioVoter.ViewModels;
+using OhioVoter.ViewModels.Location;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithAllValidLocations();
+            SideBarViewModel sideBarViewModel = GetSideBarWithAllValidLocations();
 
             // Act
             PartialViewResult result = controller.DisplayVoterLocationSideBar(sideBarViewModel) as PartialViewResult;
@@ -35,7 +35,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithAllNullLocations();
+            SideBarViewModel sideBarViewModel = GetSideBarWithAllNullLocations();
 
             // Act
             PartialViewResult result = controller.DisplayVoterLocationSideBar(sideBarViewModel) as PartialViewResult;
@@ -51,7 +51,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithAllValidLocations();
+            SideBarViewModel sideBarViewModel = GetSideBarWithAllValidLocations();
 
             // Act
             PartialViewResult result = controller.DisplayGeneralLocationSideBar(sideBarViewModel) as PartialViewResult;
@@ -67,7 +67,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithAllNullLocations();
+            SideBarViewModel sideBarViewModel = GetSideBarWithAllNullLocations();
 
             // Act
             PartialViewResult result = controller.DisplayGeneralLocationSideBar(sideBarViewModel) as PartialViewResult;
@@ -85,7 +85,7 @@ namespace OhioVoter.Tests.Controllers
             LocationController controller = new LocationController();
 
             // Act
-            Location result = controller.GetAddressForOhioSecretaryOfState() as Location;
+            LocationViewModel result = controller.GetAddressForOhioSecretaryOfState();
 
             // Assert
             Assert.AreEqual("Display", result.Status);
@@ -169,7 +169,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithAllValidLocations();
+            SideBarViewModel sideBarViewModel = GetSideBarWithAllValidLocations();
 
             // Act
             bool result = controller.ValidateSideBarLocations(sideBarViewModel);
@@ -185,7 +185,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithNullVoterLocation();
+            SideBarViewModel sideBarViewModel = GetSideBarWithNullVoterLocation();
 
             // Act
             bool result = controller.ValidateSideBarLocations(sideBarViewModel);
@@ -201,7 +201,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithNullPollingLocation();
+            SideBarViewModel sideBarViewModel = GetSideBarWithNullPollingLocation();
 
             // Act
             bool result = controller.ValidateSideBarLocations(sideBarViewModel);
@@ -217,7 +217,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithNullCountyLocation();
+            SideBarViewModel sideBarViewModel = GetSideBarWithNullCountyLocation();
 
             // Act
             bool result = controller.ValidateSideBarLocations(sideBarViewModel);
@@ -233,7 +233,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithNullStateLocation();
+            SideBarViewModel sideBarViewModel = GetSideBarWithNullStateLocation();
 
             // Act
             bool result = controller.ValidateSideBarLocations(sideBarViewModel);
@@ -249,7 +249,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBarViewModel = GetSideBarWithAllNullLocations();
+            SideBarViewModel sideBarViewModel = GetSideBarWithAllNullLocations();
 
             // Act
             bool result = controller.ValidateSideBarLocations(sideBarViewModel);
@@ -265,7 +265,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location voterLocation = GetValidVoterLocation();
+            LocationViewModel voterLocation = GetValidVoterLocation();
 
             // Act
             bool result = controller.ValidateVoterLocation(voterLocation);
@@ -281,7 +281,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location voterLocation = new Location();
+            LocationViewModel voterLocation = new LocationViewModel();
 
             // Act
             bool result = controller.ValidateVoterLocation(voterLocation);
@@ -298,7 +298,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location pollingLocation = GetValidPollingLocation();
+            LocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             bool result = controller.ValidatePollingLocation(pollingLocation);
@@ -314,7 +314,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location pollingLocation = new Location();
+            LocationViewModel pollingLocation = new LocationViewModel();
 
             // Act
             bool result = controller.ValidatePollingLocation(pollingLocation);
@@ -331,7 +331,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location countyLocation = GetValidCountyLocation();
+            LocationViewModel countyLocation = GetValidCountyLocation();
 
             // Act
             bool result = controller.ValidateCountyLocation(countyLocation);
@@ -347,7 +347,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location countyLocation = new Location();
+            LocationViewModel countyLocation = new LocationViewModel();
 
             // Act
             bool result = controller.ValidateCountyLocation(countyLocation);
@@ -364,7 +364,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location stateLocation = GetValidStateLocation();
+            LocationViewModel stateLocation = GetValidStateLocation();
 
             // Act
             bool result = controller.ValidateStateLocation(stateLocation);
@@ -380,7 +380,7 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location stateLocation = new Location();
+            LocationViewModel stateLocation = new LocationViewModel();
 
             // Act
             bool result = controller.ValidateStateLocation(stateLocation);
@@ -397,10 +397,10 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBar = GetSideBarWithAllValidLocations();
+            SideBarViewModel sideBar = GetSideBarWithAllValidLocations();
 
             // Act
-            SideBar result = controller.GetSideBarViewModelFromGoogleCivicInformationAPI(sideBar.VoterLocation);
+            SideBarViewModel result = controller.GetSideBarViewModelFromGoogleCivicInformationAPI(sideBar.VoterLocation);
 
             // Assert
             Assert.AreEqual(sideBar.VoterLocation.FullAddress, result.VoterLocation.FullAddress);
@@ -416,10 +416,10 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            SideBar sideBar = new SideBar();
+            SideBarViewModel sideBar = new SideBarViewModel();
 
             // Act
-            SideBar result = controller.GetSideBarViewModelFromGoogleCivicInformationAPI(sideBar.VoterLocation);
+            SideBarViewModel result = controller.GetSideBarViewModelFromGoogleCivicInformationAPI(sideBar.VoterLocation);
 
             // Assert
             Assert.AreEqual("Update", result.VoterLocation.Status);
@@ -433,8 +433,8 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location voterLocation = GetValidVoterLocation();
-            Location pollingLocation = GetValidPollingLocation();
+            LocationViewModel voterLocation = GetValidVoterLocation();
+            LocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             string result = controller.GetGoogleMapForPollingLocation(voterLocation, pollingLocation);
@@ -450,8 +450,8 @@ namespace OhioVoter.Tests.Controllers
         {// Tests Generated
             // Arrange
             LocationController controller = new LocationController();
-            Location voterLocation = new Location();
-            Location pollingLocation = GetValidPollingLocation();
+            LocationViewModel voterLocation = new LocationViewModel();
+            LocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             string result = controller.GetGoogleMapForPollingLocation(voterLocation, pollingLocation);
@@ -467,8 +467,8 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location voterLocation = GetValidVoterLocation();
-            Location pollingLocation = new Location();
+            LocationViewModel voterLocation = GetValidVoterLocation();
+            LocationViewModel pollingLocation = new LocationViewModel();
 
             // Act
             string result = controller.GetGoogleMapForPollingLocation(voterLocation, pollingLocation);
@@ -484,8 +484,8 @@ namespace OhioVoter.Tests.Controllers
         {
             // Arrange
             LocationController controller = new LocationController();
-            Location voterLocation = new Location();
-            Location pollingLocation = new Location();
+            LocationViewModel voterLocation = new LocationViewModel();
+            LocationViewModel pollingLocation = new LocationViewModel();
 
             // Act
             string result = controller.GetGoogleMapForPollingLocation(voterLocation, pollingLocation);
@@ -501,9 +501,9 @@ namespace OhioVoter.Tests.Controllers
 
 
 
-        private static SideBar GetSideBarWithAllValidLocations()
+        private static SideBarViewModel GetSideBarWithAllValidLocations()
         {
-            return new SideBar()
+            return new SideBarViewModel()
             {
                 VoterLocation = GetValidVoterLocation(),
                 PollingLocation = GetValidPollingLocation(),
@@ -514,11 +514,11 @@ namespace OhioVoter.Tests.Controllers
 
 
 
-        private static SideBar GetSideBarWithNullVoterLocation()
+        private static SideBarViewModel GetSideBarWithNullVoterLocation()
         {
-            return new SideBar()
+            return new SideBarViewModel()
             {
-                VoterLocation = new Location(),
+                VoterLocation = new LocationViewModel(),
                 PollingLocation = GetValidPollingLocation(),
                 CountyLocation = GetValidCountyLocation(),
                 StateLocation = GetValidStateLocation()
@@ -526,58 +526,58 @@ namespace OhioVoter.Tests.Controllers
         }
 
 
-        private static SideBar GetSideBarWithNullPollingLocation()
+        private static SideBarViewModel GetSideBarWithNullPollingLocation()
         {
-            return new SideBar()
+            return new SideBarViewModel()
             {
                 VoterLocation = GetValidVoterLocation(),
-                PollingLocation = new Location(),
+                PollingLocation = new LocationViewModel(),
                 CountyLocation = GetValidCountyLocation(),
                 StateLocation = GetValidStateLocation()
             };
         }
 
 
-        private static SideBar GetSideBarWithNullCountyLocation()
+        private static SideBarViewModel GetSideBarWithNullCountyLocation()
         {
-            return new SideBar()
+            return new SideBarViewModel()
             {
                 VoterLocation = GetValidVoterLocation(),
                 PollingLocation = GetValidPollingLocation(),
-                CountyLocation = new Location(),
+                CountyLocation = new LocationViewModel(),
                 StateLocation = GetValidStateLocation()
             };
         }
 
 
-        private static SideBar GetSideBarWithNullStateLocation()
+        private static SideBarViewModel GetSideBarWithNullStateLocation()
         {
-            return new SideBar()
+            return new SideBarViewModel()
             {
                 VoterLocation = GetValidVoterLocation(),
                 PollingLocation = GetValidPollingLocation(),
                 CountyLocation = GetValidCountyLocation(),
-                StateLocation = new Location()
+                StateLocation = new LocationViewModel()
             };
         }
 
 
-        private static SideBar GetSideBarWithAllNullLocations()
+        private static SideBarViewModel GetSideBarWithAllNullLocations()
         {
-            return new SideBar()
+            return new SideBarViewModel()
             {
-                VoterLocation = new Location(),
-                PollingLocation = new Location(),
-                CountyLocation = new Location(),
-                StateLocation = new Location()
+                VoterLocation = new LocationViewModel(),
+                PollingLocation = new LocationViewModel(),
+                CountyLocation = new LocationViewModel(),
+                StateLocation = new LocationViewModel()
             };
         }
 
 
 
-        private static Location GetValidVoterLocation()
+        private static LocationViewModel GetValidVoterLocation()
         {
-            return new Location()
+            return new LocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "9282 Gregg Drive",
@@ -589,9 +589,9 @@ namespace OhioVoter.Tests.Controllers
 
 
 
-        private static Location GetValidPollingLocation()
+        private static LocationViewModel GetValidPollingLocation()
         {
-            return new Location()
+            return new LocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "9113 CINCINNATI DAYTON RD",
@@ -603,9 +603,9 @@ namespace OhioVoter.Tests.Controllers
 
 
 
-        private static Location GetValidCountyLocation()
+        private static LocationViewModel GetValidCountyLocation()
         {
-            return new Location()
+            return new LocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "1802 Princeton Rd., Ste 600",
@@ -617,9 +617,9 @@ namespace OhioVoter.Tests.Controllers
 
 
 
-        private static Location GetValidStateLocation()
+        private static LocationViewModel GetValidStateLocation()
         {
-            return new Location()
+            return new LocationViewModel()
             {
                 Status = "Display",
                 StateAbbreviation = "OH"

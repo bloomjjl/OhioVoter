@@ -1,5 +1,8 @@
-﻿@model OhioVoter.ViewModels.SideBar
+﻿@model OhioVoter.ViewModels.Location.SideBarViewModel
 
+@{
+
+}
 <div class="panel panel-group panel-left panel-left-group">
 
     <div class="panel-title panel-left-title">
@@ -14,10 +17,13 @@
 
             <div class="panel-left-form-text">
 
-                @Html.ValidationSummary(true, Model.VoterLocation.Message, new { @class = "text-danger" })
-
                 <p> Enter an address to personalize your Ohio voting information. </p>
+
+                @*@Html.ValidationSummary(true, Model.Message, new { @class = "text-danger" })*@
+
                 <hr />
+
+                <p class="location-error-message"> @Model.VoterLocation.Message </p>
 
                 <div class="form-group">
                     @Html.LabelFor(x => x.VoterLocation.StreetAddress, htmlAttributes: new { @class = "control-label" })<br />

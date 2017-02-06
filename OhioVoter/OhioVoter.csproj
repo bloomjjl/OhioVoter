@@ -205,7 +205,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ElectionCandidate.cs" />
     <Compile Include="Models\ElectionDate.cs" />
+    <Compile Include="Models\ElectionOffice.cs" />
+    <Compile Include="Models\ElectionParty.cs" />
+    <Compile Include="Models\ElectionVotingDate.cs" />
+    <Compile Include="Models\ElectionVotingDateOfficeCandidate.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\OhioVoterDbContext.cs" />
@@ -216,15 +221,19 @@
     <Compile Include="Services\SessionExtensions.cs" />
     <Compile Include="Services\VoteSmartApiManagement.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\CandidatePageViewModel.cs" />
-    <Compile Include="ViewModels\Election\Calendar.cs" />
-    <Compile Include="ViewModels\Election\Poll.cs" />
+    <Compile Include="ViewModels\Candidate\CandidateViewModel.cs" />
+    <Compile Include="ViewModels\Candidate\CandidateSummary.cs" />
+    <Compile Include="ViewModels\Home\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\Home\PollViewModel.cs" />
     <Compile Include="ViewModels\Google\Address.cs" />
     <Compile Include="ViewModels\Google\CivicInfo.cs" />
-    <Compile Include="ViewModels\HomePageViewModel.cs" />
-    <Compile Include="ViewModels\RSS\Feed.cs" />
-    <Compile Include="ViewModels\SideBar.cs" />
+    <Compile Include="ViewModels\Home\HomeViewModel.cs" />
+    <Compile Include="ViewModels\Home\RssFeedViewModel.cs" />
+    <Compile Include="ViewModels\Location\SideBarViewModel.cs" />
+    <Compile Include="ViewModels\Rss\Feed.cs" />
     <Compile Include="ViewModels\VoteSmart\Candidate.cs" />
+    <Compile Include="ViewModels\VoteSmart\Elections.cs" />
+    <Compile Include="ViewModels\VoteSmart\GeneralInfo.cs" />
     <Compile Include="ViewModels\VoteSmart\Office.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +303,17 @@
     <Content Include="Views\Home\_RssFeeds.cshtml" />
     <Content Include="Views\Candidate\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutWithSideBar.cshtml" />
+    <Content Include="Views\Candidate\_Office.cshtml" />
+    <Content Include="Views\Candidate\_Political.cshtml" />
+    <Content Include="Views\Candidate\_Personal.cshtml" />
+    <Content Include="Views\Candidate\_Contact.cshtml" />
+    <Content Include="Views\Candidate\_Education.cshtml" />
+    <Content Include="Views\Candidate\_Professional.cshtml" />
+    <Content Include="Views\Candidate\_Caucus.cshtml" />
+    <Content Include="Views\Candidate\_Events.cshtml" />
+    <Content Include="Views\Candidate\_Religion.cshtml" />
+    <Content Include="Views\Candidate\_CandidateLookUp.cshtml" />
+    <Content Include="Views\Candidate\_CandidateSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
