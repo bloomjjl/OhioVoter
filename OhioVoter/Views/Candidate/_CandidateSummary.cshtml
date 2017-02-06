@@ -8,27 +8,30 @@
 
     <div class="panel-body panel-main-body">
 
-            <div id="candidate_election_list" class="form-group election-day">
-                <p>
-                    @Model.Candidate.CandidateName <br />
+        <div id="candidate1_summary" class="form-group candidate-information-group">
+            <img src="" alt="Candidate Name Image" width="300" /> <br />
+            @Model.Candidate.CandidateName <br />
+            @Model.Candidate.PartyName <br />
+            @Model.Candidate.CandidateOfficeName <br />
+            @Model.Candidate.OfficeHolderName
+        </div>
+        @{ if (Model.Candidate.RunningMateId > 0)
+            {
+                <div id="runningmate1_summary" class="form-group candidate-information-group">
+                    <img src="" alt="RunningMate Name Image" width="300" /> <br />
+                    @Model.Candidate.RunningMateName <br />
                     @Model.Candidate.PartyName <br />
-                    @Model.Candidate.OfficeHolderId
-                </p>
-            </div>
+                    @Model.Candidate.RunningMateOfficeName <br />
+                    @Model.Candidate.OfficeHolderName
+                </div>
+            }
+        }
 
-            <div>
-                @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @class = "btn btn-block panel-main-btn" })
+        <div>
+            @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @class = "btn btn-block panel-main-btn" })
 
-                @Html.ActionLink("Compare Second Candidate", "", "", new { candidateId = 0 }, new { @class = "btn btn-block panel-main-btn" })
-
-
-                @*
-    <button type="submit" class="btn btn-block panel-main-btn">
-        Display Candidate Information
-        <span class="glyphicon glyphicon-search"></span>
-    </button>
-                *@
-            </div>
+            @Html.ActionLink("Compare Second Candidate", "", "", new { candidateId = 0 }, new { @class = "btn btn-block panel-main-btn" })
+        </div>
 
     </div>
 
