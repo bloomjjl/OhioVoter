@@ -13,14 +13,14 @@ permissions:
        - file
 hooks:
    BeforeInstall:
-    - location: OhioVoter/scripts/install_dependencies
+    - location: Webscripts/install_dependencies
       timeout: 300
       runas: root
-    - location: OhioVoter/scripts/start_server
+    - location: Webscripts/start_server
       timeout: 300
       runas: root
    AfterInstall:
-    - location: OhioVoter/scripts/stop_server
+    - location: Webscripts/stop_server
       timeout: 300
       runas: root
       
