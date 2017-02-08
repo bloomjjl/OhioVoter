@@ -246,6 +246,33 @@ textarea {
     text-align: center;
 }
 
+#candidate_lookup_btn {
+    display: inline-block;
+    width: 40px;
+}
+
+#candidate_lookup_candidate {
+    display: inline-block;
+}
+
+#candidate_lookup_form {
+    text-align: center;
+}
+
+#candidate_summary {
+    text-align: center;
+}
+
+#candidate_summary_candidate, #candidate_summary_runningmate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_summary_candidate img, #candidate_summary_runningmate img {
+    margin-bottom: 10px;
+}
+
 footer {
     background-color: #006ddb;
     border-color: #006ddb;

@@ -14,6 +14,7 @@ namespace OhioVoter.Services
         private const string VoterLocationCity = "sessionVoterLocationCity";
         private const string VoterLocationState = "sessionVoterLocationState";
         private const string VoterLocationZipCode = "sessionVoterLocationZipCode";
+        private const string VoterLocationZipCodeSuffix = "sessionVoterLocationZipCodeSuffix";
         private const string VoterLocationFullAddress = "sessionVoterLocationFullAddress";
 
         private const string PollingLocationStatus = "sessionPollingLocationStatus";
@@ -22,6 +23,7 @@ namespace OhioVoter.Services
         private const string PollingLocationCity = "sessionPollingLocationCity";
         private const string PollingLocationState = "sessionPollingLocationState";
         private const string PollingLocationZipCode = "sessionPollingLocationZipCode";
+        private const string PollingLocationZipCodeSuffix = "sessionPollingLocationZipCodeSuffix";
         private const string PollingLocationFullAddress = "sessionPollingLocationFullAddress";
         private const string PollingLocationMap = "sessionPollingLocationMap";
 
@@ -31,6 +33,7 @@ namespace OhioVoter.Services
         private const string CountyLocationCity = "sessionCountyLocationCity";
         private const string CountyLocationState = "sessionCountyLocationState";
         private const string CountyLocationZipCode = "sessionCountyLocationZipCode";
+        private const string CountyLocationZipCodeSuffix = "sessionCountyLocationZipCodeSuffix";
         private const string CountyLocationFullAddress = "sessionCountyLocationFullAddress";
         private const string CountyLocationPhone = "sessionCountyLocationPhone";
         private const string CountyLocationEmail = "sessionCountyLocationEmail";
@@ -49,6 +52,7 @@ namespace OhioVoter.Services
             System.Web.HttpContext.Current.Session[VoterLocationCity] = CapitalizeAllLetters(voterLocation.City);
             System.Web.HttpContext.Current.Session[VoterLocationState] = CapitalizeAllLetters(voterLocation.StateAbbreviation);
             System.Web.HttpContext.Current.Session[VoterLocationZipCode] = voterLocation.ZipCode;
+            System.Web.HttpContext.Current.Session[VoterLocationZipCodeSuffix] = voterLocation.ZipCodeSuffix;
             System.Web.HttpContext.Current.Session[VoterLocationFullAddress] = voterLocation.FullAddress;
         }
 
@@ -66,6 +70,7 @@ namespace OhioVoter.Services
             System.Web.HttpContext.Current.Session[PollingLocationCity] = CapitalizeAllLetters(pollingLocation.City);
             System.Web.HttpContext.Current.Session[PollingLocationState] = CapitalizeAllLetters(pollingLocation.StateAbbreviation);
             System.Web.HttpContext.Current.Session[PollingLocationZipCode] = pollingLocation.ZipCode;
+            System.Web.HttpContext.Current.Session[PollingLocationZipCodeSuffix] = pollingLocation.ZipCodeSuffix;
             System.Web.HttpContext.Current.Session[PollingLocationFullAddress] = pollingLocation.FullAddress;
             System.Web.HttpContext.Current.Session[PollingLocationMap] = pollingLocation.GoogleLocationMapAPI;
         }
@@ -84,6 +89,7 @@ namespace OhioVoter.Services
             System.Web.HttpContext.Current.Session[CountyLocationCity] = CapitalizeAllLetters(countyLocation.City);
             System.Web.HttpContext.Current.Session[CountyLocationState] = CapitalizeAllLetters(countyLocation.StateAbbreviation);
             System.Web.HttpContext.Current.Session[CountyLocationZipCode] = countyLocation.ZipCode;
+            System.Web.HttpContext.Current.Session[CountyLocationZipCodeSuffix] = countyLocation.ZipCodeSuffix;
             System.Web.HttpContext.Current.Session[CountyLocationFullAddress] = countyLocation.FullAddress;
             System.Web.HttpContext.Current.Session[CountyLocationPhone] = countyLocation.Phone;
             System.Web.HttpContext.Current.Session[CountyLocationEmail] = countyLocation.Email;
@@ -131,7 +137,8 @@ namespace OhioVoter.Services
                 StreetAddress = System.Web.HttpContext.Current.Session[VoterLocationStreet] as String,
                 City = System.Web.HttpContext.Current.Session[VoterLocationCity] as String,
                 StateAbbreviation = System.Web.HttpContext.Current.Session[VoterLocationState] as String,
-                ZipCode = System.Web.HttpContext.Current.Session[VoterLocationZipCode] as String
+                ZipCode = System.Web.HttpContext.Current.Session[VoterLocationZipCode] as String,
+                ZipCodeSuffix = System.Web.HttpContext.Current.Session[VoterLocationZipCodeSuffix] as String
             };
 
             return voterLocation;
@@ -160,6 +167,7 @@ namespace OhioVoter.Services
                 City = System.Web.HttpContext.Current.Session[PollingLocationCity] as String,
                 StateAbbreviation = System.Web.HttpContext.Current.Session[PollingLocationState] as String,
                 ZipCode = System.Web.HttpContext.Current.Session[PollingLocationZipCode] as String,
+                ZipCodeSuffix = System.Web.HttpContext.Current.Session[PollingLocationZipCodeSuffix] as String,
                 GoogleLocationMapAPI = System.Web.HttpContext.Current.Session[PollingLocationMap] as String
             };
 
@@ -189,6 +197,7 @@ namespace OhioVoter.Services
                 City = System.Web.HttpContext.Current.Session[CountyLocationCity] as String,
                 StateAbbreviation = System.Web.HttpContext.Current.Session[CountyLocationState] as String,
                 ZipCode = System.Web.HttpContext.Current.Session[CountyLocationZipCode] as String,
+                ZipCodeSuffix = System.Web.HttpContext.Current.Session[CountyLocationZipCodeSuffix] as String,
                 Phone = System.Web.HttpContext.Current.Session[CountyLocationPhone] as String,
                 Email = System.Web.HttpContext.Current.Session[CountyLocationEmail] as String,
                 Website = System.Web.HttpContext.Current.Session[CountyLocationWebsite] as String

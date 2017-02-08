@@ -1,4 +1,4 @@
-﻿
+﻿@model OhioVoter.ViewModels.Candidate.CandidateViewModel
 
 <div class="panel panel-group panel-main panel-main-group">
 
@@ -7,7 +7,23 @@
     </div>
 
     <div class="panel-body panel-main-body">
-        <p> Information goes here... </p>
+
+        @{ if (Model.Candidate.CandidateLookUpId == Model.Candidate.CandidateId)
+            {
+                foreach (var line in @Model.Candidate.VoteSmartCandidateCongMembership)
+                {
+                    <p>@line</p>
+                }
+            }
+            else if (Model.Candidate.CandidateLookUpId == Model.Candidate.RunningMateId)
+            {
+                foreach (var line in @Model.Candidate.VoteSmartRunningMateCongMembership)
+                {
+                    <p>@line</p>
+                }
+            }
+        }
+
     </div>
 
 </div>

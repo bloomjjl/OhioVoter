@@ -20,6 +20,58 @@ namespace OhioVoter.Services
 
 
 
+
+        public Elections GetVoteSmartElectionInformationFromSuppliedVoteSmartElectionId(string electionId)
+        {// Tests Generated
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+                // http://xmltocsharp.azurewebsites.net/
+
+                string urlRequest = GetUrlRequestForElectionInformationForElectionId(electionId);
+                XmlDocument xmlDoc = MakeRequest(urlRequest);
+                Elections election = ProcessResponseForElectionList(xmlDoc);
+
+                return election;
+            }
+            catch (Exception e)
+            {// return empty object if bad information supplied
+                return new Elections();
+            }
+        }
+
+
+
+
+
+        /// <summary>
+        /// get list of candidates that are an exact match to the supplied candidate name
+        /// </summary>
+        /// <param name="candidateName"></param>
+        /// <returns></returns>
+        public CandidateBio GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(string voteSmartCandidateId)
+        {// Tests Generated
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+                // http://xmltocsharp.azurewebsites.net/
+
+                string urlRequest = GetUrlRequestForBiographyInformationForSpecifiedCandidate(voteSmartCandidateId);
+                XmlDocument xmlDoc = MakeRequest(urlRequest);
+                CandidateBio candidate = ProcessResponseForCandidateBio(xmlDoc);
+
+                return candidate;
+            }
+            catch (Exception e)
+            {// return empty object if bad information supplied
+                return new CandidateBio();
+            }
+        }
+
+
+
         /// <summary>
         /// get list of candidates that are an exact match to the supplied candidate name
         /// </summary>
@@ -147,6 +199,62 @@ namespace OhioVoter.Services
 
 
 
+        public CandidateBio ProcessResponseForCandidateBio(XmlDocument xmlDoc)
+        {
+            if (xmlDoc == null)
+                return new CandidateBio();
+
+            try
+            {
+                return new CandidateBio()
+                {
+                    CandidateId = ValidateDataForElementIsNotNull(xmlDoc, "candidateId"),
+                    CrpId = ValidateDataForElementIsNotNull(xmlDoc, "crpId"),
+                    Photo = ValidateDataForElementIsNotNull(xmlDoc, "photo"),
+                    FirstName = ValidateDataForElementIsNotNull(xmlDoc, "firstName"),
+                    NickName = ValidateDataForElementIsNotNull(xmlDoc, "nickName"),
+                    MiddleName = ValidateDataForElementIsNotNull(xmlDoc, "middleName"),
+                    PreferredName = ValidateDataForElementIsNotNull(xmlDoc, "preferredName"),
+                    LastName = ValidateDataForElementIsNotNull(xmlDoc, "lastName"),
+                    Suffix = ValidateDataForElementIsNotNull(xmlDoc, "suffix "),
+                    BirthDate = ValidateDataForElementIsNotNull(xmlDoc, "birthDate"),
+                    BirthPlace = ValidateDataForElementIsNotNull(xmlDoc, "birthPlace"),
+                    Pronunciation = ValidateDataForElementIsNotNull(xmlDoc, "pronunciation "),
+                    Gender = ValidateDataForElementIsNotNull(xmlDoc, "gender"),
+                    Family = ValidateDataForElementIsNotNull(xmlDoc, "family"),
+                    HomeCity = ValidateDataForElementIsNotNull(xmlDoc, "homeCity"),
+                    HomeState = ValidateDataForElementIsNotNull(xmlDoc, "homeState"),
+                    Education = ValidateDataForElementIsNotNull(xmlDoc, "education"),
+                    Profession = ValidateDataForElementIsNotNull(xmlDoc, "profession"),
+                    Political = ValidateDataForElementIsNotNull(xmlDoc, "political"),
+                    Religion = ValidateDataForElementIsNotNull(xmlDoc, "religion"),
+                    CongMembership = ValidateDataForElementIsNotNull(xmlDoc, "congMembership"),
+                    OrgMembership = ValidateDataForElementIsNotNull(xmlDoc, "orgMembership"),
+                    SpecialMsg = ValidateDataForElementIsNotNull(xmlDoc, "specialMsg"),
+                };
+            }
+            catch
+            {
+                return new CandidateBio();
+            }
+        }
+
+
+
+        public string ValidateDataForElementIsNotNull(XmlDocument xmlDoc, string tagName)
+        {
+            try
+            {
+                return xmlDoc.GetElementsByTagName(tagName)[0].ChildNodes[0].InnerText;
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+
+
         public Elections ProcessResponseForElectionList(XmlDocument xmlDoc)
         {
             if (xmlDoc == null)
@@ -173,7 +281,6 @@ namespace OhioVoter.Services
                 }
                 
             };
-
 
             return elections;
         }
@@ -311,6 +418,41 @@ namespace OhioVoter.Services
                                  andChar, "zip5=", zipCode,
                                  andChar, "zip4=", zipCodeSuffix);
         }
+
+
+
+        /// <summary>
+        ///     VoteSmart API Class: Election
+        ///     This method grabs district basic election data according to electionId
+        /// </summary>
+        /// <param name="electionId"></param>
+        /// <returns>
+        ///     elections.election*.electionId
+        ///     elections.election*.name
+        ///     elections.election*.stateId
+        ///     elections.election*.officeTypeId
+        ///     elections.election*.special
+        ///     elections.election*.electionYear
+        ///     elections.election*.stage*.stageId
+        ///     elections.election*.stage*.name
+        ///     elections.election*.stage*.stateId
+        ///     elections.election*.stage*.electionDate
+        ///     elections.election*.stage*.filingDeadline
+        ///     elections.election*.stage*.npatMailed
+        /// </returns>
+        public string GetUrlRequestForElectionInformationForElectionId(string electionId)
+        {
+            string api = "http://api.votesmart.org/";
+            string path = "Election.getElection?";
+            string key = _votesmartApiKey;
+            string andChar = "&";
+
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "electionId=", electionId);
+        }
+
+
 
 
 

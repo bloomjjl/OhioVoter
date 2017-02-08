@@ -96,7 +96,7 @@ namespace OhioVoter.Controllers
                 StateAbbreviation = "OH",
                 ZipCode = "43215",
                 ZipCodeSuffix = "3726",
-                Website = "http://www.sos.state.oh.us/elections.aspx"
+                Website = "http://www.sos.state.oh.us/"
             };
         }
 
@@ -342,59 +342,85 @@ namespace OhioVoter.Controllers
             return city == null || city == "" ? false : true;
         }
 
+
+
+        // **********************************************************
+
+
+
         public bool ValidateLocation(LocationViewModel location)
         {// Tests Generated
             // status 
             if(location.Status == "Update")
                 return false;
 
-            return location.Message == null || location.Message == "" ?
-                   true : false;
+            if (location.StreetAddress == null || location.City == null || location.StateAbbreviation == null || location.ZipCode == null)
+                return false;
+
+            if (location.Message == null || location.Message == "")
+                return true;
+
+            return false;
         }
+
+
+
+        // *********************************************************************
 
 
 
         public bool ValidateVoterLocation(LocationViewModel location)
         {// Tests Generated
-            // status 
-            return location.Status != null &&
-                   location.Status != "" &&
-                   location.Status == "Display" &&
-                   location.Message == "" ?
-                   true : false;
+            if (location.StateAbbreviation == null || location.StateAbbreviation == "" || location.Status != "Display")
+                return false;
+
+            if (location.Message == null || location.Message == "")
+                return true;
+
+            return false;
         }
 
 
 
         public bool ValidatePollingLocation(LocationViewModel location)
         {// Tests Generated
-            return location.Status != null &&
-                   location.Status != "" &&
-                   location.Status == "Display" &&
-                   location.Message == "" ?
-                   true : false;
+            if (location.StateAbbreviation == null || location.StateAbbreviation == "" || location.Status != "Display")
+                return false;
+
+            if (location.Message == null || location.Message == "")
+                return true;
+
+            return false;
         }
 
 
 
         public bool ValidateCountyLocation(LocationViewModel location)
         {// Tests Generated
-            return location.Status != null &&
-                   location.Status != "" &&
-                   location.Status == "Display" &&
-                   location.Message == "" ?
-                   true : false;
+            if (location.StateAbbreviation == null || location.StateAbbreviation == "" || location.Status != "Display")
+                return false;
+
+            if (location.Message == null || location.Message == "")
+                return true;
+
+            return false;
         }
 
 
         public bool ValidateStateLocation(LocationViewModel location)
         {// Tests Generated
-            return location.Status != null &&
-                   location.Status != "" &&
-                   location.Status == "Display" &&
-                   location.Message == "" ?
-                   true : false;
+            if (location.StateAbbreviation == null || location.StateAbbreviation == "" || location.Status != "Display")
+                return false;
+
+            if (location.Message == null || location.Message == "")
+                return true;
+
+            return false;
         }
+
+
+
+        // ******************************************************************************
 
 
 

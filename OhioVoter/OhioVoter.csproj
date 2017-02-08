@@ -233,6 +233,7 @@
     <Compile Include="ViewModels\Location\SideBarViewModel.cs" />
     <Compile Include="ViewModels\Rss\Feed.cs" />
     <Compile Include="ViewModels\VoteSmart\Candidate.cs" />
+    <Compile Include="ViewModels\VoteSmart\CandidateBio.cs" />
     <Compile Include="ViewModels\VoteSmart\Elections.cs" />
     <Compile Include="ViewModels\VoteSmart\GeneralInfo.cs" />
     <Compile Include="ViewModels\VoteSmart\Office.cs" />
@@ -240,6 +241,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\image_female.png" />
+    <Content Include="Content\images\image_male.png" />
     <Content Include="Content\images\logo_ohiovoter.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -251,7 +254,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\images\2017_OhioElectionCalendar.pdf" />
-    <Content Include="Scripts\install_dependencies" />
+    <None Include="Properties\PublishProfiles\OhioVoterWebsite.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -315,9 +318,10 @@
     <Content Include="Views\Candidate\_Events.cshtml" />
     <Content Include="Views\Candidate\_Religion.cshtml" />
     <Content Include="Views\Candidate\_CandidateLookUp.cshtml" />
-    <Content Include="Views\Candidate\_CandidateSummary.cshtml" />
-    <Content Include="Scripts\start_server" />
-    <Content Include="Scripts\stop_server" />
+    <Content Include="Views\Candidate\_Summary.cshtml" />
+    <Content Include="Views\Candidate\_CandidateDisplay.cshtml" />
+    <Content Include="Views\Candidate\_CompareLookUp.cshtml" />
+    <Content Include="Views\Candidate\_CompareDisplay.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

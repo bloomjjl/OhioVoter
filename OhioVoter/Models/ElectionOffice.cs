@@ -13,7 +13,7 @@ namespace OhioVoter.Models
         public int ElectionOfficeId { get; set; }
 
         [Required]
-        public int VoteSmartOfficeId { get; set; }
+        public string VoteSmartOfficeId { get; set; }
 
         [Required]
         public string OfficeName { get; set; }

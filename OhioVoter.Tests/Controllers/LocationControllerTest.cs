@@ -93,8 +93,9 @@ namespace OhioVoter.Tests.Controllers
             Assert.AreEqual("180 E. BROAD ST., 15TH FLOOR", result.StreetAddress);
             Assert.AreEqual("COLUMBUS", result.City);
             Assert.AreEqual("OH", result.StateAbbreviation);
-            Assert.AreEqual("43215-3726", result.ZipCode);
-            Assert.AreEqual("http://www.sos.state.oh.us/elections.aspx", result.Website);
+            Assert.AreEqual("43215", result.ZipCode);
+            Assert.AreEqual("3726", result.ZipCodeSuffix);
+            Assert.AreEqual("http://www.sos.state.oh.us/", result.Website);
         }
 
 
@@ -622,7 +623,11 @@ namespace OhioVoter.Tests.Controllers
             return new LocationViewModel()
             {
                 Status = "Display",
-                StateAbbreviation = "OH"
+                LocationName = "OHIO SECRETARY OF STATE",
+                StreetAddress = "180 E. BROAD ST., 15TH FLOOR",
+                City = "COLUMBUS",
+                StateAbbreviation = "OH",
+                ZipCode = "43215",
             };
         }
 

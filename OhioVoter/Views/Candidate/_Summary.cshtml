@@ -3,13 +3,13 @@
 <div class="panel panel-group panel-main panel-main-group">
 
     <div class="panel-title panel-main-title">
-        <p>Candidate Lookup</p>
+        <p>Candidate Summary</p>
     </div>
 
-    <div class="panel-body panel-main-body">
+    <div id="candidate_summary" class="panel-body panel-main-body">
 
-        <div id="candidate1_summary" class="form-group candidate-information-group">
-            <img src="" alt="Candidate Name Image" width="300" /> <br />
+        <div id="candidate_summary_candidate" class="form-group candidate-information-group">
+            <img src="@Url.Content( Model.Candidate.VoteSmartCandidatePhotoUrl )" alt="Candidate" width="80" runat="server" /> <br />
             @Model.Candidate.CandidateName <br />
             @Model.Candidate.PartyName <br />
             @Model.Candidate.CandidateOfficeName <br />
@@ -17,8 +17,8 @@
         </div>
         @{ if (Model.Candidate.RunningMateId > 0)
             {
-                <div id="runningmate1_summary" class="form-group candidate-information-group">
-                    <img src="" alt="RunningMate Name Image" width="300" /> <br />
+                <div id="candidate_summary_runningmate" class="form-group candidate-information-group">
+                    <img src="@Model.Candidate.VoteSmartRunningMatePhotoUrl" alt="Running Mate" width="80" runat="server" /> <br />
                     @Model.Candidate.RunningMateName <br />
                     @Model.Candidate.PartyName <br />
                     @Model.Candidate.RunningMateOfficeName <br />
@@ -36,7 +36,4 @@
     </div>
 
 </div>
-
-
-
 

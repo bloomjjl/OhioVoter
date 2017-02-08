@@ -6,24 +6,23 @@
         <p>Candidate Lookup</p>
     </div>
 
-    <div class="panel-body panel-main-body">
+    <div id="candidate_lookup_form" class="panel-body panel-main-body">
 
         @using (Html.BeginForm("Name", "Candidate", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
-            <div id="candidate_election_date" class="form-group election-day">
+            <div id="candidate_lookup_date" class="form-group">
                 <p>Election Date: @Model.ElectionDate.Date.ToShortDateString()</p>
             </div>
 
-            <div id="candidate_Election_list" class="form-group election-day">
+            <div id="candidate_lookup_candidate" class="form-group">
                 @Html.LabelFor(x => x.CandidateDropDownList.SelectedCandidateId, htmlAttributes: new { @class = "control-label" })
-                @Html.DropDownListFor(x => x.CandidateDropDownList.SelectedCandidateId,
-                                      Model.CandidateDropDownList.CandidateNames,
-                                      "--Select--",
-                                      new { @class = "form-control", @onchange = "$(this.form).submit();", @id = "candidate_lookup_list" })
+                @Html.DropDownListFor(x => x.CandidateDropDownList.SelectedCandidateId, Model.CandidateDropDownList.CandidateNames, "--Select--", new { @class = "form-control" })
                 @Html.ValidationMessageFor(x => x.CandidateDropDownList.SelectedCandidateId, "", new { @class = "text-danger" })
             </div>
+
+            <button id="candidate_lookup_btn" type="submit" class="btn btn-block panel-left-btn"> <span class="glyphicon glyphicon-search"></span> </button>
         }
 
     </div>

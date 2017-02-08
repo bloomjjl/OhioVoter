@@ -25,44 +25,8 @@
         </div>
 
 
-        <div id="candidate-display" class="candidate-group">
-            @{Html.RenderAction("DisplayCandidateDisplayView", "Candidate", Model);}
-        </div>
-
-        <div id="candidate-office" class="candidate-group">
-            @{Html.RenderAction("DisplayCandidateOfficeView", "Candidate", Model);}
-        </div>
-
-        <div id="candidate-political" class="candidate-group">
-            @{Html.RenderPartial("_Political");}
-        </div>
-
-        <div id="candidate-caucus" class="candidate-group">
-            @{Html.RenderPartial("_Caucus");}
-        </div>
-
-        <div id="candidate-professional" class="candidate-group">
-            @{Html.RenderPartial("_Professional");}
-        </div>
-
-        <div id="candidate-education" class="candidate-group">
-            @{Html.RenderPartial("_Education");}
-        </div>
-
-        <div id="candidate-personal" class="candidate-group">
-            @{Html.RenderPartial("_Personal");}
-        </div>
-
-        <div id="candidate-contact" class="candidate-group">
-            @{Html.RenderPartial("_Contact");}
-        </div>
-
-        <div id="candidate-religion" class="candidate-group">
-            @{Html.RenderPartial("_Religion");}
-        </div>
-
-        <div id="candidate-event" class="candidate-group">
-            @{Html.RenderPartial("_Events");}
+        <div id="candidate-display" class="candidate-Information">
+            @{Html.RenderAction("DisplayCandidateInformation", "Candidate", Model);}
         </div>
 
     </div>

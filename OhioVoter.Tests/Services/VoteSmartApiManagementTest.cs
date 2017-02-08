@@ -16,6 +16,30 @@ namespace OhioVoter.Tests.Services
         private static string _votesmartApiKey = "1c5073e4c73532c7d2daf51651023d8f";
 
 
+
+        // ***********************************************************************************
+        // Test_GetVoteSmartElectionInformationFromSuppliedVoteSmartElectionId_ValidIdProvided
+        // ***********************************************************************************
+
+
+
+        [TestMethod]
+        public void Test_GetVoteSmartElectionInformationFromSuppliedVoteSmartElectionId_ValidIdProvided()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string electionId = "1";
+
+            // Act
+            Elections result = service.GetVoteSmartElectionInformationFromSuppliedVoteSmartElectionId(electionId);
+
+            // Assert
+            Assert.AreNotEqual(0, result.Election.Count);
+            Assert.AreEqual("OH", result.Election[0].StateId);
+        }
+
+
+
         // *********************************************************
         // GetVoteSmartElectionInformationFromSuppliedZipCodeAndYear
         // *********************************************************
@@ -27,8 +51,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             VoteSmartApiManagement service = new VoteSmartApiManagement();
-            string zipCode = "45069";
-            string zipCodeSuffix = "3915";
+            string zipCode = "45224";
+            string zipCodeSuffix = "2636";
             int year = 2016;
 
             // Act
@@ -37,6 +61,100 @@ namespace OhioVoter.Tests.Services
             // Assert
             Assert.AreNotEqual(0, result.Election.Count);
             Assert.AreEqual("OH", result.Election[0].StateId);
+        }
+
+
+
+        // **************************************************************************
+        // Test_GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId_ValidId
+        // **************************************************************************
+
+
+
+        [TestMethod]
+        public void Test_GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId_ValidId()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string voteSmartCandidateId = "55463"; // Hillary Clinton
+
+            // Act
+            CandidateBio result = service.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(voteSmartCandidateId);
+
+            // Assert
+            Assert.AreEqual("55463", result.CandidateId);
+            Assert.AreEqual("N00000019", result.CrpId);
+            Assert.AreEqual("http://static.votesmart.org/canphoto/55463.jpg", result.Photo);
+            Assert.AreEqual("Hillary", result.FirstName);
+            Assert.AreEqual("", result.NickName);
+            Assert.AreEqual("Rodham", result.MiddleName);
+            Assert.AreEqual("Hillary", result.PreferredName);
+            Assert.AreEqual("Clinton", result.LastName);
+            Assert.AreEqual("", result.Suffix);
+            Assert.AreEqual("10/26/1947", result.BirthDate);
+            Assert.AreEqual("Chicago, IL", result.BirthPlace);
+            Assert.AreEqual("", result.Pronunciation);
+            Assert.AreEqual("Female", result.Gender);
+            Assert.AreEqual("Husband: Bill; 1 Child: Chelsea", result.Family);
+            Assert.AreEqual("Chappaqua", result.HomeCity);
+            Assert.AreEqual("NY", result.HomeState);
+            Assert.AreEqual("JD, Yale University, 1973" + Environment.NewLine +
+                            "BA, Wellesley College, 1969",
+                            result.Education);
+            Assert.AreEqual("Attorney, Rose Law Firm, 1976-1992" + Environment.NewLine +
+                            "Assistant Professor, University of Arkansas Law School, 1975" + Environment.NewLine +
+                            "Author" + Environment.NewLine +
+                            "Former Staff Attorney, Children's Defense Fund" + Environment.NewLine +
+                            "Former Board Member, Wal-Mart",
+                            result.Profession);
+            Assert.AreEqual("Candidate, United States President, 2016\r" +
+                            "United States Secretary of State, 2009-2013" + Environment.NewLine +
+                            "Sworn In, United States Secretary of State, January 21, 2009" + Environment.NewLine +
+                            "Senator, United States Senate, 2001-2009" + Environment.NewLine +
+                            "Candidate, United States President, 2008" + Environment.NewLine +
+                            "First Lady, President Bill Clinton, 1992-2000" + Environment.NewLine +
+                            "First Lady, State of Arkansas, 1978-1980, 1982-1992" + Environment.NewLine +
+                            "Member, Democratic Policy Committee",
+                            result.Political);
+            Assert.AreEqual("Methodist", result.Religion);
+            Assert.AreEqual("Appointed, Board, Legal Services Corporation, 1977" + Environment.NewLine +
+                            "Former Chair, Arkansas Educational Standards Committee" + Environment.NewLine +
+                            "Former Commissioner, Commission on Security and Cooperation in Europe " + Environment.NewLine +
+                            "Former Co-Chair, Congressional E-911 Caucus" + Environment.NewLine +
+                            "Former Member, Democratic Technology and Communications Committee" + Environment.NewLine +
+                            "Former Board Member, Legal Services Corporation" + Environment.NewLine +
+                            "Former Chair, Legal Services Corporation" + Environment.NewLine +
+                            "Former Member, Senate National Guard Caucus" + Environment.NewLine +
+                            "Former Member, Senate Rural Health Caucus" + Environment.NewLine +
+                            "Former Member, Senate Steel Caucus" + Environment.NewLine +
+                            "Former Chair, Steering and Coordination Committee" + Environment.NewLine +
+                            "Former Chair, Task Force of National Health Care Reform",
+                            result.CongMembership);
+            Assert.AreEqual("Member, American Bar Association's Commission on Women in the Profession" + Environment.NewLine +
+                            "Co-Founder, Arkansas Advocates for Children and Families" + Environment.NewLine +
+                            "Former Board Member, Arkansas Children's Hospital" + Environment.NewLine +
+                            "Former Board Member, Children's Defense Fund" + Environment.NewLine +
+                            "Board Member, The Country's Best Yogurt Company" + Environment.NewLine +
+                            "Founder, Vital Voices",
+                            result.OrgMembership);
+            Assert.AreEqual("", result.SpecialMsg);
+        }
+
+
+
+        [TestMethod]
+        public void Test_GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId_InvalidId()
+        {
+            // Arrange
+            VoteSmartApiManagement service = new VoteSmartApiManagement();
+            string voteSmartCandidateId = "-1"; // Hillary Clinton
+
+            // Act
+            CandidateBio result = service.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(voteSmartCandidateId);
+
+            // Assert
+            Assert.AreEqual("", result.FirstName);
+            Assert.AreEqual("", result.LastName);
         }
 
 

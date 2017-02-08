@@ -21,7 +21,9 @@ namespace OhioVoter.ViewModels.Candidate
         public string OfficeHolderName { get; set; }
 
         public int CandidateId { get; set; }
-        public int VoteSmartCandidateId { get; set; }
+        public string VoteSmartCandidateId { get; set; }
+        public string OpenSecretsCandidateId { get; set; }
+        public string VoteSmartCandidatePhotoUrl { get; set; }
         public string CandidateFirstName { get; set; }
         public string CandidateMiddleName { get; set; }
         public string CandidateLastName { get; set; }
@@ -35,12 +37,32 @@ namespace OhioVoter.ViewModels.Candidate
         }
 
         public int CandidateOfficeId { get; set; }
-        public int VoteSmartCandidateOfficeId { get; set; }
+        public string VoteSmartCandidateOfficeId { get; set; }
         public string CandidateOfficeName { get; set; }
         public string CandidateOfficeTerm { get; set; }
 
+        public string VoteSmartCandidateNickName { get; set; }
+        public string VoteSmartCandidateMiddleName { get; set; }
+        public string VoteSmartCandidatePreferredName { get; set; }
+        public string VoteSmartCandidateBirthDate { get; set; }
+        public string VoteSmartCandidateBirthPlace { get; set; }
+        public string VoteSmartCandidatePronunciation { get; set; }
+        public string VoteSmartCandidateGender { get; set; }
+        public IEnumerable<string> VoteSmartCandidateFamily { get; set; }
+        public string VoteSmartCandidateHomeCity { get; set; }
+        public string VoteSmartCandidateHomeState { get; set; }
+        public IEnumerable<string> VoteSmartCandidateEducation { get; set; }
+        public IEnumerable<string> VoteSmartCandidateProfession { get; set; }
+        public IEnumerable<string> VoteSmartCandidatePolitical { get; set; }
+        public string VoteSmartCandidateReligion { get; set; }
+        public IEnumerable<string> VoteSmartCandidateCongMembership { get; set; }
+        public IEnumerable<string> VoteSmartCandidateOrgMembership { get; set; }
+        public IEnumerable<string> VoteSmartCandidateSpecialMsg { get; set; }
+
         public int RunningMateId { get; set; }
-        public int VoteSmartRunningMateId { get; set; }
+        public string VoteSmartRunningMateId { get; set; }
+        public string OpenSecretsRunningMateId { get; set; }
+        public string VoteSmartRunningMatePhotoUrl { get; set; }
         public string RunningMateFirstName { get; set; }
         public string RunningMateMiddleName { get; set; }
         public string RunningMateLastName { get; set; }
@@ -54,9 +76,27 @@ namespace OhioVoter.ViewModels.Candidate
         }
 
         public int RunningMateOfficeId { get; set; }
-        public int VoteSmartRunningMateOfficeId { get; set; }
+        public string VoteSmartRunningMateOfficeId { get; set; }
         public string RunningMateOfficeName { get; set; }
         public string RunningMateOfficeTerm { get; set; }
+
+        public string VoteSmartRunningMateNickName { get; set; }
+        public string VoteSmartRunningMateMiddleName { get; set; }
+        public string VoteSmartRunningMatePreferredName { get; set; }
+        public string VoteSmartRunningMateBirthDate { get; set; }
+        public string VoteSmartRunningMateBirthPlace { get; set; }
+        public string VoteSmartRunningMatePronunciation { get; set; }
+        public string VoteSmartRunningMateGender { get; set; }
+        public IEnumerable<string> VoteSmartRunningMateFamily { get; set; }
+        public string VoteSmartRunningMateHomeCity { get; set; }
+        public string VoteSmartRunningMateHomeState { get; set; }
+        public IEnumerable<string> VoteSmartRunningMateEducation { get; set; }
+        public IEnumerable<string> VoteSmartRunningMateProfession { get; set; }
+        public IEnumerable<string> VoteSmartRunningMatePolitical { get; set; }
+        public string VoteSmartRunningMateReligion { get; set; }
+        public IEnumerable<string> VoteSmartRunningMateCongMembership { get; set; }
+        public IEnumerable<string> VoteSmartRunningMateOrgMembership { get; set; }
+        public IEnumerable<string> VoteSmartRunningMateSpecialMsg { get; set; }
 
     }
 

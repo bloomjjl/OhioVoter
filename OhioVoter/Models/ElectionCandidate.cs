@@ -13,7 +13,7 @@ namespace OhioVoter.Models
         public int ElectionCandidateId { get; set; }
 
         [Required]
-        public int VoteSmartCandidateId { get; set; }
+        public string VoteSmartCandidateId { get; set; }
 
         [Required]
         [Display(Name = "First Name")]

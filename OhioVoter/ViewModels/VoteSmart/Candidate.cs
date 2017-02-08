@@ -6,24 +6,23 @@ using System.Xml.Serialization;
 
 namespace OhioVoter.ViewModels.VoteSmart
 {
-/*    public class RootObject
-    {
-        public string version { get; set; }
-        public string encoding { get; set; }
-        public List<CandidateList> candidateList { get; set; }
-    }
-*/
-
     [XmlRoot(ElementName = "candidateList")]
     public class CandidateList
     {
         [XmlElement(ElementName = "generalInfo")]
-        public GeneralInfo GeneralInfo { get; set; }
+        public GeneralInfoCandidate GeneralInfo { get; set; }
         [XmlElement(ElementName = "candidate")]
         public List<Candidate> Candidate { get; set; }
     }
 
-
+    [XmlRoot(ElementName = "generalInfo")]
+    public class GeneralInfoCandidate
+    {
+        [XmlElement(ElementName = "title")]
+        public string Title { get; set; }
+        [XmlElement(ElementName = "linkBack")]
+        public string LinkBack { get; set; }
+    }
 
     [XmlRoot(ElementName="candidate")]
     public class Candidate
