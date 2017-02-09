@@ -19,10 +19,13 @@ namespace OhioVoter.Controllers
             if (candidateId == null || candidateId < 0)
                 candidateId = 0;
 
+            string controllerName = "Candidate";
+            UpdateSessionWithNewControllerNameForSideBar(controllerName);
+
             CandidateViewModel viewModel = new CandidateViewModel()
             {
+                ControllerName = controllerName,
                 Candidate = GetCandidateSummaryViewModel((int)candidateId),
-                SideBarViewModel = GetSideBarViewModel(),
                 ElectionDate = GetFirstActiveElectionDate(),
                 CandidateDropDownList = GetCandidateDropDownListViewModel(),
                 // Office
@@ -50,12 +53,12 @@ namespace OhioVoter.Controllers
 
 
 
-        private ViewModels.Location.SideBarViewModel GetSideBarViewModel()
+        private void UpdateSessionWithNewControllerNameForSideBar(string controllerName)
         {
-            LocationController location = new LocationController();
-            return location.GetSideBarViewModel("Candidate");
+            SessionExtensions session = new SessionExtensions();
+            session.UpdateVoterLocationWithNewControllerName(controllerName);
         }
-
+        
 
 
         private CandidateDropDownList GetCandidateDropDownListViewModel()

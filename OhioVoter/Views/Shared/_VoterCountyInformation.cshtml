@@ -1,0 +1,16 @@
+﻿@model OhioVoter.ViewModels.Location.CountyLocationViewModel
+
+@{
+    if (Model.City != null && Model.City != "")
+    {
+        <div id="voter-county-information" class="panel-body panel-left-body">
+            <b>County Board of Elections:</b><br />
+            @Model.LocationName <br />
+            @Model.StreetAddress <br />
+            @Model.City, @Model.StateName @Model.ZipCode <br />
+            Phone: @Model.Phone <br />
+            <a href="@Model.Website" target="_blank"> @Model.Website </a> <br />
+        </div>
+    }
+}
+

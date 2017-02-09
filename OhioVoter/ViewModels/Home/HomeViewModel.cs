@@ -8,7 +8,7 @@ namespace OhioVoter.ViewModels.Home
 {
     public class HomeViewModel
     {
-        public Location.SideBarViewModel SideBarViewModel { get; set; }
+        public string ControllerName { get; set; }
         public CalendarViewModel Calendar { get; set; }
         public PollViewModel Poll { get; set; }
         public RssFeeds RssFeeds { get; set; }

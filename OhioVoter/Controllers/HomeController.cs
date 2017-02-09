@@ -21,9 +21,12 @@ namespace OhioVoter.Controllers
         {
             LocationController location = new LocationController();
 
+            string controllerName = "Home";
+            UpdateSessionWithNewControllerNameForSideBar(controllerName);
+
             HomeViewModel viewModel = new HomeViewModel()
             {
-                SideBarViewModel = location.GetSideBarViewModel("Home"),
+                ControllerName = controllerName,
                 Calendar = GetCalendarViewModel(),
                 Poll = GetPollResultsViewModel(),
                 RssFeeds = GetRssFeedViewModel()
@@ -32,6 +35,14 @@ namespace OhioVoter.Controllers
             return View(viewModel);
         }
 
+
+
+
+        private void UpdateSessionWithNewControllerNameForSideBar(string controllerName)
+        {
+            SessionExtensions session = new SessionExtensions();
+            session.UpdateVoterLocationWithNewControllerName(controllerName);
+        }
 
 
 

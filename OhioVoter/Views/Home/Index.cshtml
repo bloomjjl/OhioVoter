@@ -3,21 +3,12 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Home Page";
-
 }
 
 <div class="row">
 
     <div id="side-bar" class="col-sm-4">
-
-        <div id="voter-location">
-            @{Html.RenderAction("DisplayVoterLocationSideBar", "Location", Model.SideBarViewModel);}
-        </div>
-
-        <div id="voter-general-information">
-            @{Html.RenderAction("DisplayGeneralLocationSideBar", "Location", Model.SideBarViewModel);}
-        </div>
-
+        @{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName);}
     </div>
 
     <div class="col-sm-8">

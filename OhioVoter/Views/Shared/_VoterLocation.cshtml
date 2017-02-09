@@ -1,51 +1,17 @@
-﻿@model OhioVoter.ViewModels.Location.SideBarViewModel
+﻿@model OhioVoter.ViewModels.Location.VoterLocationViewModel
 
-<div class="panel panel-group panel-left panel-left-group">
+<div id="voter-address" class="panel-body panel-left-body">
 
-    <div class="panel-title panel-left-title">
-        <p>Your Location</p>
-    </div>
+    <b>Voter Location:</b><br />
+    @Model.StreetAddress <br />
+    @Model.City, @Model.StateAbbreviation @Model.ZipCode
 
-    <div class="panel-body panel-left-body">
+    @Html.HiddenFor(x => x.StreetAddress)
+    @Html.HiddenFor(x => x.City)
+    @Html.HiddenFor(x => x.StateAbbreviation)
+    @Html.HiddenFor(x => x.ZipCode)
 
-        <div id="voter-address">
-
-            <b>Voter Location:</b><br />
-            @Model.VoterLocation.StreetAddress <br />
-            @Model.VoterLocation.City, @Model.VoterLocation.StateAbbreviation @Model.VoterLocation.ZipCode
-
-            @Html.HiddenFor(x => x.VoterLocation.StreetAddress)
-            @Html.HiddenFor(x => x.VoterLocation.City)
-            @Html.HiddenFor(x => x.VoterLocation.StateAbbreviation)
-            @Html.HiddenFor(x => x.VoterLocation.ZipCode)
-
-            @*<button id="btn-show-voter-location-form" type="button" class="btn btn-block panel-left-btn" onclick="ShowVoterLocationForm();"> Update Your Location </button>*@
-            @Html.ActionLink("Update Your Location", "Update", "Location", new { controllerName=Model.ControllerName }, new { @class="btn btn-block panel-left-btn"} )
-
-        </div>
-
-        <div id="polling-location">
-
-            <b>Local Polling Location:</b><br />
-            @Model.PollingLocation.LocationName<br />
-            @Model.PollingLocation.StreetAddress<br />
-            @Model.PollingLocation.City, @Model.PollingLocation.StateAbbreviation @Model.PollingLocation.ZipCode
-
-            <div id="results"></div>
-
-            <div id="voter-map" style="display:none">
-                <a href="https://www.google.com/maps/dir/ @Model.VoterLocation.FullAddress.ToString() / @Model.PollingLocation.FullAddress.ToString()" target="_blank">
-                    <img src="@Html.DisplayTextFor(x => x.PollingLocation.GoogleLocationMapAPI)" alt="Voter Map" />
-                </a>
-            </div>
-
-            <button type="button" id="show-voter-map" class="btn btn-block panel-left-btn"> View Map </button>
-            <button type="button" id="hide-voter-map" class="btn btn-block panel-left-btn" style="display:none"> Hide Map </button>
-
-        </div>
-
-    </div>
+    @*<button id="btn-show-voter-location-form" type="button" class="btn btn-block panel-left-btn" onclick="ShowVoterLocationForm();"> Update Your Location </button>*@
+    @Html.ActionLink("Update Your Location", "Update", "Location", new { controllerName = Model.ControllerName }, new { @class = "btn btn-block panel-left-btn" })
 
 </div>
-
-

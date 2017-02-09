@@ -7,15 +7,7 @@
 <div class="row">
 
     <div id="side-bar" class="col-sm-4">
-
-        <div id="voter-location">
-            @{Html.RenderAction("DisplayVoterLocationSideBar", "Location", Model.SideBarViewModel);}
-        </div>
-
-        <div id="voter-general-information">
-            @{Html.RenderAction("DisplayGeneralLocationSideBar", "Location", Model.SideBarViewModel);}
-        </div>
-
+            @{Html.RenderAction("DisplaySideBar","Location", Model.ControllerName as string);}
     </div>
 
     <div class="col-sm-8">
@@ -23,7 +15,6 @@
         <div class="panel-page-group">
             <h2><p class="panel-page-title"> Candidate Knowledge Center </p></h2>
         </div>
-
 
         <div id="candidate-display" class="candidate-Information">
             @{Html.RenderAction("DisplayCandidateInformation", "Candidate", Model);}

@@ -1,0 +1,31 @@
+﻿@model OhioVoter.ViewModels.Location.SideBarViewModel
+
+@{
+    ViewBag.Title = "SideBar";
+}
+
+<div class="panel panel-group panel-left panel-left-group">
+
+    <div class="panel-title panel-left-title">
+        <p>Your Location</p>
+    </div>
+
+    <div id="voter-location" class="panel-body panel-left-body">
+        @{Html.RenderAction("DisplayVoterLocationSideBar", "Location", Model);}
+        @{Html.RenderAction("DisplayPollingLocationSideBar", "Location", Model);}
+    </div>
+
+</div>
+
+<div class="panel panel-group panel-left panel-left-group">
+
+    <div class="panel-title panel-left-title">
+        <p>General Information</p>
+    </div>
+
+    <div id="voter-general-information" class="panel-body panel-left-body">
+        @{Html.RenderAction("DisplayStateLocationSideBar", "Location", Model);}
+        @{Html.RenderAction("DisplayCountyLocationSideBar", "Location", Model);}
+    </div>
+
+</div>

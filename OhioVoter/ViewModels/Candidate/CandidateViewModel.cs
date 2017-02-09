@@ -11,7 +11,7 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateViewModel
     {
-        public Location.SideBarViewModel SideBarViewModel { get; set; }
+        public string ControllerName { get; set; }
         public ElectionDateDropDownList ElectionDateDropDownList { get; set; }
         public OfficeDropDownList OfficeDropDownList { get; set; }
         public CandidateDropDownList CandidateDropDownList{ get; set; }

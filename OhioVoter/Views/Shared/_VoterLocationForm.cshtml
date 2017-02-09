@@ -1,49 +1,37 @@
-﻿@model OhioVoter.ViewModels.Location.SideBarViewModel
+﻿@model OhioVoter.ViewModels.Location.VoterLocationViewModel
 
-@{
+<div id="polling-location" class="panel-body panel-left-body">
 
-}
-<div class="panel panel-group panel-left panel-left-group">
+    @using (Html.BeginForm("Update", "Location", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
 
-    <div class="panel-title panel-left-title">
-        <p>Your Location</p>
-    </div>
+        <div class="panel-left-form-text">
 
-    <div class="panel-body panel-left-body">
+            <p> Enter an address to personalize your Ohio voting information. </p>
 
-        @using (Html.BeginForm("Update", "Location", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
+            <hr />
 
-            <div class="panel-left-form-text">
+            @Html.ValidationSummary(true, Model.Message, new { @class = "text-danger" })
 
-                <p> Enter an address to personalize your Ohio voting information. </p>
+            <p class="location-error-message"> @Model.Message </p>
 
-                @*@Html.ValidationSummary(true, Model.Message, new { @class = "text-danger" })*@
-
-                <hr />
-
-                <p class="location-error-message"> @Model.VoterLocation.Message </p>
-
-                <div class="form-group">
-                    @Html.LabelFor(x => x.VoterLocation.StreetAddress, htmlAttributes: new { @class = "control-label" })<br />
-                    @Html.EditorFor(x => x.VoterLocation.StreetAddress, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(x => x.VoterLocation.StreetAddress, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(x => x.VoterLocation.ZipCode, htmlAttributes: new { @class = "control-label" }) <br />
-                    @Html.EditorFor(x => x.VoterLocation.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(x => x.VoterLocation.ZipCode, "", new { @class = "text-danger" })
-                </div>
-
-                @Html.HiddenFor(x => x.ControllerName)
-
-                <button type="submit" class="btn btn-block panel-left-btn"> Update Your Location </button>
-
+            <div class="form-group">
+                @Html.LabelFor(x => x.StreetAddress, htmlAttributes: new { @class = "control-label" })<br />
+                @Html.EditorFor(x => x.StreetAddress, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.StreetAddress, "", new { @class = "text-danger" })
             </div>
-        }
 
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(x => x.ZipCode, htmlAttributes: new { @class = "control-label" }) <br />
+                @Html.EditorFor(x => x.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(x => x.ZipCode, "", new { @class = "text-danger" })
+            </div>
+
+            @Html.HiddenFor(x => x.ControllerName)
+            <button type="submit" class="btn btn-block panel-left-btn"> Update Your Location </button>
+
+        </div>
+    }
 
 </div>

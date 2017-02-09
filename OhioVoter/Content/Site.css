@@ -257,20 +257,49 @@ textarea {
 
 #candidate_lookup_form {
     text-align: center;
+    display: block;
 }
 
-#candidate_summary {
+#candidate_summary_group {
     text-align: center;
 }
 
-#candidate_summary_candidate, #candidate_summary_runningmate {
+#candidate_summary {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
 }
 
-#candidate_summary_candidate img, #candidate_summary_runningmate img {
+#runningmate_summary {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_summary_img {
+    width: 90px;
     margin-bottom: 10px;
+}
+
+#runningmate_summary_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+#candidate_summary_btn {
+    float: none;
+}
+
+#candidate_new_btn {
+    width: 230px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_compare_btn {
+    width: 230px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 footer {

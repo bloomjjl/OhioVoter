@@ -302,7 +302,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_VoterLocationForm.cshtml" />
     <Content Include="Views\Shared\_VoterLocation.cshtml" />
-    <Content Include="Views\Shared\_VoterGeneralInformation.cshtml" />
+    <Content Include="Views\Shared\_VoterStateInformation.cshtml" />
     <Content Include="Views\Home\_Calendar.cshtml" />
     <Content Include="Views\Home\_Poll.cshtml" />
     <Content Include="Views\Home\_RssFeeds.cshtml" />
@@ -322,6 +322,9 @@
     <Content Include="Views\Candidate\_CandidateDisplay.cshtml" />
     <Content Include="Views\Candidate\_CompareLookUp.cshtml" />
     <Content Include="Views\Candidate\_CompareDisplay.cshtml" />
+    <Content Include="Views\Shared\_SideBar.cshtml" />
+    <Content Include="Views\Shared\_VoterCountyInformation.cshtml" />
+    <Content Include="Views\Shared\_VoterPollingLocation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

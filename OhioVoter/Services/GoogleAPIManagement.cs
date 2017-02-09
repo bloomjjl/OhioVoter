@@ -25,7 +25,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="voterLocation"></param>
         /// <returns></returns>
-        public ViewModels.Location.SideBarViewModel GetGoogleCivicInformationForVoterLocation(ViewModels.Location.LocationViewModel voterLocation)
+        public ViewModels.Location.SideBarViewModel GetGoogleCivicInformationForVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace OhioVoter.Services
                 CivicInfoRootObject googleResult = JToken.Parse(json).ToObject<CivicInfoRootObject>();
 
                 ViewModels.Location.SideBarViewModel sideBar = GetPollingLocationAndCountyLocationFromGoogleResult(googleResult);
-                sideBar.VoterLocation = voterLocation;
+                sideBar.VoterLocationViewModel = voterLocation;
                 //sideBar.PollingLocation = ValidatePollingLocation(sideBar.PollingLocation);
                 //sideBar.CountyLocation = ValidateCountyLocation(sideBar.CountyLocation);
 
@@ -47,7 +47,7 @@ namespace OhioVoter.Services
             catch (Exception e)
             {// return empty object if bad address supplied
                 if (voterLocation == null)
-                    voterLocation = new ViewModels.Location.LocationViewModel();
+                    voterLocation = new ViewModels.Location.VoterLocationViewModel();
 
                 voterLocation.Status = "Update";
                 voterLocation.Message = "Voter address is not valid.";
@@ -62,14 +62,14 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="voterLocation"></param>
         /// <returns></returns>
-        private ViewModels.Location.SideBarViewModel GetEmptyVoterLocationViewModel(ViewModels.Location.LocationViewModel voterLocation)
+        private ViewModels.Location.SideBarViewModel GetEmptyVoterLocationViewModel(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
             return new ViewModels.Location.SideBarViewModel()
             {
-                VoterLocation = voterLocation,
-                PollingLocation = new ViewModels.Location.LocationViewModel(),
-                CountyLocation = new ViewModels.Location.LocationViewModel(),
-                StateLocation = new ViewModels.Location.LocationViewModel()
+                VoterLocationViewModel = voterLocation,
+                PollingLocationViewModel = new ViewModels.Location.PollingLocationViewModel(),
+                CountyLocationViewModel = new ViewModels.Location.CountyLocationViewModel(),
+                StateLocationViewModel = new ViewModels.Location.StateLocationViewModel()
             };
         }
 
@@ -84,9 +84,9 @@ namespace OhioVoter.Services
         {
             return new ViewModels.Location.SideBarViewModel()
             {
-                VoterLocation = GetVoterLocationFromGoogleCivicInformation(googleResult),
-                PollingLocation = GetPollingLocationFromGoogleCivicInformation(googleResult),
-                CountyLocation = GetCountyLocationFromGoogleCivicInformation(googleResult)
+                VoterLocationViewModel = GetVoterLocationFromGoogleCivicInformation(googleResult),
+                PollingLocationViewModel = GetPollingLocationFromGoogleCivicInformation(googleResult),
+                CountyLocationViewModel = GetCountyLocationFromGoogleCivicInformation(googleResult)
             };
         }
 
@@ -97,8 +97,8 @@ namespace OhioVoter.Services
         {
             return new ViewModels.Location.SideBarViewModel()
             {
-                PollingLocation = GetPollingLocationFromGoogleCivicInformation(googleResult),
-                CountyLocation = GetCountyLocationFromGoogleCivicInformation(googleResult)
+                PollingLocationViewModel = GetPollingLocationFromGoogleCivicInformation(googleResult),
+                CountyLocationViewModel = GetCountyLocationFromGoogleCivicInformation(googleResult)
             };
 
         }
@@ -108,7 +108,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="voterLocation"></param>
         /// <returns></returns>
-        public string GetUrlRequestForGoogleCivicInformationFromVoterLocation(ViewModels.Location.LocationViewModel voterLocation)
+        public string GetUrlRequestForGoogleCivicInformationFromVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
             string api = "https://www.googleapis.com/civicinfo/v2/voterinfo?";
             string key = _googleApiKey;
@@ -133,9 +133,9 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="googleResult"></param>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetVoterLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
+        public ViewModels.Location.VoterLocationViewModel GetVoterLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
-            return new ViewModels.Location.LocationViewModel()
+            return new ViewModels.Location.VoterLocationViewModel()
             {
                 StreetAddress = googleResult.normalizedInput.line1.ToString(),
                 City = googleResult.normalizedInput.city.ToString(),
@@ -151,11 +151,11 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="googleResult"></param>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetPollingLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
+        public ViewModels.Location.PollingLocationViewModel GetPollingLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
             try
             {
-                return new ViewModels.Location.LocationViewModel()
+                return new ViewModels.Location.PollingLocationViewModel()
                 {
                     LocationName = googleResult.pollingLocations[0].address.locationName.ToString(),
                     StreetAddress = googleResult.pollingLocations[0].address.line1.ToString(),
@@ -166,7 +166,7 @@ namespace OhioVoter.Services
             }
             catch
             {
-                return new ViewModels.Location.LocationViewModel()
+                return new ViewModels.Location.PollingLocationViewModel()
                 {
                     Status = "Update",
                     Message = "Polling address not found."
@@ -182,11 +182,11 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="googleResult"></param>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetCountyLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
+        public ViewModels.Location.CountyLocationViewModel GetCountyLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
             try
             { 
-                return new ViewModels.Location.LocationViewModel()
+                return new ViewModels.Location.CountyLocationViewModel()
                 {
                     LocationName = googleResult.state[0].local_jurisdiction.name.ToString(),
                     StreetAddress = googleResult.state[0].local_jurisdiction.electionAdministrationBody.physicalAddress.line1.ToString(),
@@ -200,7 +200,7 @@ namespace OhioVoter.Services
             }
             catch
             {
-                return new ViewModels.Location.LocationViewModel()
+                return new ViewModels.Location.CountyLocationViewModel()
                 {
                     Status = "Update",
                     Message = "County address not found."
@@ -215,7 +215,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="voterLocation"></param>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel ValidateSuppliedVoterLocation(ViewModels.Location.LocationViewModel voterLocation)
+        public ViewModels.Location.VoterLocationViewModel ValidateSuppliedVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
             if (voterLocation.City == null || voterLocation.City == "")
             {
@@ -245,7 +245,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="pollingLocation"></param>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel ValidatePollingLocation(ViewModels.Location.LocationViewModel pollingLocation)
+        public ViewModels.Location.PollingLocationViewModel ValidatePollingLocation(ViewModels.Location.PollingLocationViewModel pollingLocation)
         {
             if (pollingLocation.City == null || pollingLocation.City == "")
             {
@@ -271,7 +271,7 @@ namespace OhioVoter.Services
 
 
 
-        public ViewModels.Location.LocationViewModel ValidateCountyLocation(ViewModels.Location.LocationViewModel countyLocation)
+        public ViewModels.Location.CountyLocationViewModel ValidateCountyLocation(ViewModels.Location.CountyLocationViewModel countyLocation)
         {// Tests Generated
             if (countyLocation.StateAbbreviation == null || countyLocation.City == null || countyLocation.City == "")
             {
@@ -307,7 +307,7 @@ namespace OhioVoter.Services
         /// <param name="voterLocation"></param>
         /// <param name="pollingLocation"></param>
         /// <returns></returns>
-        public string GetGoogleMapAPIRequestForVoterAndPollingLocation(ViewModels.Location.LocationViewModel voterLocation, ViewModels.Location.LocationViewModel pollingLocation)
+        public string GetGoogleMapAPIRequestForVoterAndPollingLocation(ViewModels.Location.VoterLocationViewModel voterLocation, ViewModels.Location.PollingLocationViewModel pollingLocation)
         {// Tests Generated
             string api = "https://maps.googleapis.com/maps/api/staticmap?";
             string key = _googleApiKey;
@@ -417,7 +417,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetAllLocationInformationForSuppliedAddress(ViewModels.Location.LocationViewModel location)
+        public ViewModels.Location.VoterLocationViewModel GetAllLocationInformationForSuppliedAddress(ViewModels.Location.VoterLocationViewModel location)
         {
             // create C# classes from json file
             // http://json2csharp.com/
@@ -501,9 +501,9 @@ namespace OhioVoter.Services
 
 
 
-        public ViewModels.Location.LocationViewModel GetAllLocationInformationFromGoogleAddressObject(AddressObject googleResult)
+        public ViewModels.Location.VoterLocationViewModel GetAllLocationInformationFromGoogleAddressObject(AddressObject googleResult)
         {
-            ViewModels.Location.LocationViewModel location = new ViewModels.Location.LocationViewModel();
+            ViewModels.Location.VoterLocationViewModel location = new ViewModels.Location.VoterLocationViewModel();
             string streetNumber = "";
             string streetName = "";
 

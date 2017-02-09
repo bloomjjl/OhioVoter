@@ -1,0 +1,9 @@
+﻿@model OhioVoter.ViewModels.Location.StateLocationViewModel
+
+<div id="voter-state-information" class="panel-body panel-left-body">
+    <b>State Board of Elections:</b><br />
+    @Model.LocationName <br />
+    @Model.StreetAddress <br />
+    @Model.City, @Model.StateName @Model.ZipCode <br />
+    <a href="@Model.Website" target="_blank"> @Model.Website </a> <br />
+</div>

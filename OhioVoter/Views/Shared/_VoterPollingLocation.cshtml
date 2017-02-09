@@ -1,0 +1,22 @@
+﻿@model OhioVoter.ViewModels.Location.PollingLocationViewModel
+
+<div id="polling-location" class="panel-body panel-left-body">
+
+    <b>Local Polling Location:</b><br />
+    @Model.LocationName<br />
+    @Model.StreetAddress<br />
+    @Model.City, @Model.StateAbbreviation @Model.ZipCode
+
+    <div id="results"></div>
+
+    <div id="voter-map" style="display:none">
+        <a href="https://www.google.com/maps/dir/ @Model.FullAddress.ToString() / @Model.FullAddress.ToString()" target="_blank">
+            <img src="@Html.DisplayTextFor(x => x.GoogleLocationMapAPI)" alt="Voter Map" />
+        </a>
+    </div>
+
+    <button type="button" id="show-voter-map" class="btn btn-block panel-left-btn"> View Map </button>
+    <button type="button" id="hide-voter-map" class="btn btn-block panel-left-btn" style="display:none"> Hide Map </button>
+
+</div>
+

@@ -8,6 +8,7 @@ namespace OhioVoter.Services
 {
     public class SessionExtensions
     {
+        private const string VoterLocationControllerName = "sessionVoterLocationControllerName";
         private const string VoterLocationStatus = "sessionVoterLocationStatus";
         private const string VoterLocationMessage = "sessionVoterLocationMessage";
         private const string VoterLocationStreet = "sessionVoterLocationStreetAddress";
@@ -18,6 +19,7 @@ namespace OhioVoter.Services
         private const string VoterLocationFullAddress = "sessionVoterLocationFullAddress";
 
         private const string PollingLocationStatus = "sessionPollingLocationStatus";
+        private const string PollingLocationMessage = "sessionPollingLocationMessage";
         private const string PollingLocationName = "sessionPollingLocationName";
         private const string PollingLocationStreet = "sessionPollingLocationStreetAddress";
         private const string PollingLocationCity = "sessionPollingLocationCity";
@@ -28,6 +30,7 @@ namespace OhioVoter.Services
         private const string PollingLocationMap = "sessionPollingLocationMap";
 
         private const string CountyLocationStatus = "sessionCountyLocationStatus";
+        private const string CountyLocationMessage = "sessionCountyLocationMessage";
         private const string CountyLocationName = "sessionCountyLocationName";
         private const string CountyLocationStreet = "sessionCountyLocationStreetAddress";
         private const string CountyLocationCity = "sessionCountyLocationCity";
@@ -44,8 +47,9 @@ namespace OhioVoter.Services
         /// update session values with new voter location
         /// </summary>
         /// <param name="voterLocation"></param>
-        public void UpdateVoterLocationInSession(ViewModels.Location.LocationViewModel voterLocation)
+        public void UpdateVoterLocationInSession(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
+            System.Web.HttpContext.Current.Session[VoterLocationControllerName] = voterLocation.ControllerName;
             System.Web.HttpContext.Current.Session[VoterLocationStatus] = voterLocation.Status;
             System.Web.HttpContext.Current.Session[VoterLocationMessage] = voterLocation.Message;
             System.Web.HttpContext.Current.Session[VoterLocationStreet] = CapitalizeAllLetters(voterLocation.StreetAddress);
@@ -62,9 +66,10 @@ namespace OhioVoter.Services
         /// update session values with new polling location
         /// </summary>
         /// <param name="pollingLocation"></param>
-        public void UpdatePollingLocationInSession(ViewModels.Location.LocationViewModel pollingLocation)
+        public void UpdatePollingLocationInSession(ViewModels.Location.PollingLocationViewModel pollingLocation)
         {
             System.Web.HttpContext.Current.Session[PollingLocationStatus] = pollingLocation.Status;
+            System.Web.HttpContext.Current.Session[PollingLocationMessage] = pollingLocation.Message;
             System.Web.HttpContext.Current.Session[PollingLocationName] = CapitalizeAllLetters(pollingLocation.LocationName);
             System.Web.HttpContext.Current.Session[PollingLocationStreet] = CapitalizeAllLetters(pollingLocation.StreetAddress);
             System.Web.HttpContext.Current.Session[PollingLocationCity] = CapitalizeAllLetters(pollingLocation.City);
@@ -81,9 +86,10 @@ namespace OhioVoter.Services
         /// update session values with new county location
         /// </summary>
         /// <param name="countyLocation"></param>
-        public void UpdateCountyLocationInSession(ViewModels.Location.LocationViewModel countyLocation)
+        public void UpdateCountyLocationInSession(ViewModels.Location.CountyLocationViewModel countyLocation)
         {
             System.Web.HttpContext.Current.Session[CountyLocationStatus] = countyLocation.Status;
+            System.Web.HttpContext.Current.Session[CountyLocationMessage] = countyLocation.Message;
             System.Web.HttpContext.Current.Session[CountyLocationName] = CapitalizeAllLetters(countyLocation.LocationName);
             System.Web.HttpContext.Current.Session[CountyLocationStreet] = CapitalizeAllLetters(countyLocation.StreetAddress);
             System.Web.HttpContext.Current.Session[CountyLocationCity] = CapitalizeAllLetters(countyLocation.City);
@@ -117,7 +123,7 @@ namespace OhioVoter.Services
         /// get the voter location information from the session
         /// </summary>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetVoterLocationFromSession()
+        public ViewModels.Location.VoterLocationViewModel GetVoterLocationFromSession()
         {
             // make sure session exists
             if (System.Web.HttpContext.Current.Session == null)
@@ -130,8 +136,9 @@ namespace OhioVoter.Services
                 UpdateDefaultSessionItemsForVoterLocation();
             }
 
-            ViewModels.Location.LocationViewModel voterLocation = new ViewModels.Location.LocationViewModel()
+            ViewModels.Location.VoterLocationViewModel voterLocation = new ViewModels.Location.VoterLocationViewModel()
             {
+                ControllerName = System.Web.HttpContext.Current.Session[VoterLocationControllerName] as String,
                 Status = System.Web.HttpContext.Current.Session[VoterLocationStatus] as String,
                 Message = System.Web.HttpContext.Current.Session[VoterLocationMessage] as String,
                 StreetAddress = System.Web.HttpContext.Current.Session[VoterLocationStreet] as String,
@@ -150,7 +157,7 @@ namespace OhioVoter.Services
         /// get the polling location from the session
         /// </summary>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetPollingLocationFromSession()
+        public ViewModels.Location.PollingLocationViewModel GetPollingLocationFromSession()
         {
             // make sure session exists
             if (System.Web.HttpContext.Current.Session[PollingLocationStatus] == null ||
@@ -159,9 +166,10 @@ namespace OhioVoter.Services
                 UpdateDefaultSessionItemsForPollingLocation();
             }
 
-            ViewModels.Location.LocationViewModel pollingLocation = new ViewModels.Location.LocationViewModel()
+            ViewModels.Location.PollingLocationViewModel pollingLocation = new ViewModels.Location.PollingLocationViewModel()
             {
                 Status = System.Web.HttpContext.Current.Session[PollingLocationStatus] as String,
+                Message = System.Web.HttpContext.Current.Session[PollingLocationMessage] as String,
                 LocationName = System.Web.HttpContext.Current.Session[PollingLocationName] as String,
                 StreetAddress = System.Web.HttpContext.Current.Session[PollingLocationStreet] as String,
                 City = System.Web.HttpContext.Current.Session[PollingLocationCity] as String,
@@ -180,7 +188,7 @@ namespace OhioVoter.Services
         /// get the county information from the session
         /// </summary>
         /// <returns></returns>
-        public ViewModels.Location.LocationViewModel GetCountyLocationFromSession()
+        public ViewModels.Location.CountyLocationViewModel GetCountyLocationFromSession()
         {
             // make sure session exists
             if (System.Web.HttpContext.Current.Session[CountyLocationStatus] == null ||
@@ -189,9 +197,10 @@ namespace OhioVoter.Services
                 UpdateDefaultSessionItemsForCountyLocation();
             }
 
-            ViewModels.Location.LocationViewModel countyLocation = new ViewModels.Location.LocationViewModel()
+            ViewModels.Location.CountyLocationViewModel countyLocation = new ViewModels.Location.CountyLocationViewModel()
             {
                 Status = System.Web.HttpContext.Current.Session[CountyLocationStatus] as String,
+                Message = System.Web.HttpContext.Current.Session[CountyLocationMessage] as String,
                 LocationName = System.Web.HttpContext.Current.Session[CountyLocationName] as String,
                 StreetAddress = System.Web.HttpContext.Current.Session[CountyLocationStreet] as String,
                 City = System.Web.HttpContext.Current.Session[CountyLocationCity] as String,
@@ -237,6 +246,7 @@ namespace OhioVoter.Services
             // make sure state is always Ohio
             if (System.Web.HttpContext.Current.Session[VoterLocationState] == null)
             {
+                System.Web.HttpContext.Current.Session[VoterLocationControllerName] = "Home";
                 System.Web.HttpContext.Current.Session[VoterLocationStatus] = "Update";
                 System.Web.HttpContext.Current.Session[VoterLocationState] = "";
             }
@@ -284,6 +294,11 @@ namespace OhioVoter.Services
             {
                 System.Web.HttpContext.Current.Session[PollingLocationStatus] = "Update";
             }
+            else if (System.Web.HttpContext.Current.Session[PollingLocationMessage] == null)
+            {
+                System.Web.HttpContext.Current.Session[PollingLocationMessage] = "";
+            }
+
         }
 
 
@@ -311,6 +326,11 @@ namespace OhioVoter.Services
             {
                 System.Web.HttpContext.Current.Session[CountyLocationStatus] = "Update";
             }
+            else if (System.Web.HttpContext.Current.Session[CountyLocationMessage] == null)
+            {
+                System.Web.HttpContext.Current.Session[CountyLocationMessage] = "";
+            }
+
         }
 
 
@@ -324,6 +344,18 @@ namespace OhioVoter.Services
             return System.Web.HttpContext.Current.Session[VoterLocationStatus] as String;
         }
 
+
+
+        public void UpdateVoterLocationWithNewControllerName(string controllerName)
+        {
+            System.Web.HttpContext.Current.Session[VoterLocationControllerName] = controllerName;
+        }
+
+
+        public String GetControllerNameFromSession()
+        {
+            return System.Web.HttpContext.Current.Session[VoterLocationControllerName] as String;
+        }
 
     }
 }
