@@ -10,7 +10,7 @@
     <div id="results"></div>
 
     <div id="voter-map" style="display:none">
-        <a href="https://www.google.com/maps/dir/ @Model.FullAddress.ToString() / @Model.FullAddress.ToString()" target="_blank">
+        <a href="https://www.google.com/maps/dir/ @Model.VoterFullAddress.ToString() / @Model.FullAddress.ToString()" target="_blank">
             <img src="@Html.DisplayTextFor(x => x.GoogleLocationMapAPI)" alt="Voter Map" />
         </a>
     </div>

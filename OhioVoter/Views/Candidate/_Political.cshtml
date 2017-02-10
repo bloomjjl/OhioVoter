@@ -1,4 +1,4 @@
-﻿@model OhioVoter.ViewModels.Candidate.CandidateViewModel
+﻿@model OhioVoter.ViewModels.Candidate.PoliticalViewModel
 
 <div class="panel panel-group panel-main panel-main-group">
 
@@ -8,16 +8,16 @@
 
     <div class="panel-body panel-main-body">
 
-        @{ if (Model.Candidate.CandidateLookUpId == Model.Candidate.CandidateId)
+        @{ if (Model.CandidateLookUpId == Model.CandidateId)
             {
-                foreach (var line in @Model.Candidate.VoteSmartCandidatePolitical)
+                foreach (var line in @Model.CandidatePoliticalHistory)
                 {
                     <p>@line</p>
                 }
             }
-            else if (Model.Candidate.CandidateLookUpId == Model.Candidate.RunningMateId)
+            else if (Model.CandidateLookUpId == Model.RunningMateId)
             {
-                foreach (var line in @Model.Candidate.VoteSmartRunningMatePolitical)
+                foreach (var line in @Model.RunningMatePoliticalHistory)
                 {
                     <p>@line</p>
                 }

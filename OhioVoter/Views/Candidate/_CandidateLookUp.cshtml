@@ -1,4 +1,4 @@
-﻿@model OhioVoter.ViewModels.Candidate.CandidateViewModel
+﻿@model OhioVoter.ViewModels.Candidate.CandidateLookUpViewModel
 
 <div class="panel panel-group panel-main panel-main-group">
 
@@ -13,7 +13,7 @@
             @Html.AntiForgeryToken()
 
             <div id="candidate_lookup_date" class="form-group">
-                <p>Election Date: @Model.ElectionDate.Date.ToShortDateString()</p>
+                <p>Election Date: @Model.VotingDate</p>
             </div>
 
             <div id="candidate_lookup_candidate" class="form-group">

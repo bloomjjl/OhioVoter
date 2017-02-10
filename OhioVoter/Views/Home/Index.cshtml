@@ -8,7 +8,7 @@
 <div class="row">
 
     <div id="side-bar" class="col-sm-4">
-        @{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName);}
+        @{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName as string);}
     </div>
 
     <div class="col-sm-8">

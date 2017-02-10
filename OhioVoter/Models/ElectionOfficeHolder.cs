@@ -7,8 +7,8 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("OfficeHolder")]
-    public class OfficeHolder
+    [Table("ElectionOfficeHolder")]
+    public class ElectionOfficeHolder
     {
         [Required]
         [Key]

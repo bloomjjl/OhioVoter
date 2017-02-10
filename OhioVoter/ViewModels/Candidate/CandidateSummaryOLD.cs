@@ -7,7 +7,7 @@ using System.Web;
 
 namespace OhioVoter.ViewModels.Candidate
 {
-    public class CandidateSummary
+    public class CandidateSummaryOLD
     {
         public int CandidateLookUpId { get; set; }
 

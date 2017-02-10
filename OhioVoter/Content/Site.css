@@ -268,12 +268,14 @@ textarea {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 10px;
 }
 
 #runningmate_summary {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 10px;
 }
 
 #candidate_summary_img {

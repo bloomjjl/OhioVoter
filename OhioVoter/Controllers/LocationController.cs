@@ -131,6 +131,8 @@ namespace OhioVoter.Controllers
                 StateLocationViewModel = GetAddressForOhioSecretaryOfState()
             };
 
+            sideBar.PollingLocationViewModel = GetVoterLocationInformationToDisplayOnMap(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
+            
             return sideBar;
         }
 
@@ -154,6 +156,19 @@ namespace OhioVoter.Controllers
                 ZipCodeSuffix = "3726",
                 Website = "http://www.sos.state.oh.us/"
             };
+        }
+
+
+
+        public PollingLocationViewModel GetVoterLocationInformationToDisplayOnMap(VoterLocationViewModel voterLocationVM, PollingLocationViewModel pollingLocationVM)
+        {
+
+            pollingLocationVM.VoterStreetAddress = voterLocationVM.StreetAddress;
+            pollingLocationVM.VoterCity = voterLocationVM.StateAbbreviation;
+            pollingLocationVM.VoterStateAbbreviation = voterLocationVM.City;
+            pollingLocationVM.VoterZipCode = voterLocationVM.ZipCode;
+
+            return pollingLocationVM;
         }
 
 
@@ -187,6 +202,7 @@ namespace OhioVoter.Controllers
 
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError("", "Model Error");
                 voterLocation.Message = "Please enter a valid street address and zip code";
                 UpdateSessionInformationForVoterLocation(voterLocation);
                 return RedirectToAction("Index", voterLocation.ControllerName);
@@ -225,6 +241,7 @@ namespace OhioVoter.Controllers
 
             if (sideBar.VoterLocationViewModel.Status == "Display")
             {
+                sideBar.PollingLocationViewModel = GetVoterLocationInformationToDisplayOnMap(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
                 sideBar.PollingLocationViewModel.GoogleLocationMapAPI = GetGoogleMapForPollingLocation(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
                 UpdateSessionFromSideBarViewModel(sideBar);
                 return RedirectToAction("Index", voterLocation.ControllerName);

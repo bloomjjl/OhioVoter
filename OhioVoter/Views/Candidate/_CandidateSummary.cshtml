@@ -1,0 +1,45 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateSummaryViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p>Candidate Summary</p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        <div id="candidate_summary_group">
+
+            <div id="candidate_summary">
+                <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img" /> <br />
+                @Model.CandidateSummary.FullName<br />
+                @Model.CandidateSummary.PartyName<br />
+                @Model.CandidateSummary.OfficeName
+                @Model.CandidateSummary.OfficeTerm<br />
+                @Model.CandidateSummary.OfficeHolderName
+            </div>
+
+            <div id="runningmate_summary">
+                @{ if (Model.RunningMateSummary.RunningMateId > 0)
+                    {
+                        <img src="@Model.RunningMateSummary.VoteSmartPhotoUrl" alt="Running Mate" id="runningmate_summary_img" /> <br />
+                        @Model.RunningMateSummary.FullName<br />
+                        @Model.RunningMateSummary.PartyName<br />
+                        @Model.RunningMateSummary.OfficeName<br />
+                        @Model.RunningMateSummary.OfficeHolderName
+                    }
+                }
+            </div>
+
+        </div>
+
+        <div id="candidate_summary_btn">
+            @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @id= "candidate_new_btn", @class = "btn btn-block panel-main-btn" })
+            @Html.ActionLink("Compare Second Candidate", "", "", new { candidateId = 0 }, new { @id= "candidate_compare_btn", @class = "btn btn-block panel-main-btn" })
+        </div>
+
+    </div>
+
+
+</div>
+

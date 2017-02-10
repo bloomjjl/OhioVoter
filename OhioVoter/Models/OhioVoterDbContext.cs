@@ -15,7 +15,7 @@ namespace OhioVoter.Models
         public DbSet<ElectionCandidate> ElectionCandidates { get; set; }
         public DbSet<ElectionOffice> ElectionOffices { get; set; }
         public DbSet<ElectionParty> ElectionParties { get; set; }
-        public DbSet<OfficeHolder> OfficeHolders { get; set; }
+        public DbSet<ElectionOfficeHolder> OfficeHolders { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

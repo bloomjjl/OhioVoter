@@ -20,10 +20,10 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
+            ViewModels.Location.CountyLocationViewModel countyLocation = GetValidCountyLocation();
 
             // Act
-            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.CountyLocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Display", result.Status);
@@ -37,11 +37,11 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
+            ViewModels.Location.CountyLocationViewModel countyLocation = GetValidCountyLocation();
             countyLocation.StateAbbreviation = "AR";
 
             // Act
-            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.CountyLocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -55,11 +55,11 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
+            ViewModels.Location.CountyLocationViewModel countyLocation = GetValidCountyLocation();
             countyLocation.StateAbbreviation = null;
 
             // Act
-            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.CountyLocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -73,11 +73,11 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel countyLocation = GetValidCountyLocation();
+            ViewModels.Location.CountyLocationViewModel countyLocation = GetValidCountyLocation();
             countyLocation.City = null;
 
             // Act
-            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.CountyLocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -91,10 +91,10 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel countyLocation = new ViewModels.Location.LocationViewModel();
+            ViewModels.Location.CountyLocationViewModel countyLocation = new ViewModels.Location.CountyLocationViewModel();
 
             // Act
-            ViewModels.Location.LocationViewModel result = service.ValidateCountyLocation(countyLocation);
+            ViewModels.Location.CountyLocationViewModel result = service.ValidateCountyLocation(countyLocation);
 
             // Assert
             Assert.AreEqual("Update", result.Status);
@@ -108,8 +108,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel voterLocation = GetValidVoterLocation();
-            ViewModels.Location.LocationViewModel pollingLocation = GetValidPollingLocation();
+            ViewModels.Location.VoterLocationViewModel voterLocation = GetValidVoterLocation();
+            ViewModels.Location.PollingLocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -128,8 +128,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel voterLocation = new ViewModels.Location.LocationViewModel();
-            ViewModels.Location.LocationViewModel pollingLocation = GetValidPollingLocation();
+            ViewModels.Location.VoterLocationViewModel voterLocation = new ViewModels.Location.VoterLocationViewModel();
+            ViewModels.Location.PollingLocationViewModel pollingLocation = GetValidPollingLocation();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -148,8 +148,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel voterLocation = GetValidVoterLocation();
-            ViewModels.Location.LocationViewModel pollingLocation = new ViewModels.Location.LocationViewModel();
+            ViewModels.Location.VoterLocationViewModel voterLocation = GetValidVoterLocation();
+            ViewModels.Location.PollingLocationViewModel pollingLocation = new ViewModels.Location.PollingLocationViewModel();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -168,8 +168,8 @@ namespace OhioVoter.Tests.Services
         {
             // Arrange
             GoogleApiManagement service = new GoogleApiManagement();
-            ViewModels.Location.LocationViewModel voterLocation = new ViewModels.Location.LocationViewModel();
-            ViewModels.Location.LocationViewModel pollingLocation = new ViewModels.Location.LocationViewModel();
+            ViewModels.Location.VoterLocationViewModel voterLocation = new ViewModels.Location.VoterLocationViewModel();
+            ViewModels.Location.PollingLocationViewModel pollingLocation = new ViewModels.Location.PollingLocationViewModel();
 
             // Act
             string result = service.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
@@ -636,9 +636,9 @@ namespace OhioVoter.Tests.Services
         // **************************************************************
 
 
-        private static ViewModels.Location.LocationViewModel GetValidVoterLocation()
+        private static ViewModels.Location.VoterLocationViewModel GetValidVoterLocation()
         {
-            return new ViewModels.Location.LocationViewModel()
+            return new ViewModels.Location.VoterLocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "9282 Gregg Drive",
@@ -650,9 +650,9 @@ namespace OhioVoter.Tests.Services
 
 
 
-        private static ViewModels.Location.LocationViewModel GetValidPollingLocation()
+        private static ViewModels.Location.PollingLocationViewModel GetValidPollingLocation()
         {
-            return new ViewModels.Location.LocationViewModel()
+            return new ViewModels.Location.PollingLocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "9113 CINCINNATI DAYTON RD",
@@ -663,9 +663,9 @@ namespace OhioVoter.Tests.Services
         }
 
 
-        private static ViewModels.Location.LocationViewModel GetValidCountyLocation()
+        private static ViewModels.Location.CountyLocationViewModel GetValidCountyLocation()
         {
-            return new ViewModels.Location.LocationViewModel()
+            return new ViewModels.Location.CountyLocationViewModel()
             {
                 Status = "Display",
                 StreetAddress = "1802 Princeton Rd., Ste 600",
@@ -677,9 +677,9 @@ namespace OhioVoter.Tests.Services
 
 
 
-        private static ViewModels.Location.LocationViewModel GetValidStateLocation()
+        private static ViewModels.Location.StateLocationViewModel GetValidStateLocation()
         {
-            return new ViewModels.Location.LocationViewModel()
+            return new ViewModels.Location.StateLocationViewModel()
             {
                 Status = "Display",
                 StateAbbreviation = "OH"

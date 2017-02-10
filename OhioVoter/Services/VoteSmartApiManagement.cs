@@ -370,14 +370,59 @@ namespace OhioVoter.Services
         }
 
 
-        
-        
+
+
         /// <summary>
         ///     VoteSmart API Class: CandidateBio
         ///     This method grabs the main bio for each candidate.
         /// </summary>
         /// <param name="candidateId"></param>
         /// <returns>
+        ///     bio.candidate.crpId (OpenSecrets ID)
+        ///     bio.candidate.firstName
+        ///     bio.candidate.nickName
+        ///     bio.candidate.middleName
+        ///     bio.candidate.lastName
+        ///     bio.candidate.suffix
+        ///     bio.candidate.birthDate
+        ///     bio.candidate.birthPlace
+        ///     bio.candidate.pronunciation
+        ///     bio.candidate.gender
+        ///     bio.candidate.family
+        ///     bio.candidate.photo
+        ///     bio.candidate.homeCity
+        ///     bio.candidate.homeState
+        ///     bio.candidate.education**
+        ///     bio.candidate.profession**
+        ///     bio.candidate.political**
+        ///     bio.candidate.religion
+        ///     bio.candidate.congMembership**
+        ///     bio.candidate.orgMembership**
+        ///     bio.candidate.specialMsg
+        ///     bio.office.parties
+        ///     bio.office.title
+        ///     bio.office.shortTitle
+        ///     bio.office.name
+        ///     bio.office.type
+        ///     bio.office.status
+        ///     bio.office.firstElect
+        ///     bio.office.lastElect
+        ///     bio.office.nextElect
+        ///     bio.office.termStart
+        ///     bio.office.termEnd
+        ///     bio.office.district
+        ///     bio.office.districtId
+        ///     bio.office.stateId
+        ///     bio.office.committee*.committeeId
+        ///     bio.office.committee*.committeeName
+        ///     bio.election*.office
+        ///     bio.election*.officeId
+        ///     bio.election*.officeType
+        ///     bio.election*.parties
+        ///     bio.election*.district
+        ///     bio.election*.districtId
+        ///     bio.election*.status
+        ///     bio.election*.ballotName
         /// </returns>
         public string GetUrlRequestForBiographyInformationForSpecifiedCandidate(string candidateId)
         {
@@ -390,6 +435,59 @@ namespace OhioVoter.Services
                                  andChar, "key=", key,
                                  andChar, "candidateId=", candidateId);
         }
+
+
+
+        /// <summary>
+        ///     VoteSmart API Class: CandidateBio
+        ///     This method expands on getBio() by expanding the education, profession, political, orgMembership, and congMembership elements.
+        /// </summary>
+        /// <param name="candidateId"></param>
+        /// <returns>
+        ///     Includes all elements for getBio(), and expands upon the following:
+        ///     bio.candidate.education*.degree
+        ///     bio.candidate.education*.field
+        ///     bio.candidate.education*.school
+        ///     bio.candidate.education*.span
+        ///     bio.candidate.education*.gpa
+        ///     bio.candidate.education*.fullText
+        ///     bio.candidate.profession*.title
+        ///     bio.candidate.profession*.organization
+        ///     bio.candidate.profession*.span
+        ///     bio.candidate.profession*.special
+        ///     bio.candidate.profession*.district
+        ///     bio.candidate.profession*.fullText
+        ///     bio.candidate.political*.title
+        ///     bio.candidate.political*.organization
+        ///     bio.candidate.political*.span
+        ///     bio.candidate.political*.special
+        ///     bio.candidate.political*.district
+        ///     bio.candidate.political*.fullText
+        ///     bio.candidate.congMembership*.title
+        ///     bio.candidate.congMembership*.organization
+        ///     bio.candidate.congMembership*.span
+        ///     bio.candidate.congMembership*.special
+        ///     bio.candidate.congMembership*.district
+        ///     bio.candidate.congMembership*.fullText
+        ///     bio.candidate.orgMembership*.title
+        ///     bio.candidate.orgMembership*.organization
+        ///     bio.candidate.orgMembership*.span
+        ///     bio.candidate.orgMembership*.special
+        ///     bio.candidate.orgMembership*.district
+        ///     bio.candidate.orgMembership*.fullText
+        /// </returns>
+        public string GetUrlRequestForDetailedBiographyInformationForSpecifiedCandidate(string candidateId)
+        {
+            string api = "http://api.votesmart.org/";
+            string path = "CandidateBio.getDetailedBio?";
+            string key = _votesmartApiKey;
+            string andChar = "&";
+
+            return string.Concat(api, path,
+                                 andChar, "key=", key,
+                                 andChar, "candidateId=", candidateId);
+        }
+
 
 
 
