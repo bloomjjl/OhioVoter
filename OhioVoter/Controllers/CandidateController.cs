@@ -13,24 +13,122 @@ namespace OhioVoter.Controllers
 {
     public class CandidateController : Controller
     {
+        private static string _controllerName = "Candidate";
+
+
+
         // GET: Candidate
-        public ActionResult Index(int? candidateId = 0)
+        public ActionResult Index(int? candidateId)
         {
+            // validate data supplied
             if (candidateId == null || candidateId < 0)
             {
                 candidateId = 0;
             }
 
-            string controllerName = "Candidate";
-            UpdateSessionWithNewControllerNameForSideBar(controllerName);
+            // update session with controller info
+            UpdateSessionWithNewControllerNameForSideBar(_controllerName);
 
+            // get details for view model
             CandidateViewModel viewModel = new CandidateViewModel()
             {
-                ControllerName = controllerName,
-                CandidateId = (int) candidateId
+                ControllerName = _controllerName,
+                CandidateId = (int)candidateId
             };
 
             return View(viewModel);
+        }
+
+
+
+        public ActionResult Compare(int candidateFirstId, int? candidateSecondId, int dateId, int officeId)
+        {
+            // validate data supplied
+            if (candidateFirstId <= 0 || dateId <= 0 || officeId <= 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            // make sure candidateSecondId is valid
+            if (candidateSecondId == null || candidateSecondId <= 0)
+            {// NO
+                candidateSecondId = 0;
+            }
+
+            // update session with controller info
+            UpdateSessionWithNewControllerNameForSideBar(_controllerName);
+            Models.ElectionVotingDate date = GetDateInformationForDateIdFromDatabase(dateId);
+
+            // get details for view model
+            CandidateCompareViewModel viewModel = new CandidateCompareViewModel()
+            {
+                ControllerName = _controllerName,
+                CandidateFirstDisplayId = candidateFirstId,
+                CandidateSecondDisplayId = (int)candidateSecondId,
+                VotingDateId = dateId,
+                VotingDate = date.Date.ToShortDateString(),
+                OfficeId = officeId
+            };
+
+            // get information for the second candidate(s)
+            CandidateCompareSummaryLookUpViewModel candidateCompareLookUpSecondVM = GetCandidateCompareLookUpSecondViewModel(viewModel.CandidateFirstDisplayId, viewModel.VotingDateId, viewModel.OfficeId);
+            List<SelectListItem> candidates = candidateCompareLookUpSecondVM.CandidateNames.ToList();
+
+            // if only one candidate then display candidate information
+            if (candidates.Count == 1)
+            {
+                int intId;
+                string strId = candidates[0].Value.ToString();
+                if (int.TryParse(strId, out intId))
+                {
+                    viewModel.CandidateSecondDisplayId = int.Parse(strId);
+                }
+            }
+
+            // get information for the candidateCompareDisplayViewModel
+            if (candidates.Count >= 1)
+            {
+                // load all data for compare view model
+                viewModel.CandidateCompareDisplayViewModel = new CandidateCompareDisplayViewModel()
+                {
+                    CandidateCompareSummaryViewModel = GetCandidateCompareSummaryViewModel(viewModel, candidates.Count)
+                };
+
+                return View(viewModel);
+            }
+
+            // not candidates found to compare
+            return RedirectToAction("Index");
+        }
+
+
+
+
+        public ActionResult RemoveFirst(int candidateFirstId, int candidateSecondId, int dateId, int officeId)
+        {
+            // move second to first
+            candidateFirstId = candidateSecondId;
+
+            // clear second Id
+            candidateSecondId =0;
+
+            return RedirectToAction("Compare", new { candidateFirstId = candidateFirstId, candidateSecondId = candidateSecondId, dateId = dateId, officeId = officeId });
+        }
+
+
+
+        public ActionResult RemoveSecond(int candidateFirstId, int candidateSecondId, int CandidateCount, int dateId, int officeId)
+        {
+            // displayed candidate removed from list
+            if (CandidateCount > 1)
+            {
+                // clear candidateSecondId to display dropdownlist
+                return RedirectToAction("Compare", new { candidateFirstId = candidateFirstId, candidateSecondId = 0, dateId = dateId, officeId = officeId });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Candidate", new { candidateId = candidateFirstId });
+            }
         }
 
 
@@ -45,7 +143,7 @@ namespace OhioVoter.Controllers
                 // get single candidate (and runningmate) added to display model
                 CandidateDisplayViewModel candidateDisplayVM = new CandidateDisplayViewModel()
                 {
-                    ControllerName = model.ControllerName,
+                    ControllerName = _controllerName,
                     CandidateLookUpId = model.CandidateId,
                     VotingDateId = date.ElectionVotingDateId,
                     VotingDate = date.Date.ToShortDateString()
@@ -61,14 +159,60 @@ namespace OhioVoter.Controllers
                 CandidateLookUpViewModel candidateLookUpVM = new CandidateLookUpViewModel()
                 {
                     ControllerName = model.ControllerName,
-                    VotingDate = date.Date.ToShortTimeString(),
-                    CandidateDropDownList = GetCandidatesForDropDownList(date.ElectionVotingDateId)
+                    VotingDate = date.Date.ToShortDateString(),
+                    CandidateNames = GetCandidateListItems(date.ElectionVotingDateId)
+                    //CandidateDropDownList = GetCandidatesForDropDownList(date.ElectionVotingDateId)
                 };
 
                 return PartialView("_CandidateLookUp", candidateLookUpVM);
             }
         }
 
+
+
+
+        [ChildActionOnly]
+        public ActionResult DisplayCandidateCompareInformation(CandidateCompareSummaryViewModel viewModel)
+        {
+
+            // display information for one candidate or list of candidates
+            if (viewModel.CandidateCompareSummarySecondViewModel.CandidateSecondDisplayId > 0)
+            {
+                return PartialView("_CandidateCompareSummarySecond", viewModel.CandidateCompareSummarySecondViewModel);
+            }
+            else
+            {
+                return PartialView("_CandidateCompareSummaryLookUp", viewModel.CandidateCompareSummaryLookUpViewModel);
+            }
+        }
+
+
+
+/*        public ActionResult ChangeCandidateFirst(int candidateFirstId)
+        {
+            // if candidateSecond is displayed then provide a dropdown list
+            // if candidateFirst is only candidate displayed than return to candidateLookUp displaying only one candidate
+            // redirect to partial view
+
+            return PartialView();
+        }
+*/
+
+
+        public ActionResult DisplaySecondCandidate(CandidateCompareSummaryLookUpViewModel viewModel)
+        {
+            // validate selectedCandidateId
+            int intId;
+            if (int.TryParse(viewModel.SelectedCandidateId, out intId))
+            {
+                return PartialView("_CandidateCompareSecondLookUp", viewModel);
+            }
+
+            // get SummaryViewModel
+
+            // display selected candidate information
+            return PartialView("_CandidateCompareSecondSummary", viewModel);
+        }
 
 
 
@@ -90,13 +234,13 @@ namespace OhioVoter.Controllers
         }
         */
 
-            
+
         private void UpdateSessionWithNewControllerNameForSideBar(string controllerName)
         {
             SessionExtensions session = new SessionExtensions();
             session.UpdateVoterLocationWithNewControllerName(controllerName);
         }
-        
+
 
         /*
         private CandidateDropDownList GetCandidateDropDownListViewModel(int dateId)
@@ -120,13 +264,55 @@ namespace OhioVoter.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Name(CandidateLookUpViewModel model)
+        //public ActionResult Name(string selectedCandidateId)
         {
+            // validate model
             if (!ModelState.IsValid)
+            {
                 return RedirectToAction("Index", new { candidateId = 0 });
+            }
 
-            int candidateId = model.CandidateDropDownList.SelectedCandidateId;
+            // validate selectededCandidateId
+            int candidateId;
+            if (int.TryParse(model.SelectedCandidateId, out candidateId))
+            {
+                candidateId = int.Parse(model.SelectedCandidateId);
+            }
+            else
+            {
+                candidateId = 0;
+            }
 
             return RedirectToAction("Index", new { candidateId = candidateId });
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CompareName(CandidateCompareSummaryLookUpViewModel model)
+        {
+            // validate model
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Compare", new { candidateFirstId = model.CandidateFirstDisplayId, candidateSecondId = 0, dateId = model.VotingDateId, officeId = model.OfficeId });
+            }
+
+            // validate selectedCandidateId
+            int candidateId;
+            if(model.SelectedCandidateId == null)
+            {
+                return RedirectToAction("Compare", new { candidateFirstId = model.CandidateFirstDisplayId, candidateSecondId = 0, dateId = model.VotingDateId, officeId = model.OfficeId });
+            }
+            else if (int.TryParse(model.SelectedCandidateId, out candidateId))
+            {
+                candidateId = int.Parse(model.SelectedCandidateId);
+                return RedirectToAction("Compare", new { candidateFirstId = model.CandidateFirstDisplayId, candidateSecondId = candidateId, dateId = model.VotingDateId, officeId = model.OfficeId });
+            }
+            else
+            {
+                return RedirectToAction("Index", new { candidateId = 0 });
+            }
         }
 
 
@@ -204,23 +390,31 @@ namespace OhioVoter.Controllers
 
         public CandidateDisplayViewModel GetCandidateDisplayViewModel(CandidateDisplayViewModel candidateDisplayVM)
         {
+            int candidateLookUpVotingDateId = 0;
+            int candidateLookUpOfficeId = 0;
+
             Models.ElectionVotingDateOfficeCandidate dbCandidate;
             Models.ElectionVotingDateOfficeCandidate dbRunningMate = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateDisplayVM.CandidateLookUpId);
-            if(dbRunningMate == null || dbRunningMate.CandidateId == 0)
+
+            if (dbRunningMate == null || dbRunningMate.CandidateId == 0)
             {// no running mate found. Must be candidate
                 dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateDisplayVM.CandidateLookUpId);
-                if(dbCandidate.RunningMateId != 0)
+                if (dbCandidate.RunningMateId != 0)
                 {
                     dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidate.RunningMateId);
                 }
+                candidateLookUpVotingDateId = dbCandidate.ElectionVotingDateId;
+                candidateLookUpOfficeId = dbCandidate.OfficeId;
             }
             else
-            {// running mate found. store the candidate for the running mate
+            {// running mate == candidate lookup. store the candidate for the running mate
                 dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbRunningMate.CandidateId);
                 dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidate.RunningMateId);
+                candidateLookUpVotingDateId = dbRunningMate.ElectionVotingDateId;
+                candidateLookUpOfficeId = dbRunningMate.OfficeId;
             }
 
-            // Gett all objects for view model
+            // Get all objects for view model
             Models.ElectionCandidate candidate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.CandidateId);
             Models.ElectionCandidate runningMate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.RunningMateId);
             ViewModels.VoteSmart.CandidateBio voteSmartCandidate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidate.VoteSmartCandidateId);
@@ -231,16 +425,16 @@ namespace OhioVoter.Controllers
             Models.ElectionOfficeHolder officeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidate.OfficeHolderId);
 
             // load view model with objects
-            candidateDisplayVM.CandidateSummaryViewModel = GetCandidateSummaryViewModel(candidate, runningMate, voteSmartCandidate, voteSmartRunningMate, candidateOffice, runningMateOffice, party, officeHolder);
+            candidateDisplayVM.CandidateSummaryViewModel = GetCandidateSummaryViewModel(candidateDisplayVM.CandidateLookUpId, candidateLookUpVotingDateId, candidateLookUpOfficeId, candidate, runningMate, voteSmartCandidate, voteSmartRunningMate, candidateOffice, runningMateOffice, party, officeHolder);
             // OfficeSummaryViewModel
-            candidateDisplayVM.PoliticalViewModel = GetPoliticalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
-            candidateDisplayVM.CaucusViewModel = GetCaucusInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
-            candidateDisplayVM.ProfessionalViewModel = GetProfessionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
-            candidateDisplayVM.EducationViewModel = GetEducationInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
-            candidateDisplayVM.PersonalViewModel = GetPersonalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidatePoliticalViewModel = GetCandidatePoliticalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidateCaucusViewModel = GetCandidateCaucusInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidateProfessionalViewModel = GetCandidateProfessionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidateEducationViewModel = GetCandidateEducationInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidatePersonalViewModel = GetCandidatePersonalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
             // ContactViewModel
-            candidateDisplayVM.CivicViewModel = GetCivicInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
-            candidateDisplayVM.AdditionalViewModel = GetAdditionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidateCivicViewModel = GetCandidateCivicInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
+            candidateDisplayVM.CandidateAdditionalViewModel = GetCandidateAdditionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateDisplayVM.CandidateLookUpId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId);
 
             return candidateDisplayVM;
         }
@@ -251,7 +445,10 @@ namespace OhioVoter.Controllers
 
 
 
-        public CandidateSummaryViewModel GetCandidateSummaryViewModel(Models.ElectionCandidate candidate,
+        public CandidateSummaryViewModel GetCandidateSummaryViewModel(int candidateLookUpId,
+                                                                      int candidateLookUpVotingDateId,
+                                                                      int candidateLookUpOfficeId,
+                                                                      Models.ElectionCandidate candidate,
                                                                       Models.ElectionCandidate runningMate,
                                                                       ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
                                                                       ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
@@ -259,11 +456,15 @@ namespace OhioVoter.Controllers
                                                                       Models.ElectionOffice runningMateOffice,
                                                                       Models.ElectionParty party,
                                                                       Models.ElectionOfficeHolder officeHolder)
-        { 
+        {
             return new CandidateSummaryViewModel()
             {
+                SelectedCandidateId = candidateLookUpId,
+                SelectedCandidateVotingDateId = candidateLookUpVotingDateId,
+                SelectedCandidateOfficeId = candidateLookUpOfficeId,
                 CandidateSummary = new CandidateSummary()
                 {
+                    CandidateId = candidate.ElectionCandidateId,
                     FirstName = candidate.FirstName,
                     MiddleName = candidate.MiddleName,
                     LastName = candidate.LastName,
@@ -276,6 +477,7 @@ namespace OhioVoter.Controllers
                 },
                 RunningMateSummary = new RunningMateSummary()
                 {
+                    CandidateId = runningMate.ElectionCandidateId,
                     RunningMateId = runningMate.ElectionCandidateId,
                     FirstName = runningMate.FirstName,
                     MiddleName = runningMate.MiddleName,
@@ -292,21 +494,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public ViewModels.VoteSmart.CandidateBio GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(string voteSmartCandidateId)
+        public CandidatePoliticalViewModel GetCandidatePoliticalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                        int candidateLookUpId,
+                                                                                                        int candidateId,
+                                                                                                        int runningMateId)
         {
-            VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
-            return voteSmart.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(voteSmartCandidateId);
-        }
-
-
-
-        public PoliticalViewModel GetPoliticalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                                      ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                                      int candidateLookUpId,
-                                                                                      int candidateId,
-                                                                                      int runningMateId)
-        {
-            return new PoliticalViewModel()
+            return new CandidatePoliticalViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -318,13 +512,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public CaucusViewModel GetCaucusInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                                ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                                int candidateLookUpId,
-                                                                                int candidateId,
-                                                                                int runningMateId)
+        public CandidateCaucusViewModel GetCandidateCaucusInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                    int candidateLookUpId,
+                                                                                                    int candidateId,
+                                                                                                    int runningMateId)
         {
-            return new CaucusViewModel()
+            return new CandidateCaucusViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -336,13 +530,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public ProfessionalViewModel GetProfessionalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                                      ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                                      int candidateLookUpId,
-                                                                                      int candidateId,
-                                                                                      int runningMateId)
+        public CandidateProfessionalViewModel GetCandidateProfessionalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                              ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                              int candidateLookUpId,
+                                                                                                              int candidateId,
+                                                                                                              int runningMateId)
         {
-            return new ProfessionalViewModel()
+            return new CandidateProfessionalViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -354,13 +548,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public EducationViewModel GetEducationInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                                      ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                                      int candidateLookUpId,
-                                                                                      int candidateId,
-                                                                                      int runningMateId)
+        public CandidateEducationViewModel GetCandidateEducationInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                        int candidateLookUpId,
+                                                                                                        int candidateId,
+                                                                                                        int runningMateId)
         {
-            return new EducationViewModel()
+            return new CandidateEducationViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -372,13 +566,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public CivicViewModel GetCivicInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                              ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                              int candidateLookUpId,
-                                                                              int candidateId,
-                                                                              int runningMateId)
+        public CandidateCivicViewModel GetCandidateCivicInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                int candidateLookUpId,
+                                                                                                int candidateId,
+                                                                                                int runningMateId)
         {
-            return new CivicViewModel()
+            return new CandidateCivicViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -390,13 +584,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public AdditionalViewModel GetAdditionalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                                        int candidateLookUpId,
-                                                                                        int candidateId,
-                                                                                        int runningMateId)
+        public CandidateAdditionalViewModel GetCandidateAdditionalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                            ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                            int candidateLookUpId,
+                                                                                                            int candidateId,
+                                                                                                            int runningMateId)
         {
-            return new AdditionalViewModel()
+            return new CandidateAdditionalViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -408,13 +602,13 @@ namespace OhioVoter.Controllers
 
 
 
-        public PersonalViewModel GetPersonalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
-                                                                                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
-                                                                                    int candidateLookUpId,
-                                                                                    int candidateId,
-                                                                                    int runningMateId)
+        public CandidatePersonalViewModel GetCandidatePersonalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                        int candidateLookUpId,
+                                                                                                        int candidateId,
+                                                                                                        int runningMateId)
         {
-            return new PersonalViewModel()
+            return new CandidatePersonalViewModel()
             {
                 CandidateLookUpId = candidateLookUpId,
                 CandidateId = candidateId,
@@ -442,16 +636,723 @@ namespace OhioVoter.Controllers
         // *****************************************************************
 
 
+        /*
+                public CandidateCompareSummaryFirstViewModel GetCandidateFirstSummaryForCandidateCompareLookUpViewModel(int candidateDisplayId, int candiateId, int runningMateId, int votingDateId, int officeId)
+                {
+                    Models.ElectionVotingDateOfficeCandidate dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(candiateId);
+                    Models.ElectionVotingDateOfficeCandidate dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(runningMateId);
+
+                    // Get all objects for view model
+                    Models.ElectionCandidate candidate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.CandidateId);
+                    Models.ElectionCandidate runningMate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.RunningMateId);
+                    ViewModels.VoteSmart.CandidateBio voteSmartCandidate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidate.VoteSmartCandidateId);
+                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(runningMate.VoteSmartCandidateId);
+                    Models.ElectionOffice candidateOffice = GetOfficeInformationForOfficeId(dbCandidate.OfficeId);
+                    Models.ElectionOffice runningMateOffice = GetOfficeInformationForOfficeId(dbRunningMate.OfficeId);
+                    Models.ElectionParty party = GetPartyNameForPartyIdFromDatabase(dbCandidate.PartyId);
+                    Models.ElectionOfficeHolder officeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidate.OfficeHolderId);
+
+                    // load view model with objects
+                    return GetCandidateSummaryFirstViewModel(candidateDisplayId, votingDateId, officeId, candidate, runningMate, voteSmartCandidate, voteSmartRunningMate, candidateOffice, runningMateOffice, party, officeHolder);
+                }
+        */
+
+
+        // ****************************************************************
+
+        /*
+                public CandidateCompareLookUpSecondViewModel GetCandidateCompareLookUpViewModel(CandidateCompareLookUpSecondViewModel candidateCompareLookUpVM)
+                {
+                    Models.ElectionVotingDateOfficeCandidate dbCandidateFirst;
+                    Models.ElectionVotingDateOfficeCandidate dbRunningMateFirst = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateCompareLookUpVM.CandidateFirstDisplayId);
+
+                    // determine if candidate displayed is a possible runningmate and load information
+                    if (dbRunningMateFirst == null || dbRunningMateFirst.CandidateId == 0)
+                    {// no running mate found. Must be candidate
+                        dbCandidateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateCompareLookUpVM.CandidateFirstDisplayId);
+                        if (dbCandidateFirst.RunningMateId != 0)
+                        {
+                            dbRunningMateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateFirst.RunningMateId);
+                        }
+                    }
+                    else
+                    {// running mate == candidate displayed. store the actual candidate for the running mate
+                        dbCandidateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbRunningMateFirst.CandidateId);
+                        dbRunningMateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateFirst.RunningMateId);
+                    }
+
+                    // Get all objects for view model
+                    Models.ElectionCandidate candidateFirst = GetCandidateNameForCandidateIdFromDatabase(dbCandidateFirst.CandidateId);
+                    Models.ElectionCandidate runningMateFirst = GetCandidateNameForCandidateIdFromDatabase(dbCandidateFirst.RunningMateId);
+                    ViewModels.VoteSmart.CandidateBio voteSmartCandidateFirst = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidateFirst.VoteSmartCandidateId);
+                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMateFirst = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(runningMateFirst.VoteSmartCandidateId);
+                    Models.ElectionOffice candidateFirstOffice = GetOfficeInformationForOfficeId(dbCandidateFirst.OfficeId);
+                    Models.ElectionOffice runningMateFirstOffice = GetOfficeInformationForOfficeId(dbCandidateFirst.OfficeId);
+                    Models.ElectionParty party = GetPartyNameForPartyIdFromDatabase(dbCandidateFirst.PartyId);
+                    Models.ElectionOfficeHolder officeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidateFirst.OfficeHolderId);
+
+                    // load view model with objects
+                    return new CandidateCompareLookUpSecondViewModel()
+                    {
+                        //CandidateCompareSummaryFirstViewModel = GetCandidateSummaryFirstViewModel(candidateCompareLookUpVM.CandidateFirstDisplayId, candidateCompareLookUpVM.VotingDateId, candidateCompareLookUpVM.OfficeId, candidateFirst, runningMateFirst, voteSmartCandidateFirst, voteSmartRunningMateFirst, candidateFirstOffice, runningMateFirstOffice, party, officeHolder),
+                        // OfficeSummaryViewModel
+                        //CandidateFirstPoliticalViewModel = GetCandidateFirstPoliticalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstCaucusViewModel = GetCandidateFirstCaucusInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstProfessionalViewModel = GetCandidateFirstProfessionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstEducationViewModel = GetCandidateFirstEducationInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstPersonalViewModel = GetCandidateFirstPersonalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        // ContactViewModel
+                        //CandidateFirstCivicViewModel = GetCandidateFirstCivicInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstAdditionalViewModel = GetCandidateFirstAdditionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                    };
+
+
+                }
+
+        */
+
+
+
+        // *******************************************************************
+
+
+
+        public CandidateCompareSummaryViewModel GetCandidateCompareSummaryViewModel(CandidateCompareViewModel viewModel, int candidateCount)
+        {
+            return new CandidateCompareSummaryViewModel()
+            {
+                CandidateCompareSummaryFirstViewModel = GetCandidateCompareSummaryFirstViewModel(viewModel.CandidateFirstDisplayId, viewModel.CandidateSecondDisplayId, candidateCount, viewModel.VotingDateId, viewModel.OfficeId),
+                CandidateCompareSummarySecondViewModel = GetCandidateCompareSummarySecondViewModel(viewModel.CandidateFirstDisplayId, viewModel.CandidateSecondDisplayId, candidateCount, viewModel.VotingDateId, viewModel.OfficeId),
+                CandidateCompareSummaryLookUpViewModel = GetCandidateCompareLookUpSecondViewModel(viewModel.CandidateFirstDisplayId, viewModel.VotingDateId, viewModel.OfficeId)
+            };
+        }
+
+
+
+        public CandidateCompareSummaryFirstViewModel GetCandidateCompareSummaryFirstViewModel(int candidateFirstDisplayId, int candidatesecondDisplayId, int candidateCount , int VotingDateId, int CandidateDisplayOfficeId)
+        {
+            Models.ElectionVotingDateOfficeCandidate dbCandidate;
+            Models.ElectionVotingDateOfficeCandidate dbRunningMate = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateFirstDisplayId);
+
+            if (dbRunningMate == null || dbRunningMate.CandidateId == 0)
+            {// no running mate found. Must be candidate
+                dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateFirstDisplayId);
+                if (dbCandidate.RunningMateId != 0)
+                {
+                    dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidate.RunningMateId);
+                }
+                VotingDateId = dbCandidate.ElectionVotingDateId;
+                CandidateDisplayOfficeId = dbCandidate.OfficeId;
+            }
+            else
+            {// running mate == candidate lookup. store the candidate for the running mate
+                dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbRunningMate.CandidateId);
+                dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidate.RunningMateId);
+                VotingDateId = dbRunningMate.ElectionVotingDateId;
+                CandidateDisplayOfficeId = dbRunningMate.OfficeId;
+            }
+
+            // Get all objects for view model
+            Models.ElectionCandidate candidate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.CandidateId);
+            Models.ElectionCandidate runningMate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.RunningMateId);
+            ViewModels.VoteSmart.CandidateBio voteSmartCandidate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidate.VoteSmartCandidateId);
+            ViewModels.VoteSmart.CandidateBio voteSmartRunningMate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(runningMate.VoteSmartCandidateId);
+            Models.ElectionOffice candidateOffice = GetOfficeInformationForOfficeId(dbCandidate.OfficeId);
+            Models.ElectionOffice runningMateOffice = GetOfficeInformationForOfficeId(dbRunningMate.OfficeId);
+            Models.ElectionParty party = GetPartyNameForPartyIdFromDatabase(dbCandidate.PartyId);
+            Models.ElectionOfficeHolder officeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidate.OfficeHolderId);
+
+            return GetCandidateCompareSummaryFirstViewModel(candidateFirstDisplayId, candidatesecondDisplayId, candidateCount, VotingDateId, CandidateDisplayOfficeId, candidate, runningMate, voteSmartCandidate, voteSmartRunningMate, candidateOffice, runningMateOffice, party, officeHolder);
+        }
+
+
+
+        // ***********************************************************************
+
+
+
+        public CandidateCompareSummaryFirstViewModel GetCandidateCompareSummaryFirstViewModel(int candidateFirstDisplayId, 
+                                                                                                int candidatesecondDisplayId,
+                                                                                                int candidateCount,
+                                                                                                int VotingDateId,
+                                                                                                int candidateDisplayOfficeId,
+                                                                                                Models.ElectionCandidate candidate,
+                                                                                                Models.ElectionCandidate runningMate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                Models.ElectionOffice candidateOffice,
+                                                                                                Models.ElectionOffice runningMateOffice,
+                                                                                                Models.ElectionParty party,
+                                                                                                Models.ElectionOfficeHolder officeHolder)
+        {
+            return new CandidateCompareSummaryFirstViewModel()
+            {
+                CandidateFirstDisplayId = candidateFirstDisplayId,
+                CandidateSecondDisplayId = candidatesecondDisplayId,
+                TotalNumberOfCandidates = candidateCount,
+                VotingDateId = VotingDateId,
+                OfficeId = candidateDisplayOfficeId,
+                CandidateCompareSummaryFirst = new CandidateCompareSummaryFirst()
+                {
+                    CandidateId = candidate.ElectionCandidateId,
+                    FirstName = candidate.FirstName,
+                    MiddleName = candidate.MiddleName,
+                    LastName = candidate.LastName,
+                    Suffix = candidate.Suffix,
+                    OfficeName = candidateOffice.OfficeName,
+                    OfficeTerm = candidateOffice.Term,
+                    PartyName = party.PartyName,
+                    OfficeHolderName = officeHolder.OfficeHolderName,
+                    VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidate.Photo, voteSmartCandidate.Gender)
+                },
+                RunningMateCompareSummaryFirst = new RunningMateCompareSummaryFirst()
+                {
+                    CandidateId = runningMate.ElectionCandidateId,
+                    FirstName = runningMate.FirstName,
+                    MiddleName = runningMate.MiddleName,
+                    LastName = runningMate.LastName,
+                    Suffix = runningMate.Suffix,
+                    OfficeName = runningMateOffice.OfficeName,
+                    OfficeTerm = runningMateOffice.Term,
+                    PartyName = party.PartyName,
+                    OfficeHolderName = officeHolder.OfficeHolderName,
+                    VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartRunningMate.Photo, voteSmartCandidate.Gender)
+                }
+            };
+        }
+
+
+
+        // ********************************************************************************************
+
+
+
+        public CandidateCompareSummarySecondViewModel GetCandidateCompareSummarySecondViewModel(int candidateFirstDisplayId, int candidatesecondDisplayId, int candidateCount , int VotingDateId, int CandidateDisplayOfficeId)
+        {
+            // make sure candidate information needs to be displayed
+            if (candidatesecondDisplayId <= 0)
+            {// NO information. STOP!!
+                return new CandidateCompareSummarySecondViewModel();
+            }
+
+            Models.ElectionVotingDateOfficeCandidate dbCandidate;
+            Models.ElectionVotingDateOfficeCandidate dbRunningMate = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidatesecondDisplayId);
+
+            if (dbRunningMate == null || dbRunningMate.CandidateId == 0)
+            {// no running mate found. Must be candidate
+                dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidatesecondDisplayId);
+                if (dbCandidate.RunningMateId != 0)
+                {
+                    dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidate.RunningMateId);
+                }
+                VotingDateId = dbCandidate.ElectionVotingDateId;
+                CandidateDisplayOfficeId = dbCandidate.OfficeId;
+            }
+            else
+            {// running mate == candidate lookup. store the candidate for the running mate
+                dbCandidate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbRunningMate.CandidateId);
+                dbRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidate.RunningMateId);
+                VotingDateId = dbRunningMate.ElectionVotingDateId;
+                CandidateDisplayOfficeId = dbRunningMate.OfficeId;
+            }
+
+            // Get all objects for view model
+            Models.ElectionCandidate candidate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.CandidateId);
+            Models.ElectionCandidate runningMate = GetCandidateNameForCandidateIdFromDatabase(dbCandidate.RunningMateId);
+            ViewModels.VoteSmart.CandidateBio voteSmartCandidate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidate.VoteSmartCandidateId);
+            ViewModels.VoteSmart.CandidateBio voteSmartRunningMate = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(runningMate.VoteSmartCandidateId);
+            Models.ElectionOffice candidateOffice = GetOfficeInformationForOfficeId(dbCandidate.OfficeId);
+            Models.ElectionOffice runningMateOffice = GetOfficeInformationForOfficeId(dbRunningMate.OfficeId);
+            Models.ElectionParty party = GetPartyNameForPartyIdFromDatabase(dbCandidate.PartyId);
+            Models.ElectionOfficeHolder officeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidate.OfficeHolderId);
+
+            return GetCandidateCompareSummarySecondViewModel(candidateFirstDisplayId, candidatesecondDisplayId, candidateCount, VotingDateId, CandidateDisplayOfficeId, candidate, runningMate, voteSmartCandidate, voteSmartRunningMate, candidateOffice, runningMateOffice, party, officeHolder);
+        }
+
+
+
+
+        // ***********************************************************************
+
+
+
+        public CandidateCompareSummarySecondViewModel GetCandidateCompareSummarySecondViewModel(int candidateFirstDisplayId, 
+                                                                                                int candidatesecondDisplayId, 
+                                                                                                int candidateCount,
+                                                                                                int VotingDateId,
+                                                                                                int candidateDisplayOfficeId,
+                                                                                                Models.ElectionCandidate candidate,
+                                                                                                Models.ElectionCandidate runningMate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                Models.ElectionOffice candidateOffice,
+                                                                                                Models.ElectionOffice runningMateOffice,
+                                                                                                Models.ElectionParty party,
+                                                                                                Models.ElectionOfficeHolder officeHolder)
+        {
+            return new CandidateCompareSummarySecondViewModel()
+            {
+                CandidateFirstDisplayId = candidateFirstDisplayId,
+                CandidateSecondDisplayId = candidatesecondDisplayId,
+                TotalNumberOfCandidates = candidateCount,
+                VotingDateId = VotingDateId,
+                OfficeId = candidateDisplayOfficeId,
+                CandidateCompareSummarySecond = new CandidateCompareSummarySecond()
+                {
+                    CandidateId = candidate.ElectionCandidateId,
+                    FirstName = candidate.FirstName,
+                    MiddleName = candidate.MiddleName,
+                    LastName = candidate.LastName,
+                    Suffix = candidate.Suffix,
+                    OfficeName = candidateOffice.OfficeName,
+                    OfficeTerm = candidateOffice.Term,
+                    PartyName = party.PartyName,
+                    OfficeHolderName = officeHolder.OfficeHolderName,
+                    VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidate.Photo, voteSmartCandidate.Gender)
+                },
+                RunningMateCompareSummarySecond = new RunningMateCompareSummarySecond()
+                {
+                    CandidateId = runningMate.ElectionCandidateId,
+                    FirstName = runningMate.FirstName,
+                    MiddleName = runningMate.MiddleName,
+                    LastName = runningMate.LastName,
+                    Suffix = runningMate.Suffix,
+                    OfficeName = runningMateOffice.OfficeName,
+                    OfficeTerm = runningMateOffice.Term,
+                    PartyName = party.PartyName,
+                    OfficeHolderName = officeHolder.OfficeHolderName,
+                    VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartRunningMate.Photo, voteSmartCandidate.Gender)
+                }
+            };
+        }
+
+
+
+        // ********************************************************************************************
+
+
+        /*
+                public CandidateCompareDisplayViewModel GetCandidateCompareDisplayViewModel(CandidateCompareDisplayViewModel candidateCompareDisplayVM)
+                {
+                    // variables
+                    int votingDateId = candidateCompareDisplayVM.VotingDateId;
+                    int officeId = candidateCompareDisplayVM.OfficeId;
+                    int candidateFirstDisplayId = candidateCompareDisplayVM.CandidateFirstDisplayId;
+                    int candidateSecondDisplayId = candidateCompareDisplayVM.CandidateSecondDisplayId;
+                    Models.ElectionVotingDateOfficeCandidate dbCandidateFirst;
+                    Models.ElectionVotingDateOfficeCandidate dbRunningMateFirst = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateCompareDisplayVM.CandidateFirstDisplayId);
+                    Models.ElectionVotingDateOfficeCandidate dbCandidateSecond;
+                    Models.ElectionVotingDateOfficeCandidate dbRunningMateSecond;
+
+                    // First CANDIDATE Candidate/RunningMate from DB
+                    if (dbRunningMateFirst == null || dbRunningMateFirst.CandidateId == 0)
+                    {// no running mate found. Must be candidate
+                        dbCandidateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateCompareDisplayVM.CandidateFirstDisplayId);
+                        if (dbCandidateFirst.RunningMateId != 0)
+                        {
+                            dbRunningMateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateFirst.RunningMateId);
+                        }
+                    }
+                    else
+                    {// running mate == candidate lookup. store the candidate for the running mate
+                        dbCandidateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbRunningMateFirst.CandidateId);
+                        dbRunningMateFirst = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateFirst.RunningMateId);
+                    }
+
+                    // First CANDIDATE Get all objects for view model
+                    Models.ElectionCandidate candidateFirst = GetCandidateNameForCandidateIdFromDatabase(dbCandidateFirst.CandidateId);
+                    Models.ElectionCandidate runningMateFirst = GetCandidateNameForCandidateIdFromDatabase(dbCandidateFirst.RunningMateId);
+                    ViewModels.VoteSmart.CandidateBio voteSmartCandidateFirst = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidateFirst.VoteSmartCandidateId);
+                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMateFirst = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(runningMateFirst.VoteSmartCandidateId);
+                    Models.ElectionOffice candidateFirstOffice = GetOfficeInformationForOfficeId(dbCandidateFirst.OfficeId);
+                    Models.ElectionOffice runningMateFirstOffice = GetOfficeInformationForOfficeId(dbRunningMateFirst.OfficeId);
+                    Models.ElectionParty candidateFirstParty = GetPartyNameForPartyIdFromDatabase(dbCandidateFirst.PartyId);
+                    Models.ElectionOfficeHolder candidateFirstOfficeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidateFirst.OfficeHolderId);
+
+                    // Second CANDIDATE create objects variables for view model
+                    Models.ElectionCandidate candidateSecond = null;
+                    Models.ElectionCandidate runningMateSecond = null;
+                    ViewModels.VoteSmart.CandidateBio voteSmartCandidateSecond = null;
+                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMateSecond = null;
+                    Models.ElectionOffice candidateSecondOffice = null;
+                    Models.ElectionOffice runningMateSecondOffice = null;
+                    Models.ElectionParty candidateSecondParty = null;
+                    Models.ElectionOfficeHolder candidateSecondOfficeHolder = null;
+
+                    // Second CANDIDATE Candidate/RunningMate from DB if one has been selected
+                    if (candidateSecondDisplayId <= 0)
+                    {
+                        dbCandidateSecond = new Models.ElectionVotingDateOfficeCandidate();
+                        dbRunningMateSecond = new Models.ElectionVotingDateOfficeCandidate();
+                    }
+                    else
+                    {
+                        dbRunningMateSecond = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateCompareDisplayVM.CandidateSecondDisplayId);
+
+                        if (dbRunningMateSecond == null || dbRunningMateSecond.CandidateId == 0)
+                        {// no running mate found. Must be candidate
+                            dbCandidateSecond = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateCompareDisplayVM.CandidateSecondDisplayId);
+                            if (dbCandidateSecond.RunningMateId != 0)
+                            {
+                                dbRunningMateSecond = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateSecond.RunningMateId);
+                            }
+                        }
+                        else
+                        {// running mate == candidate lookup. store the candidate for the running mate
+                            dbCandidateSecond = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbRunningMateSecond.CandidateId);
+                            dbRunningMateSecond = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateSecond.RunningMateId);
+
+                            // Get all objects for view model
+                            candidateSecond = GetCandidateNameForCandidateIdFromDatabase(dbCandidateSecond.CandidateId);
+                            runningMateSecond = GetCandidateNameForCandidateIdFromDatabase(dbCandidateSecond.RunningMateId);
+                            voteSmartCandidateSecond = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(candidateSecond.VoteSmartCandidateId);
+                            voteSmartRunningMateSecond = GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(runningMateSecond.VoteSmartCandidateId);
+                            candidateSecondOffice = GetOfficeInformationForOfficeId(dbCandidateSecond.OfficeId);
+                            runningMateSecondOffice = GetOfficeInformationForOfficeId(dbRunningMateSecond.OfficeId);
+                            candidateSecondParty = GetPartyNameForPartyIdFromDatabase(dbCandidateSecond.PartyId);
+                            candidateSecondOfficeHolder = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbCandidateSecond.OfficeHolderId);
+                        }
+                    }
+
+                    // load view model with objects
+                    return new CandidateCompareDisplayViewModel()
+                    {
+                        CandidateCompareSummaryViewModel = GetCandidateCompareSummaryViewModel(candidateFirstDisplayId, candidateSecondDisplayId,
+                                                                                                votingDateId, 
+                                                                                                officeId, 
+                                                                                                candidateFirst, candidateSecond,
+                                                                                                runningMateFirst, runningMateSecond,
+                                                                                                voteSmartCandidateFirst, voteSmartCandidateSecond,
+                                                                                                voteSmartRunningMateFirst, voteSmartRunningMateSecond,
+                                                                                                candidateFirstOffice, candidateSecondOffice,
+                                                                                                runningMateFirstOffice, runningMateSecondOffice,
+                                                                                                candidateFirstParty, candidateSecondParty,
+                                                                                                candidateFirstOfficeHolder, candidateSecondOfficeHolder),
+                        // OfficeSummaryViewModel
+                        //CandidateFirstPoliticalViewModel = GetCandidateFirstPoliticalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstCaucusViewModel = GetCandidateFirstCaucusInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstProfessionalViewModel = GetCandidateFirstProfessionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstEducationViewModel = GetCandidateFirstEducationInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstPersonalViewModel = GetCandidateFirstPersonalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        // ContactViewModel
+                        //CandidateFirstCivicViewModel = GetCandidateFirstCivicInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                        //CandidateFirstAdditionalViewModel = GetCandidateFirstAdditionalInformationForCandidateBioFromVoteSmart(voteSmartCandidate, voteSmartRunningMate, candidateCompareDisplayVM.CandidateFirstDisplayId, candidate.ElectionCandidateId, runningMate.ElectionCandidateId),
+                    };
+                }
+        */
+
+
+        // ************************************************************************
+
+
+
+        /*
+                public CandidateCompareSummaryViewModel GetCandidateCompareSummaryViewModel(int candidateFirstDisplayId, int candidateSecondDisplayId,
+                                                                                            int votingDateId, 
+                                                                                            int officeId,
+                                                                                            Models.ElectionCandidate candidateFirst, Models.ElectionCandidate candidateSecond,
+                                                                                            Models.ElectionCandidate runningMateFirst, Models.ElectionCandidate runningMateSecond,
+                                                                                            ViewModels.VoteSmart.CandidateBio voteSmartCandidateFirst, ViewModels.VoteSmart.CandidateBio voteSmartCandidateSecond,
+                                                                                            ViewModels.VoteSmart.CandidateBio voteSmartRunningMateFirst, ViewModels.VoteSmart.CandidateBio voteSmartRunningMateSecond,
+                                                                                            Models.ElectionOffice candidateFirstOffice, Models.ElectionOffice candidateSecondOffice,
+                                                                                            Models.ElectionOffice runningMateFirstOffice, Models.ElectionOffice runningMateSecondOffice,
+                                                                                            Models.ElectionParty candidateFirstparty, Models.ElectionParty candidateSecondparty,
+                                                                                            Models.ElectionOfficeHolder candidateFirstofficeHolder, Models.ElectionOfficeHolder candidateSecondofficeHolder)
+                {
+                    // has a second candidate been selected to display?
+                    if (candidateSecondDisplayId <= 0)
+                    {// NO. provide user with list to select from
+                        return new CandidateCompareSummaryViewModel()
+                        {
+                            CandidateCompareSummaryFirstViewModel = GetCandidateSummaryFirstViewModel(candidateFirstDisplayId, votingDateId, officeId, candidateFirst, runningMateFirst, voteSmartCandidateFirst, voteSmartRunningMateFirst, candidateFirstOffice, runningMateFirstOffice, candidateFirstparty, candidateFirstofficeHolder),
+                            CandidateCompareLookUpSecondViewModel = GetCandidateSecondLookUpForCandidateCompareLookUpViewModel(candidateFirstDisplayId, votingDateId, officeId)
+                        };
+                    }
+                    else
+                    {// YES. display both candidates
+                        return new CandidateCompareSummaryViewModel()
+                        {
+                            CandidateCompareSummaryFirstViewModel = GetCandidateSummaryFirstViewModel(candidateFirstDisplayId, votingDateId, officeId, candidateFirst, runningMateFirst, voteSmartCandidateFirst, voteSmartRunningMateFirst, candidateFirstOffice, runningMateFirstOffice, candidateFirstparty, candidateFirstofficeHolder),
+                            CandidateCompareSummarySecondViewModel = GetCandidateSummarySecondViewModel(candidateFirstDisplayId, votingDateId, officeId, candidateSecond, runningMateSecond, voteSmartCandidateSecond, voteSmartRunningMateSecond, candidateSecondOffice, runningMateSecondOffice, candidateSecondparty, candidateSecondofficeHolder),
+                        };
+                    }
+                }
+        */
+
+        /*
+                public CandidateCompareSummaryFirstViewModel GetCandidateSummaryFirstViewModel(int candidateDisplayId,
+                                                                                                int candidateLookUpVotingDateId,
+                                                                                                int candidateLookUpOfficeId,
+                                                                                                Models.ElectionCandidate candidate,
+                                                                                                Models.ElectionCandidate runningMate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                                ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                                Models.ElectionOffice candidateOffice,
+                                                                                                Models.ElectionOffice runningMateOffice,
+                                                                                                Models.ElectionParty party,
+                                                                                                Models.ElectionOfficeHolder officeHolder)
+                {
+                    return new CandidateCompareSummaryFirstViewModel()
+                    {
+                        VotingDateId = candidateLookUpVotingDateId,
+
+                        // identify which candidate (Candidate or RunningMate) the summary is for
+                        CandidateFirstDisplayId = candidateDisplayId,
+                        OfficeId = candidateLookUpOfficeId,
+
+                        CandidateCompareSummaryFirst = new CandidateCompareSummaryFirst()
+                        {
+                            candidateId = candidate.ElectionCandidateId,
+                            FirstName = candidate.FirstName,
+                            MiddleName = candidate.MiddleName,
+                            LastName = candidate.LastName,
+                            Suffix = candidate.Suffix,
+                            OfficeName = candidateOffice.OfficeName,
+                            OfficeTerm = candidateOffice.Term,
+                            PartyName = party.PartyName,
+                            OfficeHolderName = officeHolder.OfficeHolderName,
+                            VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidate.Photo, voteSmartCandidate.Gender)
+                        },
+                        RunningMateCompareSummaryFirst = new RunningMateCompareSummaryFirst()
+                        {
+                            RunningMateId = runningMate.ElectionCandidateId,
+                            FirstName = runningMate.FirstName,
+                            MiddleName = runningMate.MiddleName,
+                            LastName = runningMate.LastName,
+                            Suffix = runningMate.Suffix,
+                            OfficeName = runningMateOffice.OfficeName,
+                            OfficeTerm = runningMateOffice.Term,
+                            PartyName = party.PartyName,
+                            OfficeHolderName = officeHolder.OfficeHolderName,
+                            VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartRunningMate.Photo, voteSmartCandidate.Gender)
+                        }
+                    };
+                }
+
+        */
+
+        public CandidateCompareSummarySecondViewModel GetCandidateSummarySecondViewModel(int candidateDisplayId,
+                                                                                        int candidateLookUpVotingDateId,
+                                                                                        int candidateLookUpOfficeId,
+                                                                                        Models.ElectionCandidate candidate,
+                                                                                        Models.ElectionCandidate runningMate,
+                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                        Models.ElectionOffice candidateOffice,
+                                                                                        Models.ElectionOffice runningMateOffice,
+                                                                                        Models.ElectionParty party,
+                                                                                        Models.ElectionOfficeHolder officeHolder)
+        {
+            return new CandidateCompareSummarySecondViewModel()
+            {
+                VotingDateId = candidateLookUpVotingDateId,
+
+                // identify which candidate (Candidate or RunningMate) the summary is for
+                CandidateFirstDisplayId = candidateDisplayId,
+                OfficeId = candidateLookUpOfficeId,
+
+                CandidateCompareSummarySecond = new CandidateCompareSummarySecond()
+                {
+                    CandidateId = candidate.ElectionCandidateId,
+                    FirstName = candidate.FirstName,
+                    MiddleName = candidate.MiddleName,
+                    LastName = candidate.LastName,
+                    Suffix = candidate.Suffix,
+                    OfficeName = candidateOffice.OfficeName,
+                    OfficeTerm = candidateOffice.Term,
+                    PartyName = party.PartyName,
+                    OfficeHolderName = officeHolder.OfficeHolderName,
+                    VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidate.Photo, voteSmartCandidate.Gender)
+                },
+                RunningMateCompareSummarySecond = new RunningMateCompareSummarySecond()
+                {
+                    CandidateId = runningMate.ElectionCandidateId,
+                    FirstName = runningMate.FirstName,
+                    MiddleName = runningMate.MiddleName,
+                    LastName = runningMate.LastName,
+                    Suffix = runningMate.Suffix,
+                    OfficeName = runningMateOffice.OfficeName,
+                    OfficeTerm = runningMateOffice.Term,
+                    PartyName = party.PartyName,
+                    OfficeHolderName = officeHolder.OfficeHolderName,
+                    VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartRunningMate.Photo, voteSmartCandidate.Gender)
+                }
+            };
+        }
+
+
+
+        public CandidateFirstPoliticalViewModel GetCandidateFirstPoliticalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                      ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                      int candidateLookUpId,
+                                                                                      int candidateId,
+                                                                                      int runningMateId)
+        {
+            return new CandidateFirstPoliticalViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidatePoliticalHistory = GetListFromStringWithLineBreaks(voteSmartCandidate.Political),
+                RunningMatePoliticalHistory = GetListFromStringWithLineBreaks(voteSmartRunningMate.Political)
+            };
+        }
+
+
+
+        public CandidateFirstCaucusViewModel GetCandidateFirstCaucusInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                int candidateLookUpId,
+                                                                                int candidateId,
+                                                                                int runningMateId)
+        {
+            return new CandidateFirstCaucusViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidateCaucusHistory = GetListFromStringWithLineBreaks(voteSmartCandidate.CongMembership),
+                RunningMateCaucusHistory = GetListFromStringWithLineBreaks(voteSmartRunningMate.CongMembership)
+            };
+        }
+
+
+
+        public CandidateFirstProfessionalViewModel GetCandidateFirstProfessionalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                      ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                      int candidateLookUpId,
+                                                                                      int candidateId,
+                                                                                      int runningMateId)
+        {
+            return new CandidateFirstProfessionalViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidateProfessionalHistory = GetListFromStringWithLineBreaks(voteSmartCandidate.Profession),
+                RunningMateProfessionalHistory = GetListFromStringWithLineBreaks(voteSmartRunningMate.Profession)
+            };
+        }
+
+
+
+        public CandidateFirstEducationViewModel GetCandidateFirstEducationInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                      ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                      int candidateLookUpId,
+                                                                                      int candidateId,
+                                                                                      int runningMateId)
+        {
+            return new CandidateFirstEducationViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidateEducationHistory = GetListFromStringWithLineBreaks(voteSmartCandidate.Education),
+                RunningMateEducationHistory = GetListFromStringWithLineBreaks(voteSmartRunningMate.Education)
+            };
+        }
+
+
+
+        public CandidateFirstCivicViewModel GetCandidateFirstCivicInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                              ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                              int candidateLookUpId,
+                                                                              int candidateId,
+                                                                              int runningMateId)
+        {
+            return new CandidateFirstCivicViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidateCivicMemberships = GetListFromStringWithLineBreaks(voteSmartCandidate.OrgMembership),
+                RunningMateCivicMemberships = GetListFromStringWithLineBreaks(voteSmartRunningMate.OrgMembership)
+            };
+        }
+
+
+
+        public CandidateFirstAdditionalViewModel GetCandidateFirstAdditionalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                        ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                        int candidateLookUpId,
+                                                                                        int candidateId,
+                                                                                        int runningMateId)
+        {
+            return new CandidateFirstAdditionalViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidateAdditionalInformation = GetListFromStringWithLineBreaks(voteSmartCandidate.SpecialMsg),
+                RunningMateAdditionalInformation = GetListFromStringWithLineBreaks(voteSmartRunningMate.SpecialMsg)
+            };
+        }
+
+
+
+        public CandidateFirstPersonalViewModel GetCandidateFirstPersonalInformationForCandidateBioFromVoteSmart(ViewModels.VoteSmart.CandidateBio voteSmartCandidate,
+                                                                                    ViewModels.VoteSmart.CandidateBio voteSmartRunningMate,
+                                                                                    int candidateLookUpId,
+                                                                                    int candidateId,
+                                                                                    int runningMateId)
+        {
+            return new CandidateFirstPersonalViewModel()
+            {
+                CandidateLookUpId = candidateLookUpId,
+                CandidateId = candidateId,
+                RunningMateId = runningMateId,
+                CandidateFamily = voteSmartCandidate.Family,
+                RunningMateFamily = voteSmartRunningMate.Family,
+                CandidateGender = voteSmartCandidate.Gender,
+                RunningMateGender = voteSmartRunningMate.Gender,
+                CandidateBirthDate = voteSmartCandidate.BirthDate,
+                RunningMateBirthDate = voteSmartRunningMate.BirthDate,
+                CandidateBirthPlace = voteSmartCandidate.BirthPlace,
+                RunningMateBirthPlace = voteSmartRunningMate.BirthPlace,
+                CandidateHomeCity = voteSmartCandidate.HomeCity,
+                RunningMateHomeCity = voteSmartRunningMate.HomeCity,
+                CandidateHomeState = voteSmartCandidate.HomeState,
+                RunningMateHomeState = voteSmartRunningMate.HomeState,
+                CandidateReligion = voteSmartCandidate.Religion,
+                RunningMateReligion = voteSmartRunningMate.Religion
+            };
+        }
+
+
+
+        // *****************************************************************
+
+
+
+        public ViewModels.VoteSmart.CandidateBio GetCandidateInformationForVoteSmartCandidateIdFromVoteSmart(string voteSmartCandidateId)
+        {
+            VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
+            return voteSmart.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(voteSmartCandidateId);
+        }
+
+
+
+        // *********************************************************************
+
+
 
         public string GetValidImageLocationToDisplay(string voteSmartURL, string gender)
         {
+            // was a URL found at VoteSmart?
             if (voteSmartURL != null && voteSmartURL != "")
+            {
                 return voteSmartURL;
+            }
 
+            // if not display blank image base on the candidate's gender
             if (gender == "Female")
+            {
                 return "~/Content/images/image_female.png";
-
-            return "~/Content/images/image_male.png";
+            }
+            else
+            {
+                return "~/Content/images/image_male.png";
+            }
         }
 
 
@@ -480,77 +1381,6 @@ namespace OhioVoter.Controllers
 
 
 
-
-
-        // ***************************************************************************
-
-        /*
-    public CandidateDisplayViewModel GetCandidateInformationForCandidateSummary(CandidateDisplayViewModel candidate)
-    {
-        // get candidateLookUp information
-        Models.ElectionVotingDateOfficeCandidate dbCandidateLookUp = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, date.ElectionVotingDateId);
-
-        // add supplied information to candidate object
-        CandidateSummaryViewModel candidate = new CandidateSummaryViewModel()
-        {
-            CandidateLookUpId = candidateLookUpId,
-            ElectionVotingDateId = date.ElectionVotingDateId,
-            VotingDate = date.Date
-        };
-
-        // determine the type of candidate that is being looked up
-        Models.ElectionVotingDateOfficeCandidate dbRunningMateLookUp = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, date.ElectionVotingDateId);
-
-        if (candidateLookUpId == dbRunningMateLookUp.RunningMateId)
-        {// candidateLookUp is a running mate
-            candidate = GetCandidateInformationForRunningMateId(candidateLookUpId, date.ElectionVotingDateId, dbCandidateLookUp, candidate);
-        }
-        else
-        {// candidateLookUp is a candidate
-            candidate = GetCandidateInformationForCandidateId(date.ElectionVotingDateId, dbCandidateLookUp, candidate);
-        }
-
-        return candidate;
-    }
-    */
-
-        /*
-    /// <summary>
-    /// look up candidate information for selected candidate and current election based on supplied candidateId
-    /// </summary>
-    /// <param name="candidateLookUpId"></param>
-    /// <param name="date"></param>
-    /// <returns></returns>
-    public CandidateSummaryViewModel GetCandidateSummaryInformationForSelectedCandidateId(int candidateLookUpId, ElectionVotingDate date)
-    {
-        // get candidateLookUp information
-        Models.ElectionVotingDateOfficeCandidate dbCandidateLookUp = GetCandidateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, date.ElectionVotingDateId);
-
-        // add supplied information to candidate object
-        CandidateSummaryViewModel candidate = new CandidateSummaryViewModel()
-        {
-            CandidateLookUpId = candidateLookUpId,
-            ElectionVotingDateId = date.ElectionVotingDateId,
-            VotingDate = date.Date
-        };
-
-        // determine the type of candidate that is being looked up
-        Models.ElectionVotingDateOfficeCandidate dbRunningMateLookUp = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, date.ElectionVotingDateId);
-
-        if (candidateLookUpId == dbRunningMateLookUp.RunningMateId)
-        {// candidateLookUp is a running mate
-            candidate = GetCandidateInformationForRunningMateId(candidateLookUpId, date.ElectionVotingDateId, dbCandidateLookUp, candidate);
-        }
-        else
-        {// candidateLookUp is a candidate
-            candidate = GetCandidateInformationForCandidateId(date.ElectionVotingDateId, dbCandidateLookUp, candidate);
-        }
-
-        return candidate;
-    }
-    */
-
-
         // *************************************************************************
 
 
@@ -571,7 +1401,7 @@ namespace OhioVoter.Controllers
         }
 
 
-        
+
         public Models.ElectionVotingDateOfficeCandidate GetRunningMateSummaryForCurrentElectionDateFromDatabase(int candidateLookUpId)
         {
             Models.ElectionVotingDateOfficeCandidate dbRunningMate = new Models.ElectionVotingDateOfficeCandidate();
@@ -581,7 +1411,7 @@ namespace OhioVoter.Controllers
                 dbRunningMate = db.ElectionVotingDateOfficeCandidates.FirstOrDefault(x => x.RunningMateId == candidateLookUpId);
             }
 
-            if (dbRunningMate == null )
+            if (dbRunningMate == null)
                 return new Models.ElectionVotingDateOfficeCandidate();
 
             return dbRunningMate;
@@ -589,300 +1419,66 @@ namespace OhioVoter.Controllers
 
 
 
-        // ****************************************************
-        
+        // *************************************************************
 
-            /*
-        public CandidateSummaryViewModel GetCandidateInformationForRunningMateId(int candidateLookUpId, int dateId, Models.ElectionVotingDateOfficeCandidate dbCandidateLookUp, CandidateSummaryViewModel candidate)
+
+
+        public CandidateCompareSummaryLookUpViewModel GetCandidateCompareLookUpSecondViewModel(int candidateFirstDisplayId, int votingDateId, int officeId)
         {
-            Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate = GetRunningMateSummaryForCurrentElectionDateFromDatabase(candidateLookUpId, dateId);
-
-            candidate = GetCandidateElectionSummaryForRunningMateId(candidate, dbElectionRunningMate);
-            candidate = GetCandidateNameSummaryForRunningMateId(candidate, dbElectionRunningMate);
-            candidate = GetCandidateOfficeSummaryForRunningMateId(candidate, dbElectionRunningMate);
-            candidate = GetRunningMateNameSummaryForRunningMateId(candidate, dbElectionRunningMate);
-            candidate = GetRunningMateOfficeSummaryForRunningMateId(candidate, dbCandidateLookUp, dbElectionRunningMate);
-
-            return candidate;
-        }
-        */
-
-        /*
-        public CandidateSummaryViewModel GetCandidateInformationForCandidateId(int dateId, Models.ElectionVotingDateOfficeCandidate dbCandidateLookUp, CandidateSummaryViewModel candidate)
-        {
-            Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbCandidateLookUp.RunningMateId, dateId);
-
-            candidate = GetCandidateElectionSummaryForCandidateId(candidate, dbCandidateLookUp);
-            candidate = GetCandidateNameSummaryForCandidateId(candidate, dbCandidateLookUp);
-            candidate = GetCandidateOfficeSummaryForCandidateId(candidate, dbCandidateLookUp);
-            candidate = GetRunningMateNameSummaryForCandidateId(candidate, dbCandidateLookUp);
-            candidate = GetRunningMateOfficeSummaryForCandidateId(dateId, candidate, dbElectionRunningMate);
-
-            return candidate;
-        }
-        */
-
-
-        // ****************************************************************************
-
-
-            /*
-        public CandidateSummaryViewModel GetCandidateElectionSummaryForRunningMateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate)
-        {
-            candidate.OfficeHolderId = dbElectionRunningMate.OfficeHolderId;
-            candidate.OfficeHolderName = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbElectionRunningMate.OfficeHolderId);
-            candidate.PartyId = dbElectionRunningMate.PartyId;
-            candidate.PartyName = GetPartyNameForPartyIdFromDatabase(dbElectionRunningMate.PartyId.ToString());
-            candidate.CertifiedCandidateId = dbElectionRunningMate.CertifiedCandidateId;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetCandidateNameSummaryForRunningMateId(CandidateSummaryViewModel candidate,  Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate)
-        {
-            Models.ElectionCandidate dbCandidate = GetCandidateNameForCandidateIdFromDatabase(dbElectionRunningMate.CandidateId);
-
-            candidate.CandidateId = dbCandidate.ElectionCandidateId;
-            candidate.VoteSmartCandidateId = dbCandidate.VoteSmartCandidateId;
-            candidate.CandidateFirstName = dbCandidate.FirstName;
-            candidate.CandidateMiddleName = dbCandidate.MiddleName;
-            candidate.CandidateLastName = dbCandidate.LastName;
-            candidate.CandidateSuffix = dbCandidate.Suffix;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetCandidateOfficeSummaryForRunningMateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate)
-        {
-            Models.ElectionOffice dbOffice = GetOfficeInformationForOfficeId(dbElectionRunningMate.OfficeId);
-
-            candidate.CandidateOfficeId = dbElectionRunningMate.OfficeId;
-            candidate.VoteSmartCandidateOfficeId = dbOffice.VoteSmartOfficeId;
-            candidate.CandidateOfficeName = dbOffice.OfficeName;
-            candidate.CandidateOfficeTerm = dbOffice.Term;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetRunningMateNameSummaryForRunningMateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate)
-        {
-            Models.ElectionCandidate dbRunningMate = GetCandidateNameForCandidateIdFromDatabase(dbElectionRunningMate.RunningMateId);
-
-            candidate.RunningMateId = dbRunningMate.ElectionCandidateId;
-            candidate.VoteSmartRunningMateId = dbRunningMate.VoteSmartCandidateId;
-            candidate.RunningMateFirstName = dbRunningMate.FirstName;
-            candidate.RunningMateMiddleName = dbRunningMate.MiddleName;
-            candidate.RunningMateLastName = dbRunningMate.LastName;
-            candidate.RunningMateSuffix = dbRunningMate.Suffix;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetRunningMateOfficeSummaryForRunningMateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbCandidateLookUp, Models.ElectionVotingDateOfficeCandidate dbElectionRunningMate)
-        {
-            Models.ElectionOffice dbOffice = GetOfficeInformationForOfficeId(dbCandidateLookUp.OfficeId);
-
-            candidate.RunningMateOfficeId = dbCandidateLookUp.OfficeId;
-            candidate.VoteSmartRunningMateOfficeId = dbOffice.VoteSmartOfficeId;
-            candidate.RunningMateOfficeName = dbOffice.OfficeName;
-            candidate.RunningMateOfficeTerm = dbOffice.Term;
-
-            return candidate;
-        }
-        */
-
-
-        // ******************************************************************************
-
-
-            /*
-        public CandidateSummaryViewModel GetCandidateElectionSummaryForCandidateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionCandidate)
-        {
-            candidate.OfficeHolderId = dbElectionCandidate.OfficeHolderId;
-            candidate.OfficeHolderName = GetOfficeHolderyNameForOfficeHolderIdFromDatabase(dbElectionCandidate.OfficeHolderId);
-            candidate.PartyId = dbElectionCandidate.PartyId;
-            candidate.PartyName = GetPartyNameForPartyIdFromDatabase(dbElectionCandidate.PartyId.ToString());
-            candidate.CertifiedCandidateId = dbElectionCandidate.CertifiedCandidateId;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetCandidateNameSummaryForCandidateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionCandidate)
-        {
-            Models.ElectionCandidate dbCandidate = GetCandidateNameForCandidateIdFromDatabase(dbElectionCandidate.CandidateId);
-
-            candidate.CandidateId = dbCandidate.ElectionCandidateId;
-            candidate.VoteSmartCandidateId = dbCandidate.VoteSmartCandidateId;
-            candidate.CandidateFirstName = dbCandidate.FirstName;
-            candidate.CandidateMiddleName = dbCandidate.MiddleName;
-            candidate.CandidateLastName = dbCandidate.LastName;
-            candidate.CandidateSuffix = dbCandidate.Suffix;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetCandidateOfficeSummaryForCandidateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionCandidate)
-        {
-            Models.ElectionOffice dbOffice = GetOfficeInformationForOfficeId(dbElectionCandidate.OfficeId);
-
-            candidate.CandidateOfficeId = dbElectionCandidate.OfficeId;
-            candidate.VoteSmartCandidateOfficeId = dbOffice.VoteSmartOfficeId;
-            candidate.CandidateOfficeName = dbOffice.OfficeName;
-            candidate.CandidateOfficeTerm = dbOffice.Term;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetRunningMateNameSummaryForCandidateId(CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionCandidate)
-        {
-            Models.ElectionCandidate dbRunningMate = GetCandidateNameForCandidateIdFromDatabase(dbElectionCandidate.RunningMateId);
-
-            candidate.RunningMateId = dbRunningMate.ElectionCandidateId;
-            candidate.VoteSmartRunningMateId = dbRunningMate.VoteSmartCandidateId;
-            candidate.RunningMateFirstName = dbRunningMate.FirstName;
-            candidate.RunningMateMiddleName = dbRunningMate.MiddleName;
-            candidate.RunningMateLastName = dbRunningMate.LastName;
-            candidate.RunningMateSuffix = dbRunningMate.Suffix;
-
-            return candidate;
-        }
-        */
-
-            /*
-        public CandidateSummaryViewModel GetRunningMateOfficeSummaryForCandidateId(int dateId, CandidateSummaryViewModel candidate, Models.ElectionVotingDateOfficeCandidate dbElectionCandidate)
-        {
-            Models.ElectionVotingDateOfficeCandidate dbRunningMateLookUp = GetCandidateSummaryForCurrentElectionDateFromDatabase(dbElectionCandidate.CandidateId, dateId);
-            Models.ElectionOffice dbOffice = GetOfficeInformationForOfficeId(dbRunningMateLookUp.OfficeId);
-
-            candidate.RunningMateOfficeId = dbRunningMateLookUp.OfficeId;
-            candidate.VoteSmartRunningMateOfficeId = dbOffice.VoteSmartOfficeId;
-            candidate.RunningMateOfficeName = dbOffice.OfficeName;
-            candidate.RunningMateOfficeTerm = dbOffice.Term;
-
-            return candidate;
-        }
-        */
-
-
-        // ******************************************************************************
-
-
-        /*
-        public CandidateSummaryViewModel GetCandidateBiographyFromVoteSmart(CandidateSummaryViewModel candidate)
-        {
-            VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
-            ViewModels.VoteSmart.CandidateBio candidateBio = voteSmart.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(candidate.VoteSmartCandidateId);
-            candidate = UpdateCandidateSummaryWithCandidateBiographyFromVoteSmart(candidate, candidateBio);
-
-            if (candidate.RunningMateId > 0)
+            return new CandidateCompareSummaryLookUpViewModel()
             {
-                ViewModels.VoteSmart.CandidateBio runningMateBio = voteSmart.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(candidate.VoteSmartRunningMateId);
-                candidate = UpdateCandidateSummaryWithRunningMateBiographyFromVoteSmart(candidate, runningMateBio);
-            }
-
-            return candidate;
-         }
-         */
-
-            /*
-        public CandidateSummaryViewModel UpdateCandidateSummaryWithCandidateBiographyFromVoteSmart(CandidateSummaryViewModel candidate, ViewModels.VoteSmart.CandidateBio candidateBio)
-        {
-            candidate.OpenSecretsCandidateId = candidateBio.CrpId;
-            candidate.VoteSmartCandidateNickName = candidateBio.NickName;
-            candidate.VoteSmartCandidateMiddleName = candidateBio.MiddleName;
-            candidate.VoteSmartCandidatePreferredName = candidateBio.PreferredName;
-            candidate.VoteSmartCandidateBirthDate = candidateBio.BirthDate;
-            candidate.VoteSmartCandidateBirthPlace = candidateBio.BirthPlace;
-            candidate.VoteSmartCandidatePronunciation = candidateBio.Pronunciation;
-            candidate.VoteSmartCandidateGender = candidateBio.Gender;
-            candidate.VoteSmartCandidatePhotoUrl = GetValidImageLocationToDisplay(candidateBio.Photo, candidateBio.Gender);
-            candidate.VoteSmartCandidateFamily = GetListFromStringWithLineBreaks(candidateBio.Family);
-            candidate.VoteSmartCandidateHomeCity = candidateBio.HomeCity;
-            candidate.VoteSmartCandidateHomeState = candidateBio.HomeState;
-            candidate.VoteSmartCandidateEducation = GetListFromStringWithLineBreaks(candidateBio.Education);
-            candidate.VoteSmartCandidateProfession = GetListFromStringWithLineBreaks(candidateBio.Profession);
-            candidate.VoteSmartCandidatePolitical = GetListFromStringWithLineBreaks(candidateBio.Political);
-            candidate.VoteSmartCandidateReligion = candidateBio.Religion;
-            candidate.VoteSmartCandidateCongMembership = GetListFromStringWithLineBreaks(candidateBio.CongMembership);
-            candidate.VoteSmartCandidateOrgMembership = GetListFromStringWithLineBreaks(candidateBio.OrgMembership);
-            candidate.VoteSmartCandidateSpecialMsg = GetListFromStringWithLineBreaks(candidateBio.SpecialMsg);
-
-            return candidate;
-        }
-        */
-
-
-            /*
-        public CandidateSummaryViewModel UpdateCandidateSummaryWithRunningMateBiographyFromVoteSmart(CandidateSummaryViewModel candidate, ViewModels.VoteSmart.CandidateBio runningMateBio)
-        {
-            candidate.OpenSecretsRunningMateId = runningMateBio.CrpId;
-            candidate.VoteSmartRunningMateNickName = runningMateBio.NickName;
-            candidate.VoteSmartRunningMateMiddleName = runningMateBio.MiddleName;
-            candidate.VoteSmartRunningMatePreferredName = runningMateBio.PreferredName;
-            candidate.VoteSmartRunningMateBirthDate = runningMateBio.BirthDate;
-            candidate.VoteSmartRunningMateBirthPlace = runningMateBio.BirthPlace;
-            candidate.VoteSmartRunningMatePronunciation = runningMateBio.Pronunciation;
-            candidate.VoteSmartRunningMateGender = runningMateBio.Gender;
-            candidate.VoteSmartRunningMatePhotoUrl = GetValidImageLocationToDisplay(runningMateBio.Photo, runningMateBio.Gender);
-            candidate.VoteSmartRunningMateFamily = GetListFromStringWithLineBreaks(runningMateBio.Family);
-            candidate.VoteSmartRunningMateHomeCity = runningMateBio.HomeCity;
-            candidate.VoteSmartRunningMateHomeState = runningMateBio.HomeState;
-            candidate.VoteSmartRunningMateEducation = GetListFromStringWithLineBreaks(runningMateBio.Education);
-            candidate.VoteSmartRunningMateProfession = GetListFromStringWithLineBreaks(runningMateBio.Profession);
-            candidate.VoteSmartRunningMatePolitical = GetListFromStringWithLineBreaks(runningMateBio.Political);
-            candidate.VoteSmartRunningMateReligion = runningMateBio.Religion;
-            candidate.VoteSmartRunningMateCongMembership = GetListFromStringWithLineBreaks(runningMateBio.CongMembership);
-            candidate.VoteSmartRunningMateOrgMembership = GetListFromStringWithLineBreaks(runningMateBio.OrgMembership);
-            candidate.VoteSmartRunningMateSpecialMsg = GetListFromStringWithLineBreaks(runningMateBio.SpecialMsg);
-
-            return candidate;
-        }
-        */
-
-          
-
-
-
-        // ********************************************************************************
-
-
-            /*
-        public List<Models.ElectionOffice> GetCompleteListOfPossibleOfficeNamesFromDatabase()
-        {
-            using (OhioVoterDbContext db = new OhioVoterDbContext())
-            {
-                return db.ElectionOffices.ToList();
-            }
-        }
-        */
-
-            /*
-        public List<Models.ElectionCandidate> GetCompleteListOfPossibleCandidateNamesFromDatabase()
-        {
-            using (OhioVoterDbContext db = new OhioVoterDbContext())
-            {
-                return db.ElectionCandidates.ToList();
-            }
+                CandidateFirstDisplayId = candidateFirstDisplayId,
+                VotingDateId = votingDateId,
+                OfficeId = officeId,
+                CandidateNames = GetCandidateCompareListItems(candidateFirstDisplayId, votingDateId, officeId)
+                //CandidateCompareDropDownList = GetCandidatesToCompareForDropDownList(candidateFirstDisplayId, votingDateId, officeId)
+            };
         }
 
-            */
+
+    /*
+    public List<Models.ElectionVotingDateOfficeCandidate> GetCandidateSummaryListForCandidatesRunningForSameOfficeForCurrentElectionDateFromDatabase(int votingDateId)
+    {
+        List<Models.ElectionVotingDateOfficeCandidate> dbCandidate = new List<Models.ElectionVotingDateOfficeCandidate>();
+
+        using (OhioVoterDbContext db = new OhioVoterDbContext())
+        {
+            dbCandidate = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == votingDateId).ToList();
+        }
+
+        if (dbCandidate == null)
+            return new List<Models.ElectionVotingDateOfficeCandidate>();
+
+        return dbCandidate;
+    }
+    */
+
+    // ********************************************************************************
 
 
-        public Models.ElectionCandidate GetCandidateNameForCandidateIdFromDatabase(int candidateId)
+    /*
+public List<Models.ElectionOffice> GetCompleteListOfPossibleOfficeNamesFromDatabase()
+{
+    using (OhioVoterDbContext db = new OhioVoterDbContext())
+    {
+        return db.ElectionOffices.ToList();
+    }
+}
+*/
+
+    /*
+public List<Models.ElectionCandidate> GetCompleteListOfPossibleCandidateNamesFromDatabase()
+{
+    using (OhioVoterDbContext db = new OhioVoterDbContext())
+    {
+        return db.ElectionCandidates.ToList();
+    }
+}
+
+    */
+
+
+    public Models.ElectionCandidate GetCandidateNameForCandidateIdFromDatabase(int candidateId)
         {
             Models.ElectionCandidate dbCandidate = new Models.ElectionCandidate();
 
@@ -1054,101 +1650,110 @@ namespace OhioVoter.Controllers
 
 
 
+        public Models.ElectionVotingDate GetDateInformationForDateIdFromDatabase(int dateId)
+        {
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                return db.ElectionVotingDates.Find(dateId);
+            }
+        }
+
+
 
         // *********************
         // Office Drop Down List
         // *********************
 
 
-            /*
-        public OfficeDropDownList GetOfficesForDropDownList(int dateId)
+        /*
+    public OfficeDropDownList GetOfficesForDropDownList(int dateId)
+    {
+        return new OfficeDropDownList()
         {
-            return new OfficeDropDownList()
-            {
-                OfficeNames = GetOfficeListItems(dateId)
-            };
-        }
-        
-            */
+            OfficeNames = GetOfficeListItems(dateId)
+        };
+    }
 
-
-            /*
-        private IEnumerable<SelectListItem> GetOfficeListItems(int dateId)
-        {
-            if (dateId <= 0)
-                return new List<SelectListItem>();
-
-            List<int> dbOfficeIds = GetOfficesForCurrentDateFromDatabase(dateId);
-            List<Models.ElectionOffice> dbOffices = GetOfficeNamesForOfficeId(dbOfficeIds);
-            List <SelectListItem> offices = new List<SelectListItem>();
-
-            for (int i = 0; i < dbOffices.Count; i++)
-            {
-                string OfficeName = dbOffices[i].OfficeName;
-
-                if (dbOffices[i].Term != null && dbOffices[i].Term != "")
-                {
-                    OfficeName = string.Format("{0} ({1})", dbOffices[i].OfficeName, dbOffices[i].Term);
-                }
-
-                offices.Add(new SelectListItem()
-                {
-                    Value = dbOffices[i].ElectionOfficeId.ToString(),
-                    Text = OfficeName
-                });
-            }
-
-            return offices;
-        }
         */
 
 
-            /*
-        private List<int> GetOfficesForCurrentDateFromDatabase(int dateId)
+        /*
+    private IEnumerable<SelectListItem> GetOfficeListItems(int dateId)
+    {
+        if (dateId <= 0)
+            return new List<SelectListItem>();
+
+        List<int> dbOfficeIds = GetOfficesForCurrentDateFromDatabase(dateId);
+        List<Models.ElectionOffice> dbOffices = GetOfficeNamesForOfficeId(dbOfficeIds);
+        List <SelectListItem> offices = new List<SelectListItem>();
+
+        for (int i = 0; i < dbOffices.Count; i++)
         {
-            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            string OfficeName = dbOffices[i].OfficeName;
+
+            if (dbOffices[i].Term != null && dbOffices[i].Term != "")
             {
-                //List<Models.ElectionVotingDateOfficeCandidate> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).Distinct().ToList();
-                List<int> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId)
-                                                                           .Select(x => x.OfficeId)
-                                                                           .ToList();
-                return dbOffices.Distinct().ToList();
+                OfficeName = string.Format("{0} ({1})", dbOffices[i].OfficeName, dbOffices[i].Term);
             }
+
+            offices.Add(new SelectListItem()
+            {
+                Value = dbOffices[i].ElectionOfficeId.ToString(),
+                Text = OfficeName
+            });
         }
-        */
 
-            /*
-        private List<Models.ElectionOffice> GetOfficeNamesForOfficeId(List<int> officeIds)
+        return offices;
+    }
+    */
+
+
+        /*
+    private List<int> GetOfficesForCurrentDateFromDatabase(int dateId)
+    {
+        using (OhioVoterDbContext db = new OhioVoterDbContext())
         {
-            List<Models.ElectionOffice> dbOffices = new List<ElectionOffice>();
-            List<Models.ElectionOffice> offices = new List<ElectionOffice>();
+            //List<Models.ElectionVotingDateOfficeCandidate> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).Distinct().ToList();
+            List<int> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                                                                       .Select(x => x.OfficeId)
+                                                                       .ToList();
+            return dbOffices.Distinct().ToList();
+        }
+    }
+    */
 
-            using (OhioVoterDbContext db = new OhioVoterDbContext())
-            {
-                dbOffices = db.ElectionOffices.ToList();
-            }
+        /*
+    private List<Models.ElectionOffice> GetOfficeNamesForOfficeId(List<int> officeIds)
+    {
+        List<Models.ElectionOffice> dbOffices = new List<ElectionOffice>();
+        List<Models.ElectionOffice> offices = new List<ElectionOffice>();
 
-            for (int i = 0; i < officeIds.Count; i++)
+        using (OhioVoterDbContext db = new OhioVoterDbContext())
+        {
+            dbOffices = db.ElectionOffices.ToList();
+        }
+
+        for (int i = 0; i < officeIds.Count; i++)
+        {
+            for (int j = 0; j < dbOffices.Count; j++)
             {
-                for (int j = 0; j < dbOffices.Count; j++)
+                if (officeIds[i] == dbOffices[j].ElectionOfficeId)
                 {
-                    if (officeIds[i] == dbOffices[j].ElectionOfficeId)
+                    offices.Add(new Models.ElectionOffice()
                     {
-                        offices.Add(new Models.ElectionOffice()
-                        {
-                            ElectionOfficeId = dbOffices[j].ElectionOfficeId,
-                            OfficeName = dbOffices[j].OfficeName,
-                            Term = dbOffices[j].Term
-                        });
+                        ElectionOfficeId = dbOffices[j].ElectionOfficeId,
+                        OfficeName = dbOffices[j].OfficeName,
+                        Term = dbOffices[j].Term
+                    });
 
-                        j = dbOffices.Count;
-                    }
+                    j = dbOffices.Count;
                 }
             }
-
-            return offices.OrderBy(x => x.OfficeName).OrderBy(x => x.ElectionOfficeId).ToList();
         }
-        */
+
+        return offices.OrderBy(x => x.OfficeName).OrderBy(x => x.ElectionOfficeId).ToList();
+    }
+    */
 
 
 
@@ -1188,6 +1793,20 @@ namespace OhioVoter.Controllers
 
 
 
+        private CandidateCompareDropDownList GetCandidatesToCompareForDropDownList(int candidateFirstDisplayId, int dateId, int officeId)
+        {
+            return new CandidateCompareDropDownList()
+            {
+                CandidateNames = GetCandidateCompareListItems(candidateFirstDisplayId, dateId, officeId)
+            };
+        }
+
+
+
+        // *****************************************************************
+
+
+
         private IEnumerable<SelectListItem> GetCandidateListItems(int dateId)
         {
             if (dateId <= 0)
@@ -1212,14 +1831,87 @@ namespace OhioVoter.Controllers
         }
 
 
+
+        private IEnumerable<SelectListItem> GetCandidateCompareListItems(int candidateFirstDisplayId, int dateId, int officeId)
+        {
+            if (dateId <= 0)
+                return new List<SelectListItem>();
+
+            List<int> dbCandidateIds = GetCandidatesForCurrentDateAndOfficeFromDatabase(dateId, officeId);
+            dbCandidateIds = RemoveSuppliedCandidateFromCandidateIdList(dbCandidateIds, candidateFirstDisplayId);
+            List<Models.ElectionCandidate> dboCandidates = GetCandidateNamesForCandidateId(dbCandidateIds);
+
+            List<SelectListItem> candidates = new List<SelectListItem>();
+
+            for (int i = 0; i < dboCandidates.Count; i++)
+            {
+                string candidateName = string.Format("{0} {1}", dboCandidates[i].FirstName, dboCandidates[i].LastName);
+
+                candidates.Add(new SelectListItem()
+                {
+                    Value = dboCandidates[i].ElectionCandidateId.ToString(),
+                    Text = candidateName
+                });
+            }
+
+            return candidates;
+        }
+
+
+
+        public List<int> RemoveSuppliedCandidateFromCandidateIdList(List<int> candidateIdList, int candidateId)
+        {
+            var itemToRemove = candidateIdList.Single(r => r == candidateId);
+            candidateIdList.Remove(itemToRemove);
+            return candidateIdList;
+        }
+
+
+        // ****************************************************************
+
+
+
         private List<int> GetCandidatesForCurrentDateFromDatabase(int dateId)
         {
+            List<Models.ElectionVotingDateOfficeCandidate> dbOffices;
+
             using (OhioVoterDbContext db = new OhioVoterDbContext())
             {
-                List<Models.ElectionVotingDateOfficeCandidate> dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).ToList();
-                return dbOffices.Select(x => x.CandidateId).Distinct().ToList();
+                dbOffices = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId).ToList();
             }
+
+            if (dbOffices == null)
+            {
+                return new List<int>();
+            }
+
+            return dbOffices.Select(x => x.CandidateId).Distinct().ToList();
         }
+
+
+
+        private List<int> GetCandidatesForCurrentDateAndOfficeFromDatabase(int dateId, int officeId)
+        {
+            List<Models.ElectionVotingDateOfficeCandidate> dbCandidates;
+
+            using (OhioVoterDbContext db = new OhioVoterDbContext())
+            {
+                dbCandidates = db.ElectionVotingDateOfficeCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                                                                    .Where(x => x.OfficeId == officeId)
+                                                                    .ToList();
+            }
+
+            if (dbCandidates == null)
+            {
+                return new List<int>();
+            }
+
+            return dbCandidates.Select(x => x.CandidateId).Distinct().ToList();
+        }
+
+
+
+        // **********************************************************************
 
 
 

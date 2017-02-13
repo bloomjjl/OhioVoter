@@ -1,0 +1,26 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Issue Page";
+}
+
+<div class="row">
+
+    <div id="side-bar" class="col-sm-4">
+        @*@{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName as string);}*@
+    </div>
+
+    <div class="col-sm-8">
+
+        <div class="panel-page-group">
+            <h2><p class="panel-page-title"> Ballot Measure Knowledge Center </p></h2>
+        </div>
+
+        <div id="candidate-display" class="candidate-Information">
+            @*@{Html.RenderAction("DisplayCandidateInformation", "Candidate", Model);}*@
+            <p><h2>Issue page will be coming soon...</h2></p>
+        </div>
+
+    </div>
+
+</div>

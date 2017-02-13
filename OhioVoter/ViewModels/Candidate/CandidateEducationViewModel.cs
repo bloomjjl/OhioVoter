@@ -5,12 +5,12 @@ using System.Web;
 
 namespace OhioVoter.ViewModels.Candidate
 {
-    public class PoliticalViewModel
+    public class CandidateEducationViewModel
     {
         public int CandidateLookUpId { get; set; }
         public int CandidateId { get; set; }
         public int RunningMateId { get; set; }
-        public IEnumerable<string> CandidatePoliticalHistory { get; set; }
-        public IEnumerable<string> RunningMatePoliticalHistory { get; set; }
+        public IEnumerable<string> CandidateEducationHistory { get; set; }
+        public IEnumerable<string> RunningMateEducationHistory { get; set; }
     }
 }

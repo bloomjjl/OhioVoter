@@ -1,44 +1,44 @@
 ﻿@model OhioVoter.ViewModels.Candidate.CandidateDisplayViewModel
 
 
-<div id="candidate-summary" class="candidate-group">
+<div id="candidate_summary_group" class="candidate-group">
     @{Html.RenderPartial("_CandidateSummary", Model.CandidateSummaryViewModel);}
 </div>
 
-<div id="candidate-office" class="candidate-group">
-    @{Html.RenderPartial("_OfficeSummary");}
+<div id="candidate_office_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateOfficeSummary");}
 </div>
 
-<div id="candidate-political" class="candidate-group">
-    @{Html.RenderPartial("_Political", Model.PoliticalViewModel);}
+<div id="candidate_political_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidatePolitical", Model.CandidatePoliticalViewModel);}
 </div>
 
-<div id="candidate-caucus" class="candidate-group">
-    @{Html.RenderPartial("_Caucus", Model.CaucusViewModel);}
+<div id="candidate_caucus_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateCaucus", Model.CandidateCaucusViewModel);}
 </div>
 
-<div id="candidate-professional" class="candidate-group">
-    @{Html.RenderPartial("_Professional", Model.ProfessionalViewModel);}
+<div id="candidate_professional_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateProfessional", Model.CandidateProfessionalViewModel);}
 </div>
 
-<div id="candidate-education" class="candidate-group">
-    @{Html.RenderPartial("_Education", Model.EducationViewModel);}
+<div id="candidate_education_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateEducation", Model.CandidateEducationViewModel);}
 </div>
 
-<div id="candidate-personal" class="candidate-group">
-   @{Html.RenderPartial("_Personal", Model.PersonalViewModel);}
+<div id="candidate_personal_group" class="candidate-group">
+   @{Html.RenderPartial("_CandidatePersonal", Model.CandidatePersonalViewModel);}
 </div>
 
-<div id="candidate-contact" class="candidate-group">
-    @{Html.RenderPartial("_Contact");}
+<div id="candidate_contact_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateContact");}
 </div>
 
-<div id="candidate-religion" class="candidate-group">
-    @{Html.RenderPartial("_Civic", Model.CivicViewModel);}
+<div id="candidate_religion_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateCivic", Model.CandidateCivicViewModel);}
 </div>
 
-<div id="candidate-event" class="candidate-group">
-    @{Html.RenderPartial("_Additional", Model.AdditionalViewModel);}
+<div id="candidate_event_group" class="candidate-group">
+    @{Html.RenderPartial("_CandidateAdditional", Model.CandidateAdditionalViewModel);}
 </div>
 
 

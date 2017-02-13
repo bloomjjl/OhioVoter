@@ -1,0 +1,24 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Candidate Compare Page";
+}
+
+<div class="row">
+
+    <div id="side-bar" class="col-sm-4">
+        @{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName as string);}
+    </div>
+
+    <div class="col-sm-8">
+
+        <div class="panel-page-group">
+            <h2><p class="panel-page-title"> Candidate Knowledge Center </p></h2>
+        </div>
+
+        <div id="candidate_compare_display" class="candidate-Information">
+            @{Html.RenderPartial("_CandidateCompareDisplay", Model.CandidateCompareDisplayViewModel);}
+        </div>
+    </div>
+
+</div>

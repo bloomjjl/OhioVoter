@@ -1,23 +1,23 @@
-﻿@model OhioVoter.ViewModels.Candidate.CaucusViewModel
+﻿@model OhioVoter.ViewModels.Candidate.CandidateAdditionalViewModel
 
 <div class="panel panel-group panel-main panel-main-group">
 
     <div class="panel-title panel-main-title">
-        <p> Caucus/Non-Legislative Committees </p>
+        <p> Additional Information </p>
     </div>
 
     <div class="panel-body panel-main-body">
 
         @{ if (Model.CandidateLookUpId == Model.CandidateId)
             {
-                foreach (var line in @Model.CandidateCaucusHistory)
+                foreach (var line in @Model.CandidateAdditionalInformation)
                 {
                     <p>@line</p>
                 }
             }
             else if (Model.CandidateLookUpId == Model.RunningMateId)
             {
-                foreach (var line in @Model.RunningMateCaucusHistory)
+                foreach (var line in @Model.RunningMateAdditionalInformation)
                 {
                     <p>@line</p>
                 }

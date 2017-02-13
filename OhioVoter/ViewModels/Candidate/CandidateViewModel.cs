@@ -17,19 +17,4 @@ namespace OhioVoter.ViewModels.Candidate
         public CandidateDisplayViewModel CandidateDisplayViewModel { get; set; }
     }
 
-    /*
-        public ElectionDateDropDownList ElectionDateDropDownList { get; set; }
-        public OfficeDropDownList OfficeDropDownList { get; set; }
-        public CandidateDropDownList CandidateDropDownList{ get; set; }
-
-        public Models.ElectionVotingDate ElectionDate { get; set; }
-
-        public CandidateSummary Candidate { get; set; }
-        //public IEnumerable<CandidateSummary> Candidates { get; set; }
-    }
-
-    */
-
-
-
 }

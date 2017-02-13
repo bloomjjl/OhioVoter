@@ -1,23 +1,23 @@
-﻿@model OhioVoter.ViewModels.Candidate.EducationViewModel
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCivicViewModel
 
 <div class="panel panel-group panel-main panel-main-group">
 
     <div class="panel-title panel-main-title">
-        <p> Education </p>
+        <p> Religious, Civic, and other Memberships </p>
     </div>
 
     <div class="panel-body panel-main-body">
 
         @{ if (Model.CandidateLookUpId == Model.CandidateId)
             {
-                foreach (var line in @Model.CandidateEducationHistory)
+                foreach (var line in @Model.CandidateCivicMemberships)
                 {
                     <p>@line</p>
                 }
             }
             else if (Model.CandidateLookUpId == Model.RunningMateId)
             {
-                foreach (var line in @Model.RunningMateEducationHistory)
+                foreach (var line in @Model.RunningMateCivicMemberships)
                 {
                     <p>@line</p>
                 }

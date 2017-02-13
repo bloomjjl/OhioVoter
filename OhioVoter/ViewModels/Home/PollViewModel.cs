@@ -24,6 +24,7 @@ namespace OhioVoter.ViewModels.Home
         public string PartyColor { get; set; }
         public int VoteCount { get; set; }
         public decimal VotePercent { get; set; }
+        public string ImageUrl { get; set; }
     }
 
 }

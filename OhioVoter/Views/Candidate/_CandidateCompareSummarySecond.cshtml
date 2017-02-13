@@ -1,0 +1,33 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareSummarySecondViewModel
+
+<div id="candidate_compare_summary_second">
+
+    <div id="candidate_compare_summary_second_candidate">
+        <img src="@Url.Content(Model.CandidateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_compare_summary_second_img" /> <br />
+        @Model.CandidateCompareSummarySecond.FullName<br />
+        @Model.CandidateCompareSummarySecond.PartyName<br />
+        @Model.CandidateCompareSummarySecond.OfficeName
+        @Model.CandidateCompareSummarySecond.OfficeTerm<br />
+        @Model.CandidateCompareSummarySecond.OfficeHolderName
+    </div>
+
+    <div id="candidate_compare_summary_second_runningmate">
+        @{ if (Model.RunningMateCompareSummarySecond.CandidateId > 0)
+            {
+                <img src="@Url.Content(@Model.RunningMateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_compare_summary_second_img" /> <br />
+                @Model.RunningMateCompareSummarySecond.FullName<br />
+                @Model.RunningMateCompareSummarySecond.PartyName<br />
+                @Model.RunningMateCompareSummarySecond.OfficeName<br />
+                @Model.RunningMateCompareSummarySecond.OfficeHolderName
+            }
+        }
+    </div>
+
+    @Html.ActionLink("Remove Candidate", "RemoveSecond", "Candidate", new { candidateFirstId = Model.CandidateFirstDisplayId, candidateSecondId = Model.CandidateSecondDisplayId, candidateCount = Model.TotalNumberOfCandidates, dateId = Model.VotingDateId, officeId = Model.OfficeId }, new { @id = "candidate_compare_summary_second_btn", @class = "btn btn-block panel-main-btn" })
+
+</div>
+
+
+
+
+

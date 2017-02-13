@@ -26,7 +26,7 @@
                 @foreach (var x in Model.CandidateVotes)
                 {
                     <div class="graph-row">
-                        <div class="graph-row-img"><img src="~/Content/images/candidate.jpg" /></div>
+                        <div class="graph-row-img"><img src="@x.ImageUrl" /></div>
                         <div class="graph-row-candidate-name">@x.Candidate</div>
                         <div class="graph-row-vote-count">@x.VotePercent%</div>
                         <div class="graph-row-bar" style="width:@x.VotePercent%; background-color:@x.PartyColor;"></div>

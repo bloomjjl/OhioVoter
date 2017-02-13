@@ -5,36 +5,47 @@ using System.Web;
 
 namespace OhioVoter.ViewModels.Candidate
 {
-    public class CandidateDisplayViewModel
+    public class CandidateCompareDisplayViewModel
     {
         public string ControllerName { get; set; }
-
-        public int CandidateLookUpId { get; set; }
 
         public int VotingDateId { get; set; }
         public string VotingDate { get; set; }
 
         public string CertifiedCandidateId { get; set; }
+        public int OfficeId { get; set; }
+        public string OfficeName { get; set; }
         public string PartyId { get; set; }
         public string PartyName { get; set; }
         public string OfficeHolderId { get; set; }
         public string OfficeHolderName { get; set; }
 
-        public Candidate Candidate { get; set; }
-        public RunningMate RunningMate { get; set; }
+        public int CandidateFirstDisplayId { get; set; }
+        public bool CandidateFirstIsRunningMate { get; set; }
+        public int CandidateSecondDisplayId { get; set; }
+        public bool CandidateSecondIsRunningMate { get; set; }
 
-        public CandidateSummaryViewModel CandidateSummaryViewModel { get; set; }
-        public CandidatePoliticalViewModel CandidatePoliticalViewModel { get; set; }
-        public CandidateCaucusViewModel CandidateCaucusViewModel { get; set; }
-        public CandidateProfessionalViewModel CandidateProfessionalViewModel { get; set; }
-        public CandidateEducationViewModel CandidateEducationViewModel { get; set; }
-        public CandidatePersonalViewModel CandidatePersonalViewModel { get; set; }
-        public CandidateCivicViewModel CandidateCivicViewModel { get; set; }
-        public CandidateAdditionalViewModel CandidateAdditionalViewModel { get; set; }
+        public CandidateCompareSummaryViewModel CandidateCompareSummaryViewModel { get; set; }
+//        public CandidateCompareFirstPoliticalViewModel CandidateCompareFirstPoliticalViewModel { get; set; }
+//        public CandidateCompareFirstCaucusViewModel CandidateCompareFirstCaucusViewModel { get; set; }
+//        public CandidateCompareFirstProfessionalViewModel CandidateCompareFirstProfessionalViewModel { get; set; }
+//        public CandidateCompareFirstEducationViewModel CandidateCompareFirstEducationViewModel { get; set; }
+//        public CandidateCompareFirstPersonalViewModel CandidateCompareFirstPersonalViewModel { get; set; }
+//        public CandidateCompareFirstCivicViewModel CandidateCompareFirstCivicViewModel { get; set; }
+//        public CandidateCompareFirstAdditionalViewModel CandidateCompareFirstAdditionalViewModel { get; set; }
+
+//        public CandidateCompareSecondSummaryViewModel CandidateCompareSecondSummaryViewModel { get; set; }
+//        public CandidateCompareSecondPoliticalViewModel CandidateCompareSecondPoliticalViewModel { get; set; }
+//        public CandidateCompareSecondCaucusViewModel CandidateCompareSecondCaucusViewModel { get; set; }
+//        public CandidateCompareSecondProfessionalViewModel CandidateCompareSecondProfessionalViewModel { get; set; }
+//        public CandidateCompareSecondEducationViewModel CandidateCompareSecondEducationViewModel { get; set; }
+//        public CandidateCompareSecondPersonalViewModel CandidateCompareSecondPersonalViewModel { get; set; }
+//        public CandidateCompareSecondCivicViewModel CandidateCompareSecondCivicViewModel { get; set; }
+//        public CandidateCompareSecondAdditionalViewModel CandidateCompareSecondAdditionalViewModel { get; set; }
     }
 
-
-    public class Candidate
+    /*
+    public class CandidateCompareFirst
     {
         public int OfficeId { get; set; }
         public string OfficeName { get; set; }
@@ -78,7 +89,7 @@ namespace OhioVoter.ViewModels.Candidate
 
 
 
-    public class RunningMate
+    public class CandidateCompareSecond
     {
         public int OfficeId { get; set; }
         public string OfficeName { get; set; }
@@ -120,5 +131,5 @@ namespace OhioVoter.ViewModels.Candidate
         public IEnumerable<string> VoteSmartCandidateSpecialMsg { get; set; }
 
     }
-
+    */
 }

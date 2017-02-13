@@ -1,0 +1,26 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareSummaryViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p>Candidate Compare Look Up</p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        <div id="candidate_compare_summary">
+
+            <div id="candidate_compare_summary_first_group" class="candidate-group">
+                @{Html.RenderPartial("_CandidateCompareSummaryFirst", Model.CandidateCompareSummaryFirstViewModel);}
+            </div>
+            
+            <div id="candidate_compare_summary_second_group" class="candidate-group">
+                @{Html.RenderAction("DisplayCandidateCompareInformation", "Candidate", Model);}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>

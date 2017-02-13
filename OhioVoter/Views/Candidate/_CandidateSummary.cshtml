@@ -8,9 +8,9 @@
 
     <div class="panel-body panel-main-body">
 
-        <div id="candidate_summary_group">
+        <div id="candidate_summary">
 
-            <div id="candidate_summary">
+            <div id="candidate_summary_candidate">
                 <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img" /> <br />
                 @Model.CandidateSummary.FullName<br />
                 @Model.CandidateSummary.PartyName<br />
@@ -19,10 +19,10 @@
                 @Model.CandidateSummary.OfficeHolderName
             </div>
 
-            <div id="runningmate_summary">
+            <div id="candidate_summary_runningmate">
                 @{ if (Model.RunningMateSummary.RunningMateId > 0)
                     {
-                        <img src="@Model.RunningMateSummary.VoteSmartPhotoUrl" alt="Running Mate" id="runningmate_summary_img" /> <br />
+                        <img src="@Url.Content(@Model.RunningMateSummary.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_summary_img" /> <br />
                         @Model.RunningMateSummary.FullName<br />
                         @Model.RunningMateSummary.PartyName<br />
                         @Model.RunningMateSummary.OfficeName<br />
@@ -34,8 +34,8 @@
         </div>
 
         <div id="candidate_summary_btn">
-            @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @id= "candidate_new_btn", @class = "btn btn-block panel-main-btn" })
-            @Html.ActionLink("Compare Second Candidate", "", "", new { candidateId = 0 }, new { @id= "candidate_compare_btn", @class = "btn btn-block panel-main-btn" })
+            @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @id= "candidate_summary_new_btn", @class = "btn btn-block panel-main-btn" })
+            @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { candidateFirstId = Model.SelectedCandidateId, candidateSecondId = 0, dateId = Model.SelectedCandidateVotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id= "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
         </div>
 
     </div>

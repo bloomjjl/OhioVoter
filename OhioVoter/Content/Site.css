@@ -1,4 +1,4 @@
-﻿body {
+﻿ body {
     padding-top: 5px;
     padding-bottom: 20px;
 }
@@ -146,8 +146,8 @@ textarea {
     text-align: left;
 }
 
-.panel-main-body .btn-calendar {
-    width: 100%;
+.panel-main-body #calender_btn {
+    width: 60%;
     height: auto;
     white-space: normal;
 }
@@ -246,13 +246,26 @@ textarea {
     text-align: center;
 }
 
+
+
+
 #candidate_lookup_btn {
-    display: inline-block;
-    width: 40px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 230px;
 }
 
-#candidate_lookup_candidate {
+#candidate_lookup_candidate{
     display: inline-block;
+}
+
+#candidate_lookup_dropdown {
+    top: 100%;
+}
+
+#candidate_lookup_label {
+    float: left;
 }
 
 #candidate_lookup_form {
@@ -260,18 +273,26 @@ textarea {
     display: block;
 }
 
+
+
+
+
 #candidate_summary_group {
-    text-align: center;
+
 }
 
 #candidate_summary {
+    text-align: center;
+}
+
+#candidate_summary_candidate {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 10px;
 }
 
-#runningmate_summary {
+#candidate_summary_runningmate {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
@@ -283,26 +304,271 @@ textarea {
     margin-bottom: 10px;
 }
 
-#runningmate_summary_img {
-    width: 90px;
-    margin-bottom: 10px;
-}
-
 #candidate_summary_btn {
     float: none;
 }
 
-#candidate_new_btn {
+#candidate_summary_new_btn {
     width: 230px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#candidate_compare_btn {
+#candidate_summary_compare_btn {
     width: 230px;
     margin-left: auto;
     margin-right: auto;
 }
+
+
+
+
+
+
+
+
+
+#candidate_compare_summary_group {
+}
+
+#candidate_compare_summary {
+}
+
+#candidate_compare_summary_first_group {
+    
+}
+
+#candidate_compare_summary_first {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    float: left;
+    width: 45%;
+}
+
+#candidate_compare_summary_first_candidate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_compare_summary_first_runningmate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_compare_summary_first_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+#candidate_compare_summary_first_btn {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 230px;
+}
+
+
+
+
+
+
+#candidate_compare_summary_second_group {
+
+}
+
+
+#candidate_compare_summary_second {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    float: right;
+    width: 45%;
+}
+
+#candidate_compare_summary_second_candidate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_compare_summary_second_runningmate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_compare_summary_second_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+#candidate_compare_summary_second_btn {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 230px;
+}
+
+
+
+
+
+#candidate_compare_summary_lookup {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    float: right;
+    width: 45%;
+    height: 100%;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+#candidate_compare_summary_lookup_candidate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#candidate_compare_summary_lookup_btn {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 230px;
+}
+
+#candidate_compare_summary_lookup_hidden {
+    display: none;
+}
+
+
+
+
+
+#runningmate_compare_summary {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+
+#candidate_compare_summary_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+#runningmate_compare_summary_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+#candidate_compare_summary_btn {
+    float: none;
+}
+
+#candidate_compare_new_btn {
+    width: 230px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+
+
+#candidate_compare_lookup_btn {
+    display: inline-block;
+    width: 40px;
+}
+
+#candidate_compare_lookup_candidate{
+    display: inline-block;
+}
+
+#candidate_compare_lookup_label {
+    float: left;
+}
+
+#candidate_compare_lookup_form {
+    text-align: center;
+    display: block;
+}
+
+#candidate_compare_summary_group {
+    text-align: center;
+}
+
+
+
+#runningmate_compare_summary_first {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+
+
+
+#runningmate_compare_summary_second {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+
+
+
+#runningmate_compare_summary_first_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+
+
+#runningmate_compare_summary_second_img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+
+
+#candidate_compare_summary_second_btn {
+    float: none;
+}
+
+
+
+
+
+
+
+
+
+#candidate_compare_new_second_btn {
+    width: 230px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+#candidate_compare_lookup_second_btn {
+    display: inline-block;
+    width: 230px;
+}
+
+#candidate_compare_lookup_second_candidate{
+    display: inline-block;
+}
+
+#candidate_compare_lookup_second_label {
+    float: left;
+}
+
+
+
 
 footer {
     background-color: #006ddb;

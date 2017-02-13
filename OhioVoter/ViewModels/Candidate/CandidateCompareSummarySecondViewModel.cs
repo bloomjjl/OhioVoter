@@ -7,20 +7,23 @@ using System.Web;
 
 namespace OhioVoter.ViewModels.Candidate
 {
-    public class CandidateSummaryViewModel
+    public class CandidateCompareSummarySecondViewModel
     {
-        public int SelectedCandidateId { get; set; }
-        public int SelectedCandidateOfficeId { get; set; }
-        public int SelectedCandidateVotingDateId { get; set; }
-        public CandidateSummary CandidateSummary { get; set; }
-        public RunningMateSummary RunningMateSummary { get; set; }
+        public int VotingDateId { get; set; }
+        public int OfficeId { get; set; }
+        public int CandidateFirstDisplayId { get; set; }
+        public int CandidateSecondDisplayId { get; set; }
+        public int TotalNumberOfCandidates { get; set; }
+        public bool CandidateSecondDisplayIsRunningMate { get; set; }
+        public CandidateCompareSummarySecond CandidateCompareSummarySecond { get; set; }
+        public RunningMateCompareSummarySecond RunningMateCompareSummarySecond { get; set; }
     }
 
 
-
-    public class CandidateSummary
+    public class CandidateCompareSummarySecond
     {
         public int CandidateId { get; set; }
+        public int RunningMateId { get; set; }
         public string VoteSmartPhotoUrl { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
@@ -39,12 +42,9 @@ namespace OhioVoter.ViewModels.Candidate
         public string OfficeHolderName { get; set; }
     }
 
-
-
-    public class RunningMateSummary
+    public class RunningMateCompareSummarySecond
     {
         public int CandidateId { get; set; }
-        public int RunningMateId { get; set; }
         public string VoteSmartPhotoUrl { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
