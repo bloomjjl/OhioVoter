@@ -1,0 +1,26 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareCaucusViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p> Caucus/Non-Legislative Committees </p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        <div id="candidate_compare_caucus">
+
+            <div id="candidate_compare_caucus_first" class="candidate_compare_first_group">
+                @{Html.RenderPartial("_CandidateCompareCaucusFirst", Model.CandidateCompareCaucusFirstViewModel);}
+            </div>
+
+            <div id="candidate_compare_caucus_second" class="candidate_compare_second_group">
+                @{Html.RenderPartial("_CandidateCompareCaucusSecond", Model.CandidateCompareCaucusSecondViewModel);}
+            </div>
+            
+        </div>
+
+
+    </div>
+
+</div>

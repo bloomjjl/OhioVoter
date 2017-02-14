@@ -23,7 +23,7 @@
         }
     </div>
 
-    @Html.ActionLink("Remove Candidate", "RemoveFirst", "Candidate", new { candidateFirstId = 0, candidateSecondId = Model.CandidateSecondDisplayId, candidateCount = Model.TotalNumberOfCandidates, dateId = Model.VotingDateId, officeId = Model.OfficeId }, new { @id = "candidate_compare_summary_first_btn", @class = "btn btn-block panel-main-btn" })
+    @Html.ActionLink("Remove Candidate", "RemoveFirst", "Candidate", new { firstCandidateId = 0, secondCandidateId = Model.CandidateSecondDisplayId, candidateCount = Model.TotalNumberOfCandidates, dateId = Model.VotingDateId, officeId = Model.OfficeId }, new { @id = "candidate_compare_summary_first_btn", @class = "btn btn-block panel-main-btn" })
 
 </div>
 

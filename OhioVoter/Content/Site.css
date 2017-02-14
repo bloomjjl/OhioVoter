@@ -329,9 +329,11 @@ textarea {
 
 
 #candidate_compare_summary_group {
+
 }
 
 #candidate_compare_summary {
+    vertical-align: bottom;
 }
 
 #candidate_compare_summary_first_group {
@@ -448,95 +450,32 @@ textarea {
 
 
 
-#runningmate_compare_summary {
-    display: inline-block;
+#candidate_compare_political_group {
+
+}
+
+#candidate_compare_political {
+
+}
+
+.candidate_compare_first_group {
+    text-align: left;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 10px;
-}
-
-#candidate_compare_summary_img {
-    width: 90px;
-    margin-bottom: 10px;
-}
-
-#runningmate_compare_summary_img {
-    width: 90px;
-    margin-bottom: 10px;
-}
-
-#candidate_compare_summary_btn {
-    float: none;
-}
-
-#candidate_compare_new_btn {
-    width: 230px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-
-
-
-
-#candidate_compare_lookup_btn {
-    display: inline-block;
-    width: 40px;
-}
-
-#candidate_compare_lookup_candidate{
-    display: inline-block;
-}
-
-#candidate_compare_lookup_label {
     float: left;
+    width: 50%;
+    padding-right: 15px;
+    word-wrap: break-word;
 }
 
-#candidate_compare_lookup_form {
-    text-align: center;
-    display: block;
-}
-
-#candidate_compare_summary_group {
-    text-align: center;
-}
-
-
-
-#runningmate_compare_summary_first {
-    display: inline-block;
+#candidate_compare_political .candidate_compare_second_group {
+    text-align: left;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 10px;
-}
-
-
-
-#runningmate_compare_summary_second {
-    display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 10px;
-}
-
-
-
-#runningmate_compare_summary_first_img {
-    width: 90px;
-    margin-bottom: 10px;
-}
-
-
-
-#runningmate_compare_summary_second_img {
-    width: 90px;
-    margin-bottom: 10px;
-}
-
-
-
-#candidate_compare_summary_second_btn {
-    float: none;
+    float: right;
+    width: 50%;
+    padding-left: 15px;
+    border-left: thick double #ff0000;
 }
 
 
@@ -547,25 +486,9 @@ textarea {
 
 
 
-#candidate_compare_new_second_btn {
-    width: 230px;
-    margin-left: auto;
-    margin-right: auto;
-}
 
 
-#candidate_compare_lookup_second_btn {
-    display: inline-block;
-    width: 230px;
-}
 
-#candidate_compare_lookup_second_candidate{
-    display: inline-block;
-}
-
-#candidate_compare_lookup_second_label {
-    float: left;
-}
 
 
 

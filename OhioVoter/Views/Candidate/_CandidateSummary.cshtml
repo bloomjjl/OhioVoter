@@ -35,7 +35,7 @@
 
         <div id="candidate_summary_btn">
             @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @id= "candidate_summary_new_btn", @class = "btn btn-block panel-main-btn" })
-            @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { candidateFirstId = Model.SelectedCandidateId, candidateSecondId = 0, dateId = Model.SelectedCandidateVotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id= "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
+            @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { firstCandidateId = Model.SelectedCandidateId, secondCandidateId = 0, dateId = Model.SelectedCandidateVotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id= "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
         </div>
 
     </div>

@@ -1,0 +1,21 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareEducationViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p> Education </p>
+    </div>
+
+    <div id="candidate_compare_education" class="panel-body panel-main-body">
+
+        <div id="candidate_compare_education_first" class="candidate_compare_first_group">
+            @{Html.RenderPartial("_CandidateCompareEducationFirst", Model.CandidateCompareEducationFirstViewModel);}
+        </div>
+            
+        <div id="candidate_compare_education_second" class="candidate_compare_second_group">
+            @{Html.RenderPartial("_CandidateCompareEducationSecond", Model.CandidateCompareEducationSecondViewModel);}
+        </div>
+
+    </div>
+
+</div>

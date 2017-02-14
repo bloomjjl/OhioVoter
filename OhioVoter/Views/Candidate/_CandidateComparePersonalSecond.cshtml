@@ -1,0 +1,22 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateComparePersonalSecondViewModel
+
+@{ if (Model.CandidateDisplayId == Model.CandidateId)
+    {
+        <text><b>Family:</b></text> @Model.CandidateFamily <br />
+        <text><b>Gender:</b></text> @Model.CandidateGender <br />
+        <text><b>Birth Date:</b></text> @Model.CandidateBirthDate <br />
+        <text><b>Birth Place:</b></text> @Model.CandidateBirthPlace <br />
+        <text><b>Home:</b></text> @Model.CandidateHomeCity<text>, </text>@Model.CandidateHomeState <br />
+        <text><b>Religion:</b></text> @Model.CandidateReligion
+    }
+    else if (Model.CandidateDisplayId == Model.RunningMateId)
+    {
+        <text><b>Family:</b></text> @Model.RunningMateFamily <br />
+        <text><b>Gender:</b></text> @Model.RunningMateGender <br />
+        <text><b>Birth Date:</b></text> @Model.RunningMateBirthDate <br />
+        <text><b>Birth Place:</b></text> @Model.RunningMateBirthPlace <br />
+        <text><b>Home:</b></text> @Model.RunningMateHomeCity<text>, </text>@Model.RunningMateHomeState <br />
+        <text><b>Religion:</b></text> @Model.RunningMateReligion
+    }
+}
+

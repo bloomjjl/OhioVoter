@@ -1,0 +1,18 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareCaucusSecondViewModel
+
+@{ if (Model.CandidateDisplayId == Model.CandidateId)
+    {
+        foreach (var line in @Model.CandidateCaucusHistory)
+        {
+            <p>@line</p>
+        }
+    }
+    else if (Model.CandidateDisplayId == Model.RunningMateId)
+    {
+        foreach (var line in @Model.RunningMateCaucusHistory)
+        {
+            <p>@line</p>
+        }
+    }
+}
+

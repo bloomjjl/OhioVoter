@@ -1,0 +1,26 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareCivicViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p> Religious, Civic, and other Memberships </p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        <div id="candidate_compare_civic">
+
+            <div id="candidate_compare_civic_first" class="candidate_compare_first_group">
+                @{Html.RenderPartial("_CandidateCompareCivicFirst", Model.CandidateCompareCivicFirstViewModel);}
+            </div>
+            
+            <div id="candidate_compare_civic_second" class="candidate_compare_second_group">
+                @{Html.RenderPartial("_CandidateCompareCivicSecond", Model.CandidateCompareCivicSecondViewModel);}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>

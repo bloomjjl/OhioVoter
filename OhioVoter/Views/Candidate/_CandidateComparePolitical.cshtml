@@ -1,0 +1,18 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateComparePoliticalViewModel
+
+<div class="panel-title panel-main-title">
+    <p> Political Experience </p>
+</div>
+
+<div id="candidate_compare_political" class="panel-body panel-main-body">
+
+    <div id="candidate_compare_political_first" class="candidate_compare_first_group">
+        @{Html.RenderPartial("_CandidateComparePoliticalFirst", Model.CandidateComparePoliticalFirstViewModel);}
+    </div>
+            
+    <div id="candidate_compare_political_second" class="candidate_compare_second_group">
+        @{Html.RenderPartial("_CandidateComparePoliticalSecond", Model.CandidateComparePoliticalSecondViewModel);}
+    </div>
+
+</div>
+

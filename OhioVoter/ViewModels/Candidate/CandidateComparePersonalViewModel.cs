@@ -7,22 +7,25 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateComparePersonalViewModel
     {
-        public int CandidateLookUpId { get; set; }
-        public int CandidateId { get; set; }
-        public int RunningMateId { get; set; }
-        public string CandidateFamily { get; set; }
-        public string RunningMateFamily { get; set; }
-        public string CandidateGender { get; set; }
-        public string RunningMateGender { get; set; }
-        public string CandidateBirthDate { get; set; }
-        public string RunningMateBirthDate { get; set; }
-        public string CandidateBirthPlace { get; set; }
-        public string RunningMateBirthPlace { get; set; }
-        public string CandidateHomeCity { get; set; }
-        public string RunningMateHomeCity { get; set; }
-        public string CandidateHomeState { get; set; }
-        public string RunningMateHomeState { get; set; }
-        public string CandidateReligion { get; set; }
-        public string RunningMateReligion { get; set; }
+        public string ControllerName { get; set; }
+
+        public int VotingDateId { get; set; }
+        public string VotingDate { get; set; }
+
+        public string CertifiedCandidateId { get; set; }
+        public int OfficeId { get; set; }
+        public string OfficeName { get; set; }
+        public string PartyId { get; set; }
+        public string PartyName { get; set; }
+        public string OfficeHolderId { get; set; }
+        public string OfficeHolderName { get; set; }
+
+        public int CandidateFirstDisplayId { get; set; }
+        public bool CandidateFirstIsRunningMate { get; set; }
+        public int CandidateSecondDisplayId { get; set; }
+        public bool CandidateSecondIsRunningMate { get; set; }
+
+        public CandidateComparePersonalFirstViewModel CandidateComparePersonalFirstViewModel { get; set; }
+        public CandidateComparePersonalSecondViewModel CandidateComparePersonalSecondViewModel { get; set; }
     }
 }

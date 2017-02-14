@@ -1,0 +1,26 @@
+﻿@model OhioVoter.ViewModels.Candidate.CandidateComparePersonalViewModel
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p> Personal Information </p>
+    </div>
+
+    <div class="panel-body panel-main-body">
+
+        <div id="candidate_compare_personal">
+
+            <div id="candidate_compare_personal_first" class="candidate_compare_first_group">
+                @{Html.RenderPartial("_CandidateComparePersonalFirst", Model.CandidateComparePersonalFirstViewModel);}
+            </div>
+            
+            <div id="candidate_compare_personal_second" class="candidate_compare_second_group">
+                @{Html.RenderPartial("_CandidateComparePersonalSecond", Model.CandidateComparePersonalSecondViewModel);}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>

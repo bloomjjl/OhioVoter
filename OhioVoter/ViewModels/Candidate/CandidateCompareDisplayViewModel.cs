@@ -23,113 +23,16 @@ namespace OhioVoter.ViewModels.Candidate
         public int CandidateFirstDisplayId { get; set; }
         public bool CandidateFirstIsRunningMate { get; set; }
         public int CandidateSecondDisplayId { get; set; }
+        public int CandidateSecondCompareCount { get; set; }
         public bool CandidateSecondIsRunningMate { get; set; }
 
         public CandidateCompareSummaryViewModel CandidateCompareSummaryViewModel { get; set; }
-//        public CandidateCompareFirstPoliticalViewModel CandidateCompareFirstPoliticalViewModel { get; set; }
-//        public CandidateCompareFirstCaucusViewModel CandidateCompareFirstCaucusViewModel { get; set; }
-//        public CandidateCompareFirstProfessionalViewModel CandidateCompareFirstProfessionalViewModel { get; set; }
-//        public CandidateCompareFirstEducationViewModel CandidateCompareFirstEducationViewModel { get; set; }
-//        public CandidateCompareFirstPersonalViewModel CandidateCompareFirstPersonalViewModel { get; set; }
-//        public CandidateCompareFirstCivicViewModel CandidateCompareFirstCivicViewModel { get; set; }
-//        public CandidateCompareFirstAdditionalViewModel CandidateCompareFirstAdditionalViewModel { get; set; }
-
-//        public CandidateCompareSecondSummaryViewModel CandidateCompareSecondSummaryViewModel { get; set; }
-//        public CandidateCompareSecondPoliticalViewModel CandidateCompareSecondPoliticalViewModel { get; set; }
-//        public CandidateCompareSecondCaucusViewModel CandidateCompareSecondCaucusViewModel { get; set; }
-//        public CandidateCompareSecondProfessionalViewModel CandidateCompareSecondProfessionalViewModel { get; set; }
-//        public CandidateCompareSecondEducationViewModel CandidateCompareSecondEducationViewModel { get; set; }
-//        public CandidateCompareSecondPersonalViewModel CandidateCompareSecondPersonalViewModel { get; set; }
-//        public CandidateCompareSecondCivicViewModel CandidateCompareSecondCivicViewModel { get; set; }
-//        public CandidateCompareSecondAdditionalViewModel CandidateCompareSecondAdditionalViewModel { get; set; }
+        public CandidateComparePoliticalViewModel CandidateComparePoliticalViewModel { get; set; }
+        public CandidateCompareCaucusViewModel CandidateCompareCaucusViewModel { get; set; }
+        public CandidateCompareProfessionalViewModel CandidateCompareProfessionalViewModel { get; set; }
+        public CandidateCompareEducationViewModel CandidateCompareEducationViewModel { get; set; }
+        public CandidateComparePersonalViewModel CandidateComparePersonalViewModel { get; set; }
+        public CandidateCompareCivicViewModel CandidateCompareCivicViewModel { get; set; }
+        public CandidateCompareAdditionalViewModel CandidateCompareAdditionalViewModel { get; set; }
     }
-
-    /*
-    public class CandidateCompareFirst
-    {
-        public int OfficeId { get; set; }
-        public string OfficeName { get; set; }
-        public string OfficeTerm { get; set; }
-        public string VoteSmartOfficeId { get; set; }
-
-        public int CandidateId { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string Suffix { get; set; }
-        public string Name
-        {
-            get
-            {
-                return string.Format("{0} {1}", FirstName, LastName);
-            }
-        }
-
-        public string VoteSmartCandidateId { get; set; }
-        public string OpenSecretsCandidateId { get; set; }
-        public string VoteSmartCandidatePhotoUrl { get; set; }
-        public string VoteSmartCandidateNickName { get; set; }
-        public string VoteSmartCandidateMiddleName { get; set; }
-        public string VoteSmartCandidatePreferredName { get; set; }
-        public string VoteSmartCandidateBirthDate { get; set; }
-        public string VoteSmartCandidateBirthPlace { get; set; }
-        public string VoteSmartCandidatePronunciation { get; set; }
-        public string VoteSmartCandidateGender { get; set; }
-        public IEnumerable<string> VoteSmartCandidateFamily { get; set; }
-        public string VoteSmartCandidateHomeCity { get; set; }
-        public string VoteSmartCandidateHomeState { get; set; }
-        public IEnumerable<string> VoteSmartCandidateEducation { get; set; }
-        public IEnumerable<string> VoteSmartCandidateProfession { get; set; }
-        public IEnumerable<string> VoteSmartCandidatePolitical { get; set; }
-        public string VoteSmartCandidateReligion { get; set; }
-        public IEnumerable<string> VoteSmartCandidateCongMembership { get; set; }
-        public IEnumerable<string> VoteSmartCandidateOrgMembership { get; set; }
-        public IEnumerable<string> VoteSmartCandidateSpecialMsg { get; set; }
-    }
-
-
-
-    public class CandidateCompareSecond
-    {
-        public int OfficeId { get; set; }
-        public string OfficeName { get; set; }
-        public string OfficeTerm { get; set; }
-        public string VoteSmartOfficeId { get; set; }
-
-        public int CandidateId { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string Suffix { get; set; }
-        public string Name
-        {
-            get
-            {
-                return string.Format("{0} {1}", FirstName, LastName);
-            }
-        }
-
-        public string VoteSmartCandidateId { get; set; }
-        public string OpenSecretsCandidateId { get; set; }
-        public string VoteSmartCandidatePhotoUrl { get; set; }
-        public string VoteSmartCandidateNickName { get; set; }
-        public string VoteSmartCandidateMiddleName { get; set; }
-        public string VoteSmartCandidatePreferredName { get; set; }
-        public string VoteSmartCandidateBirthDate { get; set; }
-        public string VoteSmartCandidateBirthPlace { get; set; }
-        public string VoteSmartCandidatePronunciation { get; set; }
-        public string VoteSmartCandidateGender { get; set; }
-        public IEnumerable<string> VoteSmartCandidateFamily { get; set; }
-        public string VoteSmartCandidateHomeCity { get; set; }
-        public string VoteSmartCandidateHomeState { get; set; }
-        public IEnumerable<string> VoteSmartCandidateEducation { get; set; }
-        public IEnumerable<string> VoteSmartCandidateProfession { get; set; }
-        public IEnumerable<string> VoteSmartCandidatePolitical { get; set; }
-        public string VoteSmartCandidateReligion { get; set; }
-        public IEnumerable<string> VoteSmartCandidateCongMembership { get; set; }
-        public IEnumerable<string> VoteSmartCandidateOrgMembership { get; set; }
-        public IEnumerable<string> VoteSmartCandidateSpecialMsg { get; set; }
-
-    }
-    */
 }

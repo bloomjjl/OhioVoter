@@ -29,11 +29,18 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public Feed GetInformationFromRSSFeed(string feedUrl, int maxItemCount)
         {
-            XmlReader reader = XmlReader.Create(feedUrl);
-            SyndicationFeed feed = SyndicationFeed.Load(reader);
-            reader.Close();
+            try
+            {
+                XmlReader reader = XmlReader.Create(feedUrl);
+                SyndicationFeed feed = SyndicationFeed.Load(reader);
+                reader.Close();
 
-            return GetInformationFromRSSFeedToDisplay(feed, maxItemCount);
+                return GetInformationFromRSSFeedToDisplay(feed, maxItemCount);
+            }
+            catch
+            {
+                return new Feed();
+            }
         }
 
 

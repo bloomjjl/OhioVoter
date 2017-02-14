@@ -17,6 +17,7 @@ namespace OhioVoter.ViewModels.Candidate
         public bool CandidateFirstDisplayIsRunningMate { get; set; }
         public CandidateCompareSummaryFirst CandidateCompareSummaryFirst { get; set; }
         public RunningMateCompareSummaryFirst RunningMateCompareSummaryFirst { get; set; }
+        public List<ViewModels.VoteSmart.CandidateBio> voteSmartCandidates { get; set; }
     }
 
 

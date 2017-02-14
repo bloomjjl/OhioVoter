@@ -4,14 +4,17 @@
 <div id="candidate_compare_summary_group" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareSummary", Model.CandidateCompareSummaryViewModel);}
 </div>
+
 @*
 <div id="candidate-office" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareOfficeSummary");}
 </div>
+*@
 
-<div id="candidate-political" class="candidate-group">
+<div id="candidate_compare_political_group" class="panel panel-group panel-main panel-main-group">
     @{Html.RenderPartial("_CandidateComparePolitical", Model.CandidateComparePoliticalViewModel);}
 </div>
+
 
 <div id="candidate-caucus" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareCaucus", Model.CandidateCompareCaucusViewModel);}
@@ -21,6 +24,7 @@
     @{Html.RenderPartial("_CandidateCompareProfessional", Model.CandidateCompareProfessionalViewModel);}
 </div>
 
+
 <div id="candidate-education" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareEducation", Model.CandidateCompareEducationViewModel);}
 </div>
@@ -29,20 +33,19 @@
    @{Html.RenderPartial("_CandidateComparePersonal", Model.CandidateComparePersonalViewModel);}
 </div>
 
+@*
 <div id="candidate-contact" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareContact");}
 </div>
+*@
 
 <div id="candidate-religion" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareCivic", Model.CandidateCompareCivicViewModel);}
 </div>
 
+
 <div id="candidate-event" class="candidate-group">
     @{Html.RenderPartial("_CandidateCompareAdditional", Model.CandidateCompareAdditionalViewModel);}
 </div>
-*@
-
-
-
 
 
