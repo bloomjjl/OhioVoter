@@ -12,9 +12,10 @@ namespace OhioVoter.ViewModels.Candidate
         public int CandidateFirstDisplayId { get; set; }
         public int OfficeId { get; set; }
         public int VotingDateId { get; set; }
-        //public CandidateCompareDropDownList CandidateCompareDropDownList { get; set; }
+
         [Display(Name = "")]
         public string SelectedCandidateId { get; set; }
+
         public IEnumerable<SelectListItem> CandidateNames { get; set; }
     }
 

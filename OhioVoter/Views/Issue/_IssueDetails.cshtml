@@ -1,0 +1,79 @@
+﻿@model OhioVoter.ViewModels.Issue.IssueDetailViewModel
+
+@{
+    ViewBag.Title = "Issue Details";
+}
+
+<div class="panel panel-group panel-main panel-main-group">
+
+    <div class="panel-title panel-main-title">
+        <p>Issue Details</p>
+    </div>
+
+    <div id="issue_details" class="panel-body panel-main-body">
+
+        <div>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.IssueTitle)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.IssueTitle)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.IssueRequirement)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.IssueRequirement)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.IssueDetails)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.IssueDetails)
+                </dd>
+
+                @{ if (Model.IssueFullTextLink != null && Model.IssueFullTextLink != "")
+            {
+                        <dt>
+                            @Html.DisplayNameFor(model => model.IssueFullTextLink)
+                        </dt>
+
+                        <dd>
+                            <a href="@Url.Content(Model.IssueFullTextLink)" target="_blank">View Full Text</a>
+                        </dd>
+                    }
+                }
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.IssueOption1)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.IssueOption1)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.IssueOption2)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.IssueOption2)
+                </dd>
+
+            </dl>
+
+        </div>
+        <p>
+            @Html.ActionLink("Back to List", "Index", "Issue", new { votingDateId = Model.DateId, countyId = Model.CountyId, communityId = Model.CommunityId }, null)
+        </p>
+
+    </div>
+
+</div>

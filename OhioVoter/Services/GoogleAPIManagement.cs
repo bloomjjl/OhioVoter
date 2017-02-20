@@ -19,6 +19,40 @@ namespace OhioVoter.Services
         // Google Civic Info API
         // **************************
 
+
+        
+        public ViewModels.Location.SideBarViewModel GetGoogleCivicRepresentativesForVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
+        {
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+
+                string urlRequest = GetUrlRequestForRepresentativesFromVoterLocation(voterLocation);
+                WebClient client = new WebClient();
+                string json = client.DownloadString(urlRequest);
+                CivicInfoRootObject googleResult = JToken.Parse(json).ToObject<CivicInfoRootObject>();
+
+                ViewModels.Location.SideBarViewModel sideBar = GetPollingLocationAndCountyLocationFromGoogleResult(googleResult);
+                sideBar.VoterLocationViewModel = voterLocation;
+                //sideBar.PollingLocation = ValidatePollingLocation(sideBar.PollingLocation);
+                //sideBar.CountyLocation = ValidateCountyLocation(sideBar.CountyLocation);
+
+                return sideBar;
+            }
+            catch (Exception e)
+            {// return empty object if bad address supplied
+                if (voterLocation == null)
+                    voterLocation = new ViewModels.Location.VoterLocationViewModel();
+
+                voterLocation.Status = "Update";
+                voterLocation.Message = "Voter address is not valid.";
+                return GetEmptyVoterLocationViewModel(voterLocation);
+            }
+        }
+
+
+
         /// <summary>
         /// validate voter information supplied is valid
         /// then return voting location information
@@ -103,6 +137,9 @@ namespace OhioVoter.Services
 
         }
 
+
+
+
         /// <summary>
         /// get voting information from API for supplied voter location
         /// </summary>
@@ -123,6 +160,20 @@ namespace OhioVoter.Services
 */
             return string.Concat(api, "address=", voterAddress,
                                  andChar, "electionId=", electionIdValue,
+                                 andChar, "key=", key);
+        }
+
+
+
+
+        public string GetUrlRequestForRepresentativesFromVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
+        {
+            string api = "https://www.googleapis.com/civicinfo/v2/representatives?";
+            string key = _googleApiKey;
+            string andChar = "&";
+            string voterAddress = string.Format("{0} {1}", voterLocation.StreetAddress, voterLocation.ZipCode);
+
+            return string.Concat(api, "address=", voterAddress,
                                  andChar, "key=", key);
         }
 

@@ -1468,7 +1468,9 @@ namespace OhioVoter.Controllers
         private IEnumerable<SelectListItem> GetCandidateListItems(int dateId)
         {
             if (dateId <= 0)
+            {
                 return new List<SelectListItem>();
+            }
 
             List<int> dbCandidateIds = GetCandidatesForCurrentDateFromDatabase(dateId);
             List<Models.ElectionCandidate> dboCandidates = GetCandidateNamesForCandidateId(dbCandidateIds);

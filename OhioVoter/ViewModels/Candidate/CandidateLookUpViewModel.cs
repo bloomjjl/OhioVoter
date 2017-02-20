@@ -11,7 +11,7 @@ namespace OhioVoter.ViewModels.Candidate
     {
         public string ControllerName { get; set; }
         public string VotingDate { get; set; }
-        //public CandidateDropDownList CandidateDropDownList { get; set; }
+
         [Display(Name = "")]
         public string SelectedCandidateId { get; set; }
         public IEnumerable<SelectListItem> CandidateNames { get; set; }
@@ -19,20 +19,23 @@ namespace OhioVoter.ViewModels.Candidate
     }
 
 
-
+    /*
     public class ElectionDateDropDownList
     {
         [Display(Name = "Election Date")]
         public string SelectedDateId { get; set; }
         public IEnumerable<SelectListItem> Date { get; set; }
     }
+    */
 
+    /*
     public class OfficeDropDownList
     {
         [Display(Name = "Office")]
         public string SelectedOfficeId { get; set; }
         public IEnumerable<SelectListItem> OfficeNames { get; set; }
     }
+    */
 
     public class CandidateDropDownList
     {

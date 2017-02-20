@@ -209,13 +209,18 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ElectionCandidate.cs" />
     <Compile Include="Models\ElectionDate.cs" />
+    <Compile Include="Models\ElectionIssue.cs" />
+    <Compile Include="Models\ElectionIssuePrecinct.cs" />
     <Compile Include="Models\ElectionOffice.cs" />
     <Compile Include="Models\ElectionParty.cs" />
+    <Compile Include="Models\ElectionPrecinct.cs" />
     <Compile Include="Models\ElectionVotingDate.cs" />
     <Compile Include="Models\ElectionVotingDateOfficeCandidate.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ElectionOfficeHolder.cs" />
+    <Compile Include="Models\OhioCounty.cs" />
+    <Compile Include="Models\OhioLocal.cs" />
     <Compile Include="Models\OhioVoterDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\GoogleApiManagement.cs" />
@@ -270,12 +275,17 @@
     <Compile Include="ViewModels\Candidate\CandidatePersonalViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidatePoliticalViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateProfessionalViewModel.cs" />
+    <Compile Include="ViewModels\Google\Representatives.cs" />
     <Compile Include="ViewModels\Home\CalendarViewModel.cs" />
     <Compile Include="ViewModels\Home\PollViewModel.cs" />
     <Compile Include="ViewModels\Google\Address.cs" />
     <Compile Include="ViewModels\Google\CivicInfo.cs" />
     <Compile Include="ViewModels\Home\HomeViewModel.cs" />
     <Compile Include="ViewModels\Home\RssFeedViewModel.cs" />
+    <Compile Include="ViewModels\Issue\IssueDetailViewModel.cs" />
+    <Compile Include="ViewModels\Issue\IssueDisplayViewModel.cs" />
+    <Compile Include="ViewModels\Issue\IssueLookUpViewModel.cs" />
+    <Compile Include="ViewModels\Issue\IssueViewModel.cs" />
     <Compile Include="ViewModels\Location\VoterLocationViewModel.cs" />
     <Compile Include="ViewModels\Location\PollingLocationViewModel.cs" />
     <Compile Include="ViewModels\Location\CountyLocationViewModel.cs" />
@@ -304,6 +314,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\images\2017_OhioElectionCalendar.pdf" />
+    <Content Include="Content\images\2016November_Hamilton_Issue01.pdf" />
+    <Content Include="Content\images\2016November_Hamilton_Issue07.pdf" />
+    <Content Include="Content\images\2016November_Hamilton_Issue08.pdf" />
+    <Content Include="Content\images\2016November_Hamilton_Issue29.pdf" />
     <None Include="Properties\PublishProfiles\OhioVoterWebsite.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -402,6 +416,9 @@
     <Content Include="Views\Candidate\_CandidateComparePersonalSecond.cshtml" />
     <Content Include="Views\Candidate\_CandidateCompareEducationSecond.cshtml" />
     <Content Include="Views\Candidate\_CandidateCompareProfessionalSecond.cshtml" />
+    <Content Include="Views\Issue\_IssueLookUp.cshtml" />
+    <Content Include="Views\Issue\_IssueList.cshtml" />
+    <Content Include="Views\Issue\_IssueDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
