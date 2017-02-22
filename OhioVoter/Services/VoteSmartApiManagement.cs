@@ -16,7 +16,6 @@ namespace OhioVoter.Services
 {
     public class VoteSmartApiManagement
     {
-        private static string _votesmartApiKey = "1c5073e4c73532c7d2daf51651023d8f";
 
 
 

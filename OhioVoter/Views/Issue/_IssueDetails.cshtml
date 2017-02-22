@@ -4,7 +4,7 @@
     ViewBag.Title = "Issue Details";
 }
 
-<div class="panel panel-group panel-main panel-main-group">
+<div id="issue_details_group" class="panel panel-group panel-main panel-main-group">
 
     <div class="panel-title panel-main-title">
         <p>Issue Details</p>
@@ -19,7 +19,7 @@
                     @Html.DisplayNameFor(model => model.IssueTitle)
                 </dt>
 
-                <dd>
+                <dd style="font-weight: bold;">
                     @Html.DisplayFor(model => model.IssueTitle)
                 </dd>
 
@@ -27,7 +27,7 @@
                     @Html.DisplayNameFor(model => model.IssueRequirement)
                 </dt>
 
-                <dd>
+                <dd style="font-style:italic;">
                     @Html.DisplayFor(model => model.IssueRequirement)
                 </dd>
 

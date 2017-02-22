@@ -11,7 +11,6 @@ namespace OhioVoter.Services
 {
     public class GoogleApiManagement
     {
-        private static string _googleApiKey = "AIzaSyCmAeCrJzlOqmOlPx0q-MuZYZZnOMVfgXU";
 
 
 

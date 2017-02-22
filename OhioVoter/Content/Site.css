@@ -24,6 +24,10 @@ textarea {
 }
 
 
+
+
+
+
 .background-blue-dark {
     background-color: #006ddb;
 }
@@ -40,6 +44,11 @@ textarea {
     background-color: #db1116;
 }
 
+
+
+
+
+
 .header {
     margin-top: 0px;
 }
@@ -54,6 +63,9 @@ textarea {
     color: #db1116;
     font-weight: bold;
 }
+
+
+
 
 .navbar-logo {
     min-width: 200px;
@@ -85,6 +97,11 @@ textarea {
     color: #9ebcdb;
     font-weight: bold;
 }
+
+
+
+
+
 
 .panel-left {
     border-color: #9ebcdb;
@@ -137,6 +154,12 @@ textarea {
     font-weight: bold;
 }
 
+
+
+
+
+
+
 .panel-main {
     border-color: #9ebcdb;
 }
@@ -164,6 +187,10 @@ textarea {
 .panel-main-body .calendar .description {
     padding-bottom: 10px;
 }
+
+
+
+
 
 
 .panel-main-body .graph {
@@ -214,6 +241,10 @@ textarea {
     background-color: #aeaeae;
 }
 
+
+
+
+
 .panel-main-body .rss-channel {
     padding-bottom: 10px;
     font-size: 1.5em;
@@ -223,6 +254,10 @@ textarea {
     background-color: #006ddb;
     color: white;
 }
+
+
+
+
 
 .panel-main-group {
     margin-bottom: 20px;
@@ -248,6 +283,17 @@ textarea {
 
 
 
+
+
+
+
+#candidate_display {
+
+}
+
+#candidate_lookup_group {
+
+}
 
 #candidate_lookup_btn {
     margin-top: 10px;
@@ -477,6 +523,63 @@ textarea {
     padding-left: 15px;
     border-left: thick double #9ebcdb;
 }
+
+
+
+
+
+
+#issue_lookup_group {
+
+}
+
+#issue_lookup {
+
+}
+
+#issue_lookup_table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.issue_lookup_date_label {
+
+}
+
+#issue_lookup_county_label {
+
+}
+
+#issue_lookup_community_label {
+
+}
+
+#issue_lookup_dropdown {
+
+}
+
+
+
+
+#issue_list {
+
+}
+
+#issue_list_table {
+
+}
+
+
+
+
+
+
+
+#issue_details #issue_detail_title {
+    font-weight: bold;
+}
+
+
 
 
 

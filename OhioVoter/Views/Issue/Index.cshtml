@@ -16,13 +16,13 @@
             <h2><p class="panel-page-title"> Ballot Measure Knowledge Center </p></h2>
         </div>
 
-        <div>
-            @{ Html.RenderPartial("_IssueLookUp", Model.IssueLookUpViewModel);}
+        <div id="issue_lookup_group"class="panel panel-group panel-main panel-main-group">
+                @{ Html.RenderPartial("_IssueLookUp", Model.IssueLookUpViewModel);}
         </div>
 
         @{ if (Model.IssueLookUpViewModel.SelectedVotingDateId != "0" && Model.IssueLookUpViewModel.SelectedCountyId != "0")
             {
-                <div id="issue-display" class="issue-Information">
+                <div id="issue_display" class="issue_Information">
                     @{Html.RenderAction("DisplayIssueInformation", "Issue", Model);}
                 </div>
             }

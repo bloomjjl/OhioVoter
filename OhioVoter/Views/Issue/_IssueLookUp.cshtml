@@ -1,11 +1,51 @@
 ﻿@model OhioVoter.ViewModels.Issue.IssueLookUpViewModel
 
-<div class="panel panel-group panel-main panel-main-group">
+<div class="panel-title panel-main-title">
+    <p>Issue Lookup</p>
+</div>
 
-    <div class="panel-title panel-main-title">
-        <p>Issue Lookup</p>
-    </div>
+<div id="issue_lookup" class="panel-body panel-main-body">
 
+    @using (Html.BeginForm("LookUp", "Issue", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <table id="issue_lookup_table" style="margin-right: auto; margin-left: auto;">
+
+            <tr>
+                <td style = "text-align: right; padding-right: 10px;">@Html.LabelFor(x => x.SelectedVotingDateId, htmlAttributes: new { @class = "issue_lookup_date_label" })</td>
+                <td>@Html.DropDownListFor(x => x.SelectedVotingDateId, Model.VotingDates, "-- Select A Date --", new { @class = "form-control", onchange = "this.form.submit()" })</td>
+                <td>@Html.ValidationMessageFor(x => x.SelectedVotingDateId, "", new { @class = "text-danger" })</td>
+            </tr>
+            <tr>
+                <td style = "text-align: right; padding-right: 10px;">@Html.LabelFor(x => x.SelectedCountyId, htmlAttributes: new { @class = "control-label" })</td>
+                <td>@Html.DropDownListFor(x => x.SelectedCountyId, Model.CountyNames, "-- Select A County --", new { @class = "form-control", onchange = "this.form.submit()" })</td>
+                <td>@Html.ValidationMessageFor(x => x.SelectedCountyId, "", new { @class = "text-danger" })</td>
+            </tr>
+            @{  if (Model.SelectedCountyId != "0")
+                {
+                    <tr>
+                        <td style = "text-align: right; padding-right: 10px;">@Html.LabelFor(x => x.SelectedCommunityId, htmlAttributes: new { @class = "control-label" })</td>
+                        <td>@Html.DropDownListFor(x => x.SelectedCommunityId, Model.CommunityNames, "-- Select A Community --", new { @class = "form-control", onchange = "this.form.submit()" })</td>
+                        <td>@Html.ValidationMessageFor(x => x.SelectedCommunityId, "", new { @class = "text-danger" })</td>
+                    </tr>
+                }
+            }
+
+        </table>
+
+        <div id="issue_lookup_hidden" style="display: none;">
+            @Html.Display("selectedVotingDateId", Model.SelectedVotingDateId)
+            @Html.Display("selectedCountyId", Model.SelectedCountyId)
+            @Html.Display("selectedCommunityId", Model.SelectedCommunityId)
+        </div>
+
+    }
+
+</div>
+
+
+@*
     <div id="issue_lookup_form" class="panel-body panel-main-body">
 
         @using (Html.BeginForm("LookUp", "Issue", FormMethod.Post))
@@ -13,7 +53,7 @@
             @Html.AntiForgeryToken()
 
             <div id="issue_lookup_date" class="form-group">
-                @Html.LabelFor(x => x.SelectedVotingDateId, htmlAttributes: new { @id = "issue_lookup_label", @class = "control-label" })
+                @Html.LabelFor(x => x.SelectedVotingDateId, htmlAttributes: new { id = "issue_lookup_date_label", @class = "control-label" })
                 @Html.DropDownListFor(x => x.SelectedVotingDateId, Model.VotingDates, "-- Select A Date --", new { @class = "form-control", onchange = "this.form.submit()" })
                 @Html.ValidationMessageFor(x => x.SelectedVotingDateId, "", new { @class = "text-danger" })
             </div>
@@ -33,7 +73,7 @@
                 </div>
             }
 
-            <div id="candidate_compare_summary_lookup_hidden" style="display: none;">
+            <div id="issue_lookup_hidden" style="display: none;">
                 @Html.Display("selectedVotingDateId", Model.SelectedVotingDateId)
                 @Html.Display("selectedCountyId", Model.SelectedCountyId)
                 @Html.Display("selectedCommunityId", Model.SelectedCommunityId)
@@ -42,5 +82,4 @@
         }
 
     </div>
-
-</div>
+*@
