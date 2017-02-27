@@ -7,14 +7,14 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("ElectionParty")]
-    public class ElectionParty
+    [Table("tblOfficeHolder")]
+    public class OfficeHolder
     {
         [Required]
         [Key]
-        public string PartyId { get; set; }
+        public string Id { get; set; }
 
         [Required]
-        public string PartyName { get; set; }
+        public string Description { get; set; }
     }
 }

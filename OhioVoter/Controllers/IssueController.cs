@@ -379,7 +379,7 @@ namespace OhioVoter.Controllers
             {
                 dates.Add(new SelectListItem()
                 {
-                    Value = dboDates[i].ElectionVotingDateId.ToString(),
+                    Value = dboDates[i].Id.ToString(),
                     Text = dboDates[i].Date.ToShortDateString()
                 });
             }

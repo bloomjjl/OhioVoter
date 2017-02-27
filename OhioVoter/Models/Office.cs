@@ -7,18 +7,21 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("ElectionVotingDate")]
-    public class ElectionVotingDate
+    [Table("tblOffice")]
+    public class Office
     {
         [Required]
         [Key]
         public int Id { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public string VoteSmartOfficeId { get; set; }
 
         [Required]
-        public bool Active { get; set; }
+        public string OfficeName { get; set; }
 
+        public string OfficeCode { get; set; }
+
+        public string OfficeWebsite { get; set; }
     }
 }

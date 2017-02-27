@@ -7,53 +7,61 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("ElectionCandidate")]
+    [Table("tblElectionCandidate")]
     public class ElectionCandidate
     {
-        [Required]
-        [Key]
-        public int ElectionCandidateId { get; set; }
-
-        [Required]
-        public string VoteSmartCandidateId { get; set; }
-
-        [Required]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Display(Name = "Nick Name")]
-        public string NickName { get; set; }
-
-        [Display(Name = "Middle Name")]
-        public string MiddleName { get; set; }
-
-        [Display(Name = "Preferred Name")]
-        public string PreferredName { get; set; }
-
-        [Required]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
-        public string Suffix { get; set; }
-
-        public string CandidateName
+        public ElectionCandidate()
         {
-            get
-            {
-                return string.Format("{0} {1}", FirstName, LastName);
-            }
+
         }
 
-        [Display(Name = "Birth Date")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime BirthDate { get; set; }
+        [Required]
+        [Key]
+        public int Id { get; set; }
 
-        [Display(Name = "Birth City")]
-        public string BirthCity { get; set; }
+        [Required]
+        [Column("ElectionVotingDate_Id")]
+        public int ElectionVotingDateId { get; set; }
 
-        [Display(Name = "Birth State Abbreviation")]
-        public string BirthState { get; set; }
+        [Required]
+        [Column("ElectionOffice_Id")]
+        public int ElectionOfficeId { get; set; }
 
-        public string Gender { get; set; }
+        [Required]
+        [Column("Candidate_Id")]
+        public int CandidateId { get; set; }
+
+        [Required]
+        [Column("CertifiedCandidate_Id")]
+        public string CertifiedCandidateId { get; set; }
+
+        [Column("Party_Id")]
+        public string PartyId { get; set; }
+
+        [Column("OfficeHolder_Id")]
+        public string OfficeHolderId { get; set; }
+
+        public int RunningMateId { get; set; }
+
+
+
+
+        [ForeignKey("ElectionVotingDateId")]
+        public virtual ElectionVotingDate ElectionVotingDate { get; set; }
+
+        [ForeignKey("ElectionOfficeId")]
+        public virtual ElectionOffice ElectionOffice { get; set; }
+
+        [ForeignKey("CandidateId")]
+        public virtual Candidate Candidate { get; set; }
+
+        [ForeignKey("CertifiedCandidateId")]
+        public virtual CertifiedCandidate CertifiedCandidate { get; set; }
+
+        [ForeignKey("PartyId")]
+        public virtual Party Party { get; set; }
+
+        [ForeignKey("OfficeHolderId")]
+        public virtual OfficeHolder OfficeHolder { get; set; }
     }
 }

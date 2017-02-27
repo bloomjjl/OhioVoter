@@ -1,4 +1,5 @@
-﻿
+﻿@model OhioVoter.ViewModels.Ballot.BallotViewModel
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Ballot Page";
@@ -7,7 +8,7 @@
 <div class="row">
 
     <div id="side-bar" class="col-sm-4">
-        @*@{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName as string);}*@
+        @{Html.RenderAction("DisplaySideBar", "Location", Model.ControllerName as string);}
     </div>
 
     <div class="col-sm-8">
@@ -17,7 +18,7 @@
         </div>
 
         <div id="candidate-display" class="candidate-Information">
-            @*@{Html.RenderAction("DisplayCandidateInformation", "Candidate", Model);}*@
+            @*@{Html.RenderAction("DisplayBallotInformation", "Ballot", Model);}*@
             <p><h2>Ballot page will be coming soon...</h2></p>
         </div>
 
