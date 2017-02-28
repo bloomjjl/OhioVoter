@@ -7,25 +7,36 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("tblOhioLocal")]
-    public class OhioLocal
+    [Table("tblOhioPrecinct")]
+    public class OhioPrecinct
     {
         [Required]
         [Key]
         public int Id { get; set; }
 
+        public string CountyPrecinctCode { get; set; }
+
+        public string PrecinctName { get; set; }
+
         [Required]
         [Column("OhioCounty_Id")]
         public int OhioCountyId { get; set; }
 
-        public string LocalName { get; set; }
+        [Required]
+        [Column("HamiltonCountyPrecinct_Id")]
+        public int HamiltonCountyPrecinctId { get; set; }
 
-        public string LocalType { get; set; }
+        [Required]
+        [Column("OhioLocal_Id")]
+        public int OhioLocalId { get; set; }
 
 
 
         [ForeignKey("OhioCountyId")]
         public virtual OhioCounty OhioCounty { get; set; }
+
+        [ForeignKey("OhioLocalId")]
+        public virtual OhioLocal OhioLocal { get; set; }
 
     }
 }

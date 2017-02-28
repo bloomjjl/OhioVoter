@@ -7,11 +7,14 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("OhioCounty")]
+    [Table("tblOhioCounty")]
     public class OhioCounty
     {
+        [Required]
         [Key]
-        public int OhioCountyId { get; set; }
-        public string CountyName { get; set; }
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
     }
 }

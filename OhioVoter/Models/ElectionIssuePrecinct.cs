@@ -7,15 +7,26 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("ElectionIssuePrecinct")]
+    [Table("tblElectionIssuePrecinct")]
     public class ElectionIssuePrecinct
     {
+        [Required]
         [Key]
-        [Column(Order = 0)]
+        [Column("ElectionIssue_Id", Order = 0)]
         public int ElectionIssueId { get; set; }
 
+        [Required]
         [Key]
-        [Column(Order = 1)]
-        public int ElectionPrecinctId { get; set; }
+        [Column("OhioPrecinct_Id", Order = 1)]
+        public int OhioPrecinctId { get; set; }
+
+
+
+        [ForeignKey("ElectionIssueId")]
+        public virtual ElectionIssue ElectionIssue { get; set; }
+
+        [ForeignKey("OhioPrecinctId")]
+        public virtual OhioPrecinct OhioPrecinct { get; set; }
+
     }
 }

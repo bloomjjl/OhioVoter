@@ -287,13 +287,9 @@ textarea {
 
 
 
-#candidate_display {
+/* #candidate_display */
 
-}
-
-#candidate_lookup_group {
-
-}
+/* #candidate_lookup_group */
 
 #candidate_lookup_btn {
     margin-top: 10px;
@@ -323,9 +319,7 @@ textarea {
 
 
 
-#candidate_summary_group {
-
-}
+/* #candidate_summary_group */
 
 #candidate_summary {
     text-align: center;
@@ -374,17 +368,13 @@ textarea {
 
 
 
-#candidate_compare_summary_group {
-
-}
+/* #candidate_compare_summary_group */
 
 #candidate_compare_summary {
     vertical-align: bottom;
 }
 
-#candidate_compare_summary_first_group {
-    
-}
+#candidate_compare_summary_first_group 
 
 #candidate_compare_summary_first {
     text-align: center;
@@ -423,9 +413,7 @@ textarea {
 
 
 
-#candidate_compare_summary_second_group {
-
-}
+/* #candidate_compare_summary_second_group */
 
 
 #candidate_compare_summary_second {
@@ -496,13 +484,9 @@ textarea {
 
 
 
-#candidate_compare_political_group {
+/* #candidate_compare_political_group */
 
-}
-
-#candidate_compare_political {
-
-}
+/* #candidate_compare_political */ 
 
 .candidate_compare_first_group {
     text-align: left;
@@ -529,45 +513,29 @@ textarea {
 
 
 
-#issue_lookup_group {
+/* #issue_lookup_group */
 
-}
-
-#issue_lookup {
-
-}
+/* #issue_lookup */ 
 
 #issue_lookup_table {
     margin-left: auto;
     margin-right: auto;
 }
 
-.issue_lookup_date_label {
+/* .issue_lookup_date_label */
 
-}
+/* #issue_lookup_county_label */ 
 
-#issue_lookup_county_label {
+/* #issue_lookup_community_label */ 
 
-}
-
-#issue_lookup_community_label {
-
-}
-
-#issue_lookup_dropdown {
-
-}
+/* #issue_lookup_dropdown */ 
 
 
 
 
-#issue_list {
+/* #issue_list */
 
-}
-
-#issue_list_table {
-
-}
+/* #issue_list_table */
 
 
 

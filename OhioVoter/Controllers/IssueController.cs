@@ -155,7 +155,7 @@ namespace OhioVoter.Controllers
         {
             using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
-                Models.ElectionIssue dboIssue = context.ElectionIssues.FirstOrDefault(x => x.ElectionIssueId == issueId);
+                Models.ElectionIssue dboIssue = context.ElectionIssues.FirstOrDefault(x => x.Id == issueId);
 
                 if (dboIssue == null)
                 {
@@ -176,7 +176,7 @@ namespace OhioVoter.Controllers
             // narrow list for community
             if (communityId > 0)
             {
-                List<Models.ElectionPrecinct> dboPrecincts = GetListOfPrecinctsForCommunityFromDatabase(communityId);
+                List<Models.OhioPrecinct> dboPrecincts = GetListOfPrecinctsForCommunityFromDatabase(communityId);
                 List<Models.ElectionIssue> dboPrecinctIssues = GetListOfIssuesForPrecinctFromDatabase(dboIssues, dboPrecincts);
                 return GetFormatedListOfIssuesForIssueDisplayViewModel(dboPrecinctIssues);
             }
@@ -195,7 +195,7 @@ namespace OhioVoter.Controllers
                 issues.Add(
                     new Issue()
                     {
-                        Id = dboIssues[i].ElectionIssueId,
+                        Id = dboIssues[i].Id,
                         Title = dboIssues[i].IssueTitle,
                         Requirement = dboIssues[i].IssueRequirement,
                         Details = dboIssues[i].IssueDetails,
@@ -210,7 +210,7 @@ namespace OhioVoter.Controllers
         }
 
 
-        public List<Models.ElectionIssue> GetListOfIssuesForPrecinctFromDatabase(List<Models.ElectionIssue> dboIssues, List<Models.ElectionPrecinct> dboPrecincts)
+        public List<Models.ElectionIssue> GetListOfIssuesForPrecinctFromDatabase(List<Models.ElectionIssue> dboIssues, List<Models.OhioPrecinct> dboPrecincts)
         {
             using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
@@ -221,10 +221,10 @@ namespace OhioVoter.Controllers
                 for (int i = 0; i < dboIssues.Count; i++)
                 {
                     // store current issue id
-                    int issueId = dboIssues[i].ElectionIssueId;
+                    int issueId = dboIssues[i].Id;
 
                     // get list of all matching issues in IssuePrecincts table
-                    List<Models.ElectionIssuePrecinct> dboCurrentIssueForPrecincts = context.ElectionIssuePrecincts.Where(x => x.ElectionPrecinctId > 0)
+                    List<Models.ElectionIssuePrecinct> dboCurrentIssueForPrecincts = context.ElectionIssuePrecincts.Where(x => x.OhioPrecinctId > 0)
                                                                                                                    .Where(x => x.ElectionIssueId == issueId)
                                                                                                                    .ToList();
                     if (issueId == 49){
@@ -236,10 +236,10 @@ namespace OhioVoter.Controllers
                     for (int j = 0; j < dboPrecincts.Count; j++)
                     {
                         // store current precinct id
-                        int precinctId = dboPrecincts[j].ElectionPrecinctId;
+                        int precinctId = dboPrecincts[j].Id;
 
                         // search IssuePrecincts table for current precinct id
-                        List<Models.ElectionIssuePrecinct> dboIssueForSuppliedPrecincts = dboCurrentIssueForPrecincts.Where(x => x.ElectionPrecinctId == precinctId).ToList();
+                        List<Models.ElectionIssuePrecinct> dboIssueForSuppliedPrecincts = dboCurrentIssueForPrecincts.Where(x => x.OhioPrecinctId == precinctId).ToList();
 
                         //Models.ElectionIssuePrecinct dboIssueForPrecinct = context.ElectionIssuePrecincts.Find(issueId, precinctId);
 
@@ -258,15 +258,15 @@ namespace OhioVoter.Controllers
 
 
 
-        public List<Models.ElectionPrecinct> GetListOfPrecinctsForCommunityFromDatabase(int communityId)
+        public List<Models.OhioPrecinct> GetListOfPrecinctsForCommunityFromDatabase(int communityId)
         {
             using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
-                List<Models.ElectionPrecinct> dboPrecincts = context.ElectionPrecincts.Where(x => x.LocalId == communityId).ToList();
+                List<Models.OhioPrecinct> dboPrecincts = context.OhioPrecincts.Where(x => x.OhioLocalId == communityId).ToList();
 
                 if (dboPrecincts == null)
                 {
-                    return new List<Models.ElectionPrecinct>();
+                    return new List<Models.OhioPrecinct>();
                 }
 
                 return dboPrecincts;
@@ -398,8 +398,8 @@ namespace OhioVoter.Controllers
             {
                 counties.Add(new SelectListItem()
                 {
-                    Value = dboCounties[i].OhioCountyId.ToString(),
-                    Text = dboCounties[i].CountyName
+                    Value = dboCounties[i].Id.ToString(),
+                    Text = dboCounties[i].Name
                 });
             }
 
@@ -423,7 +423,7 @@ namespace OhioVoter.Controllers
             {
                 communities.Add(new SelectListItem()
                 {
-                    Value = dboCommunities[i].OhioLocalId.ToString(),
+                    Value = dboCommunities[i].Id.ToString(),
                     Text = dboCommunities[i].LocalName
                 });
             }

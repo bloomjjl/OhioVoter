@@ -7,7 +7,7 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("ElectionVotingDate")]
+    [Table("tblElectionVotingDate")]
     public class ElectionVotingDate
     {
         [Required]

@@ -214,8 +214,9 @@
     <Compile Include="Models\ElectionIssuePrecinct.cs" />
     <Compile Include="Models\ElectionOffice.cs" />
     <Compile Include="Models\OfficeHolder.cs" />
+    <Compile Include="Models\HamiltonOhioVoter.cs" />
     <Compile Include="Models\Party.cs" />
-    <Compile Include="Models\ElectionPrecinct.cs" />
+    <Compile Include="Models\OhioPrecinct.cs" />
     <Compile Include="Models\ElectionVotingDate.cs" />
     <Compile Include="Models\ElectionCandidate.cs" />
     <Compile Include="Models\IdentityModels.cs" />
