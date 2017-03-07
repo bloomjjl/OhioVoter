@@ -16,7 +16,7 @@ namespace OhioVoter.Services
 {
     public class VoteSmartApiManagement
     {
-        private static string _votesmartApiKey = "1c5073e4c73532c7d2daf51651023d8f";
+        private static string _votesmartApiKey = "2f03c2e306be0364519648e3878b6337";
 
 
 
@@ -72,6 +72,32 @@ namespace OhioVoter.Services
 
 
 
+
+
+
+
+        public string GetVoteSmartCandidateImageUrlFromSuppliedVoteSmartCandidateId(string voteSmartCandidateId)
+        {// Tests Generated
+            try
+            {
+                // create C# classes from json file
+                // http://json2csharp.com/
+                // http://xmltocsharp.azurewebsites.net/
+
+                string urlRequest = GetUrlRequestForBiographyInformationForSpecifiedCandidate(voteSmartCandidateId);
+                XmlDocument xmlDoc = MakeRequest(urlRequest);
+                CandidateBio candidate = ProcessResponseForCandidateBio(xmlDoc);
+
+                return candidate.Photo;
+            }
+            catch (Exception e)
+            {// return empty object if bad information supplied
+                return string.Empty;
+            }
+        }
+
+
+
         /// <summary>
         /// get list of candidates that are an exact match to the supplied candidate name
         /// </summary>
@@ -96,6 +122,9 @@ namespace OhioVoter.Services
                 return new List<Candidate>();
             }
         }
+
+
+
 
 
 

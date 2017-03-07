@@ -12,12 +12,13 @@ namespace OhioVoter.Models
     {
         [Required]
         [Key]
-        public string Id { get; set; }
+        public int Id { get; set; }
+
+        public string PartyCode { get; set; }
+
+        public string PartyAbbreviation { get; set; }
 
         [Required]
-        public string Code { get; set; }
-
-        [Required]
-        public string Name { get; set; }
+        public string PartyName { get; set; }
     }
 }

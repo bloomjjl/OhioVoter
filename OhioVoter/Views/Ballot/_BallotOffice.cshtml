@@ -1,0 +1,32 @@
+﻿@model OhioVoter.ViewModels.Ballot.BallotOfficeViewModel
+
+<div class="panel-title panel-main-title ballot_office_title">
+    @Html.HiddenFor(x => Model.OfficeId)
+    <p>@Model.OfficeName</p>
+    @Html.DisplayFor(x => Model.OfficeTerm)
+    <br /> (Select ? Candidate)
+</div>
+
+<div class="panel-body panel-main-body ballot_office_candidates">
+    <table id="ballot_group" class="table">
+
+        @* ** LISTED CANDIDATES GO HERE ** *@
+        @if (Model.BallotListedCandidatesViewModel.Count > 0)
+        {
+            for (int j = 0; j < Model.BallotListedCandidatesViewModel.Count(); j++)
+            {
+                Html.RenderPartial("_BallotCandidate", Model.BallotListedCandidatesViewModel[j]);
+            }
+        }
+
+        @* ** WRITE-IN CANDIDATES GO HERE ** *@
+        @if (Model.BallotwriteInCandidatesViewModel.Count > 0)
+        {
+            for (int j = 0; j < Model.BallotwriteInCandidatesViewModel.Count(); j++)
+            {
+                Html.RenderPartial("_BallotCandidate", Model.BallotwriteInCandidatesViewModel[j]);
+            }
+        }
+
+    </table>
+</div>

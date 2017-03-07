@@ -1,0 +1,26 @@
+﻿@model OhioVoter.ViewModels.Ballot.BallotIssueViewModel
+
+
+<div class="panel-title panel-main-title ballot_issue_title">
+    @Html.HiddenFor(x => Model.Id)
+    <p>@Model.Title</p>
+</div>
+
+<div class="panel-body panel-main-body ballot_issue_information">
+    <p>
+        @Html.HiddenFor(x => Model.Id)
+        <i>@Html.DisplayFor(x => Model.Requirement)</i> <br />
+        @Html.DisplayFor(x => Model.Details) 
+
+        @{ if (Model.FullTextUrl != "")
+            {
+                <br />
+                <a href="@Model.FullTextUrl" target="_blank">Learn More</a>
+            }
+        }
+    </p>
+    <p>
+        @Html.RadioButton(@Model.Id.ToString(), Model.Option1) @Model.Option1 <br />
+        @Html.RadioButton(@Model.Id.ToString(), Model.Option2) @Model.Option2
+    </p>
+</div>

@@ -11,7 +11,9 @@ namespace OhioVoter.Services
         private const string VoterLocationControllerName = "sessionVoterLocationControllerName";
         private const string VoterLocationStatus = "sessionVoterLocationStatus";
         private const string VoterLocationMessage = "sessionVoterLocationMessage";
-        private const string VoterLocationStreet = "sessionVoterLocationStreetAddress";
+        private const string VoterLocationStreetNumber = "sessionVoterLocationStreetNumber";
+        private const string VoterLocationStreetName = "sessionVoterLocationStreetName";
+        private const string VoterLocationStreetAddress = "sessionVoterLocationStreetAddress";
         private const string VoterLocationCity = "sessionVoterLocationCity";
         private const string VoterLocationState = "sessionVoterLocationState";
         private const string VoterLocationZipCode = "sessionVoterLocationZipCode";
@@ -52,7 +54,9 @@ namespace OhioVoter.Services
             System.Web.HttpContext.Current.Session[VoterLocationControllerName] = voterLocation.ControllerName;
             System.Web.HttpContext.Current.Session[VoterLocationStatus] = voterLocation.Status;
             System.Web.HttpContext.Current.Session[VoterLocationMessage] = voterLocation.Message;
-            System.Web.HttpContext.Current.Session[VoterLocationStreet] = CapitalizeAllLetters(voterLocation.StreetAddress);
+            System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] = voterLocation.StreetNumber;
+            System.Web.HttpContext.Current.Session[VoterLocationStreetName] = CapitalizeAllLetters(voterLocation.StreetName);
+            System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] = CapitalizeAllLetters(voterLocation.StreetAddress);
             System.Web.HttpContext.Current.Session[VoterLocationCity] = CapitalizeAllLetters(voterLocation.City);
             System.Web.HttpContext.Current.Session[VoterLocationState] = CapitalizeAllLetters(voterLocation.StateAbbreviation);
             System.Web.HttpContext.Current.Session[VoterLocationZipCode] = voterLocation.ZipCode;
@@ -141,7 +145,9 @@ namespace OhioVoter.Services
                 ControllerName = System.Web.HttpContext.Current.Session[VoterLocationControllerName] as String,
                 Status = System.Web.HttpContext.Current.Session[VoterLocationStatus] as String,
                 Message = System.Web.HttpContext.Current.Session[VoterLocationMessage] as String,
-                StreetAddress = System.Web.HttpContext.Current.Session[VoterLocationStreet] as String,
+                StreetNumber = System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] as String,
+                StreetName = System.Web.HttpContext.Current.Session[VoterLocationStreetName] as String,
+                StreetAddress = System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] as String,
                 City = System.Web.HttpContext.Current.Session[VoterLocationCity] as String,
                 StateAbbreviation = System.Web.HttpContext.Current.Session[VoterLocationState] as String,
                 ZipCode = System.Web.HttpContext.Current.Session[VoterLocationZipCode] as String,
@@ -252,11 +258,13 @@ namespace OhioVoter.Services
             }
 
             // initiate session values if none are provided
-            if (System.Web.HttpContext.Current.Session[VoterLocationStreet] == null)
+            if (System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] == null)
             {
                 System.Web.HttpContext.Current.Session[VoterLocationStatus] = "Update";
                 System.Web.HttpContext.Current.Session[VoterLocationMessage] = "Street address must be a valid location in Ohio.";
-                System.Web.HttpContext.Current.Session[VoterLocationStreet] = "";
+                System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] = "";
+                System.Web.HttpContext.Current.Session[VoterLocationStreetName] = "";
+                System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] = "";
             }
             else if (System.Web.HttpContext.Current.Session[VoterLocationStatus] == null)
             {

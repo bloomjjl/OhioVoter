@@ -36,7 +36,7 @@ namespace OhioVoter.Models
         public string CertifiedCandidateId { get; set; }
 
         [Column("Party_Id")]
-        public string PartyId { get; set; }
+        public int PartyId { get; set; }
 
         [Column("OfficeHolder_Id")]
         public string OfficeHolderId { get; set; }
@@ -54,6 +54,9 @@ namespace OhioVoter.Models
 
         [ForeignKey("CandidateId")]
         public virtual Candidate Candidate { get; set; }
+
+        [ForeignKey("RunningMateId")]
+        public virtual Candidate RunningMate { get; set; }
 
         [ForeignKey("CertifiedCandidateId")]
         public virtual CertifiedCandidate CertifiedCandidate { get; set; }

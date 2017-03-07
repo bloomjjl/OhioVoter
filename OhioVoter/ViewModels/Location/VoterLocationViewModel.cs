@@ -8,6 +8,20 @@ namespace OhioVoter.ViewModels.Location
 {
     public class VoterLocationViewModel
     {
+        public VoterLocationViewModel() { }
+
+        public VoterLocationViewModel(ViewModels.Ballot.BallotLocationViewModel ballotLocationVM)
+        {
+            ControllerName = ballotLocationVM.ControllerName;
+            Status = ballotLocationVM.Status;
+            Message = ballotLocationVM.Message;
+            StreetAddress = ballotLocationVM.StreetAddress;
+            City = ballotLocationVM.City;
+            StateAbbreviation = ballotLocationVM.StateAbbreviation;
+            ZipCode = ballotLocationVM.ZipCode;
+        }
+
+
         public string ControllerName { get; set; }
 
         public string Status { get; set; }
@@ -15,6 +29,10 @@ namespace OhioVoter.ViewModels.Location
         public string Message { get; set; }
 
         public string LocationName { get; set; }
+
+        public string StreetNumber { get; set; }
+
+        public string StreetName { get; set; }
 
         [Required(ErrorMessage = "Please enter a street address in Ohio.")]
         [Display(Name = "Street Address")]

@@ -542,8 +542,8 @@ namespace OhioVoter.Controllers
                     LastName = candidates[0].LastName,
                     Suffix = candidates[0].Suffix,
                     OfficeName = GetOfficeNameForOfficeIdFromDatabase(candidateOffices[0].OfficeId),
-                    OfficeTerm = candidateOffices[0].Term,
-                    PartyName = party.Name,
+                    OfficeTerm = candidateOffices[0].OfficeTerm,
+                    PartyName = party.PartyName,
                     OfficeHolderName = officeHolder.Description,
                     VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidates[0].Photo, voteSmartCandidates[0].Gender)
                 },
@@ -556,8 +556,8 @@ namespace OhioVoter.Controllers
                     LastName = candidates[1].LastName,
                     Suffix = candidates[1].Suffix,
                     OfficeName = GetOfficeNameForOfficeIdFromDatabase(candidateOffices[1].OfficeId),
-                    OfficeTerm = candidateOffices[1].Term,
-                    PartyName = party.Name,
+                    OfficeTerm = candidateOffices[1].OfficeTerm,
+                    PartyName = party.PartyName,
                     OfficeHolderName = officeHolder.Description,
                     VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidates[1].Photo, voteSmartCandidates[1].Gender)
                 }
@@ -819,8 +819,8 @@ namespace OhioVoter.Controllers
                     LastName = candidates[0].LastName,
                     Suffix = candidates[0].Suffix,
                     OfficeName = GetOfficeNameForOfficeIdFromDatabase(candidateOffices[0].OfficeId),
-                    OfficeTerm = candidateOffices[0].Term,
-                    PartyName = party.Name,
+                    OfficeTerm = candidateOffices[0].OfficeTerm,
+                    PartyName = party.PartyName,
                     OfficeHolderName = officeHolder.Description,
                     VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidates[0].Photo, voteSmartCandidates[0].Gender)
                 },
@@ -832,8 +832,8 @@ namespace OhioVoter.Controllers
                     LastName = candidates[1].LastName,
                     Suffix = candidates[1].Suffix,
                     OfficeName = GetOfficeNameForOfficeIdFromDatabase(candidateOffices[1].OfficeId),
-                    OfficeTerm = candidateOffices[1].Term,
-                    PartyName = party.Name,
+                    OfficeTerm = candidateOffices[1].OfficeTerm,
+                    PartyName = party.PartyName,
                     OfficeHolderName = officeHolder.Description,
                     VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidates[1].Photo, voteSmartCandidates[1].Gender)
                 }
@@ -864,8 +864,8 @@ namespace OhioVoter.Controllers
                     LastName = candidates[0].LastName,
                     Suffix = candidates[0].Suffix,
                     OfficeName = GetOfficeNameForOfficeIdFromDatabase(candidateOffices[0].OfficeId),
-                    OfficeTerm = candidateOffices[0].Term,
-                    PartyName = party.Name,
+                    OfficeTerm = candidateOffices[0].OfficeTerm,
+                    PartyName = party.PartyName,
                     OfficeHolderName = officeHolder.Description,
                     VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidates[0].Photo, voteSmartCandidates[0].Gender),
                 },
@@ -877,8 +877,8 @@ namespace OhioVoter.Controllers
                     LastName = candidates[1].LastName,
                     Suffix = candidates[1].Suffix,
                     OfficeName = GetOfficeNameForOfficeIdFromDatabase(candidateOffices[1].OfficeId),
-                    OfficeTerm = candidateOffices[1].Term,
-                    PartyName = party.Name,
+                    OfficeTerm = candidateOffices[1].OfficeTerm,
+                    PartyName = party.PartyName,
                     OfficeHolderName = officeHolder.Description,
                     VoteSmartPhotoUrl = GetValidImageLocationToDisplay(voteSmartCandidates[1].Photo, voteSmartCandidates[1].Gender)
                 }
@@ -1644,7 +1644,7 @@ namespace OhioVoter.Controllers
 
 
 
-        public Models.Party GetPartyNameForPartyIdFromDatabase(string partyId)
+        public Models.Party GetPartyNameForPartyIdFromDatabase(int partyId)
         {
             Models.Party dbParty = new Models.Party();
 

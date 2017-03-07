@@ -17,9 +17,8 @@
             <h2><p class="panel-page-title"> My Ballot </p></h2>
         </div>
 
-        <div id="candidate-display" class="candidate-Information">
-            @*@{Html.RenderAction("DisplayBallotInformation", "Ballot", Model);}*@
-            <p><h2>Ballot page will be coming soon...</h2></p>
+        <div id="ballot_display">
+            @{Html.RenderAction("DisplayBallotInformation", "Ballot", Model);}
         </div>
 
     </div>

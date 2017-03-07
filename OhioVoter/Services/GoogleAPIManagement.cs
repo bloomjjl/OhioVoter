@@ -186,14 +186,31 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public ViewModels.Location.VoterLocationViewModel GetVoterLocationFromGoogleCivicInformation(CivicInfoRootObject googleResult)
         {
+            int intZipCode = GetIntegerFromStringValue(googleResult.normalizedInput.zip.ToString());
+
+
             return new ViewModels.Location.VoterLocationViewModel()
             {
                 StreetAddress = googleResult.normalizedInput.line1.ToString(),
                 City = googleResult.normalizedInput.city.ToString(),
                 StateAbbreviation = googleResult.normalizedInput.state.ToString(),
-                ZipCode = googleResult.normalizedInput.zip.ToString()
+                ZipCode = intZipCode.ToString()
             };
         }
+
+
+
+        public int GetIntegerFromStringValue(string strValue)
+        {
+            int intValue = 0;
+            if (int.TryParse(strValue, out intValue))
+            {
+                intValue = int.Parse(strValue);
+            }
+
+            return intValue;
+        }
+
 
 
 
@@ -473,7 +490,7 @@ namespace OhioVoter.Services
             // create C# classes from json file
             // http://json2csharp.com/
 
-            string urlRequest = GetUrlRequestForFullAddressFromStreetAddressAndZipCode(location.StreetAddress, location.ZipCode);
+            string urlRequest = GetUrlRequestForFullAddressFromStreetAddressAndZipCode(location.StreetAddress, location.ZipCode.ToString());
             WebClient client = new WebClient();
             string urlResponse = client.DownloadString(urlRequest);
             AddressObject googleResult = JToken.Parse(urlResponse).ToObject<AddressObject>();
@@ -555,9 +572,7 @@ namespace OhioVoter.Services
         public ViewModels.Location.VoterLocationViewModel GetAllLocationInformationFromGoogleAddressObject(AddressObject googleResult)
         {
             ViewModels.Location.VoterLocationViewModel location = new ViewModels.Location.VoterLocationViewModel();
-            string streetNumber = "";
-            string streetName = "";
-
+            
             // make sure address found
             if (googleResult.results.Count == 0 || googleResult.results == null)
                 return location;
@@ -572,10 +587,10 @@ namespace OhioVoter.Services
                     case null:
                         break;
                     case "street_number":
-                        streetNumber = googleResult.results[0].address_components[i].long_name.ToString();
+                        location.StreetNumber = googleResult.results[0].address_components[i].long_name.ToString();
                         break;
                     case "route":
-                        streetName = googleResult.results[0].address_components[i].short_name.ToString();
+                        location.StreetName = googleResult.results[0].address_components[i].short_name.ToString();
                         break;
                     case "neighborhood":
                         location.Neighborhood = googleResult.results[0].address_components[i].long_name.ToString();
@@ -606,7 +621,7 @@ namespace OhioVoter.Services
                 }
             }
 
-            location.StreetAddress = string.Concat(streetNumber, " ", streetName);
+            location.StreetAddress = string.Concat(location.StreetNumber, " ", location.StreetName);
 
             return location;
         }

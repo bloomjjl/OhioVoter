@@ -24,18 +24,27 @@ namespace OhioVoter.Models
         public int ElectionVotingDateId { get; set; }
 
         [Required]
+        [Column("OhioLocal_Id")]
+        public int OhioLocalId { get; set; }
+
+        [Required]
         [Column("Office_Id")]
         public int OfficeId { get; set; }
 
-        public string Term { get; set; }
+        public string OfficeTerm { get; set; }
+
+        [Required]
+        public int NumberOfSeats { get; set; }
 
 
 
         [ForeignKey("ElectionVotingDateId")]
         public virtual ElectionVotingDate ElectionVotingDate { get; set; }
 
+        [ForeignKey("OhioLocalId")]
+        public virtual OhioLocal OhioLocal { get; set; }
+
         [ForeignKey("OfficeId")]
         public virtual Office Office { get; set; }
-
     }
 }

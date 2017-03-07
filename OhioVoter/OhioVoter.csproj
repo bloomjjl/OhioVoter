@@ -232,7 +232,12 @@
     <Compile Include="Services\SessionExtensions.cs" />
     <Compile Include="Services\VoteSmartApiManagement.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\Ballot\BallotCandidateViewModel.cs" />
+    <Compile Include="ViewModels\Ballot\BallotIssueViewModel.cs" />
+    <Compile Include="ViewModels\Ballot\BallotOfficeViewModel.cs" />
     <Compile Include="ViewModels\Ballot\BallotViewModel.cs" />
+    <Compile Include="ViewModels\Ballot\BallotLocationViewModel.cs" />
+    <Compile Include="ViewModels\Ballot\BallotVoterViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareAdditionalSecondViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareAdditionalFirstViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareCaucusSecondViewModel.cs" />
@@ -425,6 +430,10 @@
     <Content Include="Views\Issue\_IssueLookUp.cshtml" />
     <Content Include="Views\Issue\_IssueList.cshtml" />
     <Content Include="Views\Issue\_IssueDetails.cshtml" />
+    <Content Include="Views\Ballot\_Ballot.cshtml" />
+    <Content Include="Views\Ballot\_BallotCandidate.cshtml" />
+    <Content Include="Views\Ballot\_BallotOffice.cshtml" />
+    <Content Include="Views\Ballot\_BallotIssue.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

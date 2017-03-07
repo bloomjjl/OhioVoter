@@ -10,6 +10,11 @@ namespace OhioVoter.Models
     [Table("tblVoterList_Hamilton")]
     public class HamiltonOhioVoter
     {
+        public HamiltonOhioVoter()
+        {
+
+        }
+
         [Required]
         [Key]
         public int Id { get; set; }
@@ -23,8 +28,6 @@ namespace OhioVoter.Models
         [Required]
         [Column("OhioPrecinct_Id")]
         public int OhioPrecinctId { get; set; }
-
-        public string HamiltonPrecinctName { get; set; }
 
         public DateTime RegisteredDate { get; set; }
 
@@ -40,11 +43,9 @@ namespace OhioVoter.Models
 
         public string Status { get; set; }
 
-        [Required]
-        [Column("Party_Id")]
-        public string PartyId { get; set; }
-
         public string PartyCode { get; set; }
+
+        public string PartyAbbreviation { get; set; }
 
         public string BirthYear { get; set; }
 
@@ -60,12 +61,26 @@ namespace OhioVoter.Models
 
         public string AddressSuffix { get; set; }
 
+        public string AddressStreetAndSuffix { get; set; }
+
         public string AddressOther { get; set; }
 
         public string AddressCityName { get; set; }
 
         [Required]
         public int AddressZip { get; set; }
+
+        [Required]
+        [Column("OhioCounty_Id")]
+        public int OhioCountyId { get; set; }
+
+        [Required]
+        [Column("CourtOfAppealsOffice_Id")]
+        public int CourtOfAppealsOfficeId { get; set; }
+
+        [Required]
+        [Column("CourtOfAppealsOfficeCode")]
+        public string CourtOfAppealsOfficeCode { get; set; }
 
         [Required]
         public string CongressOfficeCode { get; set; }
@@ -91,5 +106,7 @@ namespace OhioVoter.Models
         [ForeignKey("OhioPrecinctId")]
         public virtual OhioPrecinct OhioPrecinct { get; set; }
 
+        [ForeignKey("OhioCountyId")]
+        public virtual OhioCounty OhioCounty { get; set; }
     }
 }

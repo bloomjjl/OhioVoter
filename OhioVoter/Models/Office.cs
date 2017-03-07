@@ -14,13 +14,18 @@ namespace OhioVoter.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
         public string VoteSmartOfficeId { get; set; }
 
         [Required]
         public string OfficeName { get; set; }
 
-        public string OfficeCode { get; set; }
+        [Required]
+        public string OfficeLevel { get; set; }
+
+        [Required]
+        public int OfficeSortOrder { get; set; }
+
+        public string DistrictCode { get; set; }
 
         public string OfficeWebsite { get; set; }
     }

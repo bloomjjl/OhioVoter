@@ -80,19 +80,26 @@ namespace OhioVoter.Controllers
         /// <returns></returns>
         public IEnumerable<ElectionDate> GetListOfUpcomingElectionDates(DateTime startDate, DateTime endDate)
         {
-            if (startDate > endDate)
-                return new List<ElectionDate>();
-
-            List<Models.ElectionDate> electionDates = new List<Models.ElectionDate>();
-            using (Models.OhioVoterDbContext db = new Models.OhioVoterDbContext())
+            try
             {
-                electionDates = db.ElectionDates.Where(x => x.Date >= startDate)
-                                                .Where(x => x.Date < endDate)
-                                                .OrderBy(x => x.Date)
-                                                .ToList();
-            }
+                if (startDate > endDate)
+                    return new List<ElectionDate>();
 
-            return CopyElectionDatesToViewModel(electionDates);
+                List<Models.ElectionDate> electionDates = new List<Models.ElectionDate>();
+                using (Models.OhioVoterDbContext db = new Models.OhioVoterDbContext())
+                {
+                    electionDates = db.ElectionDates.Where(x => x.Date >= startDate)
+                                                    .Where(x => x.Date < endDate)
+                                                    .OrderBy(x => x.Date)
+                                                    .ToList();
+                }
+
+                return CopyElectionDatesToViewModel(electionDates);
+            }
+            catch
+            {
+                return new List<ElectionDate>();
+            }
         }
 
 
