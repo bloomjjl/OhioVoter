@@ -8,6 +8,22 @@ namespace OhioVoter.ViewModels.Location
 {
     public class PollingLocationViewModel
     {
+        public PollingLocationViewModel() { }
+
+        public PollingLocationViewModel(Models.OhioPrecinct precinctDTO)
+        {
+            PrecinctId = precinctDTO.Id;
+            LocationName = precinctDTO.PollingLocationName;
+            StreetAddress = precinctDTO.PollingAddress1;
+            StreetAddress2 = precinctDTO.PollingAddress2;
+            City = precinctDTO.PollingCity;
+            StateAbbreviation = precinctDTO.PollingState;
+            ZipCode = precinctDTO.PollingZipCode;
+            CountyId = precinctDTO.OhioCountyId;
+        }
+
+
+        public int PrecinctId { get; set; }
         public string Status { get; set; }
 
         public string Message { get; set; }
@@ -18,10 +34,14 @@ namespace OhioVoter.ViewModels.Location
         [Display(Name = "Street Address")]
         public string StreetAddress { get; set; }
 
+        public string StreetAddress2 { get; set; }
+
         public string Neighborhood { get; set; }
 
         [Required()]
         public string City { get; set; }
+
+        public int CountyId { get; set; }
 
         public string County { get; set; }
 

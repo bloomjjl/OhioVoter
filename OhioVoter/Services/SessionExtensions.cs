@@ -9,6 +9,7 @@ namespace OhioVoter.Services
     public class SessionExtensions
     {
         private const string VoterLocationControllerName = "sessionVoterLocationControllerName";
+        private const string VoterLocationId = "sessionVoterLocationId";
         private const string VoterLocationStatus = "sessionVoterLocationStatus";
         private const string VoterLocationMessage = "sessionVoterLocationMessage";
         private const string VoterLocationStreetNumber = "sessionVoterLocationStreetNumber";
@@ -52,6 +53,7 @@ namespace OhioVoter.Services
         public void UpdateVoterLocationInSession(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
             System.Web.HttpContext.Current.Session[VoterLocationControllerName] = voterLocation.ControllerName;
+            System.Web.HttpContext.Current.Session[VoterLocationId] = voterLocation.VoterLocationId;
             System.Web.HttpContext.Current.Session[VoterLocationStatus] = voterLocation.Status;
             System.Web.HttpContext.Current.Session[VoterLocationMessage] = voterLocation.Message;
             System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] = voterLocation.StreetNumber;
@@ -143,6 +145,7 @@ namespace OhioVoter.Services
             ViewModels.Location.VoterLocationViewModel voterLocation = new ViewModels.Location.VoterLocationViewModel()
             {
                 ControllerName = System.Web.HttpContext.Current.Session[VoterLocationControllerName] as String,
+                VoterLocationId = System.Web.HttpContext.Current.Session[VoterLocationId] as String,
                 Status = System.Web.HttpContext.Current.Session[VoterLocationStatus] as String,
                 Message = System.Web.HttpContext.Current.Session[VoterLocationMessage] as String,
                 StreetNumber = System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] as String,
@@ -253,6 +256,7 @@ namespace OhioVoter.Services
             if (System.Web.HttpContext.Current.Session[VoterLocationState] == null)
             {
                 System.Web.HttpContext.Current.Session[VoterLocationControllerName] = "Home";
+                System.Web.HttpContext.Current.Session[VoterLocationId] = "0";
                 System.Web.HttpContext.Current.Session[VoterLocationStatus] = "Update";
                 System.Web.HttpContext.Current.Session[VoterLocationState] = "";
             }
@@ -260,6 +264,7 @@ namespace OhioVoter.Services
             // initiate session values if none are provided
             if (System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] == null)
             {
+                System.Web.HttpContext.Current.Session[VoterLocationId] = "0";
                 System.Web.HttpContext.Current.Session[VoterLocationStatus] = "Update";
                 System.Web.HttpContext.Current.Session[VoterLocationMessage] = "Street address must be a valid location in Ohio.";
                 System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] = "";
@@ -363,6 +368,13 @@ namespace OhioVoter.Services
         public String GetControllerNameFromSession()
         {
             return System.Web.HttpContext.Current.Session[VoterLocationControllerName] as String;
+        }
+
+
+
+        public string GetVoterLocationId()
+        {
+            return System.Web.HttpContext.Current.Session[VoterLocationId] as String;
         }
 
     }

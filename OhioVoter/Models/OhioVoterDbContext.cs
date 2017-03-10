@@ -21,6 +21,7 @@ namespace OhioVoter.Models
         public DbSet<Party> Parties { get; set; }
         public DbSet<OfficeHolder> OfficeHolders { get; set; }
         public DbSet<Office> Offices { get; set; }
+        public DbSet<OhioBoardOfElection> OhioBoardOfElections { get; set; }
         public DbSet<OhioCounty> OhioCounties { get; set; }
         public DbSet<OhioLocal> OhioLocals { get; set; }
         public DbSet<OhioPrecinct> OhioPrecincts { get; set; }

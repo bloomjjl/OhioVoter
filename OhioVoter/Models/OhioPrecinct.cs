@@ -30,6 +30,18 @@ namespace OhioVoter.Models
         [Column("OhioLocal_Id")]
         public int OhioLocalId { get; set; }
 
+        public string PollingLocationName { get; set; }
+
+        public string PollingAddress1 { get; set; }
+
+        public string PollingAddress2 { get; set; }
+
+        public string PollingCity { get; set; }
+
+        public string PollingState { get; set; }
+
+        public string PollingZipCode { get; set; }
+
 
 
         [ForeignKey("OhioCountyId")]

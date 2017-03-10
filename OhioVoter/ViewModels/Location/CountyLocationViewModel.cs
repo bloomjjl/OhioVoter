@@ -8,15 +8,31 @@ namespace OhioVoter.ViewModels.Location
 {
     public class CountyLocationViewModel
     {
+        public CountyLocationViewModel() { }
+
+        public CountyLocationViewModel(Models.OhioBoardOfElection countyDTO)
+        {
+            StreetAddress = countyDTO.StreetAddress1;
+            StreetAddress2 = countyDTO.StreetAddress2;
+            City = countyDTO.City;
+            StateAbbreviation = countyDTO.State;
+            ZipCode = countyDTO.ZipCode.ToString();
+            County = countyDTO.OhioCounty.Name;
+            Website = countyDTO.Website;
+            Phone = countyDTO.Phone;
+        }
+
+
         public string Status { get; set; }
 
         public string Message { get; set; }
 
         public string LocationName { get; set; }
 
-        [Required(ErrorMessage = "Please enter a street address in Ohio.")]
         [Display(Name = "Street Address")]
         public string StreetAddress { get; set; }
+
+        public string StreetAddress2 { get; set; }
 
         public string Neighborhood { get; set; }
 
@@ -29,9 +45,7 @@ namespace OhioVoter.ViewModels.Location
 
         public string StateAbbreviation { get; set; }
 
-        [Required(ErrorMessage = "Please enter a zip code in Ohio.")]
         [Display(Name = "Zip Code")]
-        [StringLength(5, MinimumLength = 5, ErrorMessage = "Zip Code Must Be 5 Digits")]
         public string ZipCode { get; set; }
 
         public string ZipCodeSuffix { get; set; }

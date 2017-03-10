@@ -28,6 +28,12 @@ namespace OhioVoter.Models
         public int OhioCountyId { get; set; }
 
         [Required]
+        [Column("OhioLocal_Id")]
+        public int OhioLocalId { get; set; }
+
+        public string SchoolCode { get; set; }
+
+        [Required]
         public string IssueTitle { get; set; }
 
         [Required]

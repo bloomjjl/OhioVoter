@@ -10,9 +10,26 @@ namespace OhioVoter.ViewModels.Location
     {
         public VoterLocationViewModel() { }
 
-        public VoterLocationViewModel(ViewModels.Ballot.BallotLocationViewModel ballotLocationVM)
+        public VoterLocationViewModel(Models.HamiltonOhioVoter locationDTO, string strStateAbbreviation)
+        {
+            VoterLocationId = locationDTO.Id.ToString();
+            StreetNumber = locationDTO.AddressNumber.ToString();
+            StreetPreDirection = locationDTO.AddressPreDirectional_Short;
+            StreetName = locationDTO.AddressStreet;
+            StreetSuffix = locationDTO.AddressSuffix_Short;
+            StreetAddress = locationDTO.AddressNumberAndPreDirectionAndStreetAndSuffix_Short;
+            City = locationDTO.AddressCityName;
+            StateAbbreviation = strStateAbbreviation;
+            ZipCode = locationDTO.AddressZip.ToString();
+            PrecinctId = locationDTO.OhioPrecinctId;
+            PrecinctNumber = locationDTO.HamiltonPrecinctNumber;
+            PrecinctSplit = locationDTO.HamiltonPrecinctSplit;
+        }
+
+        public VoterLocationViewModel(ViewModels.Ballot.VoterAddressViewModel ballotLocationVM)
         {
             ControllerName = ballotLocationVM.ControllerName;
+            VoterLocationId = ballotLocationVM.VoterLocationId;
             Status = ballotLocationVM.Status;
             Message = ballotLocationVM.Message;
             StreetAddress = ballotLocationVM.StreetAddress;
@@ -24,6 +41,8 @@ namespace OhioVoter.ViewModels.Location
 
         public string ControllerName { get; set; }
 
+        public string VoterLocationId { get; set; }
+
         public string Status { get; set; }
 
         public string Message { get; set; }
@@ -32,7 +51,11 @@ namespace OhioVoter.ViewModels.Location
 
         public string StreetNumber { get; set; }
 
+        public string StreetPreDirection { get; set; }
+
         public string StreetName { get; set; }
+
+        public string StreetSuffix { get; set; }
 
         [Required(ErrorMessage = "Please enter a street address in Ohio.")]
         [Display(Name = "Street Address")]
@@ -70,6 +93,12 @@ namespace OhioVoter.ViewModels.Location
                 return string.Format("{0} {1}, {2} {3}", this.StreetAddress, this.City, this.StateAbbreviation, this.ZipCode);
             }
         }
+
+        public int PrecinctId { get; set; }
+
+        public int PrecinctNumber { get; set; }
+
+        public int PrecinctSplit { get; set; }
 
         public string GoogleLocationMapAPI { get; set; }
     }

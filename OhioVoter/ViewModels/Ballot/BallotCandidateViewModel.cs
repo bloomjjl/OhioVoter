@@ -17,15 +17,17 @@ namespace OhioVoter.ViewModels.Ballot
 
             CandidateId = candidateDTO.CandidateId;
             VoteSmartCandidateId = candidateDTO.Candidate.VoteSmartCandidateId;
+            CandidatePhoto = candidateDTO.Candidate.VoteSmartPhotoUrl;
             CandidateFirstName = candidateDTO.Candidate.FirstName;
             CandidateMiddleName = candidateDTO.Candidate.MiddleName;
             CandidateLastName = candidateDTO.Candidate.LastName;
             CandidateSuffix = candidateDTO.Candidate.Suffix;
+            CandidateGender = candidateDTO.Candidate.Gender;
 
             RunningMateId = candidateDTO.RunningMateId;
         }
 
-        public BallotCandidateViewModel(BallotCandidateViewModel candidateVM, Models.Candidate candidateDTO)
+        public BallotCandidateViewModel(BallotCandidateViewModel candidateVM, Models.Candidate runningmateDTO)
         {
             PartyId = candidateVM.PartyId;
             PartyName = candidateVM.PartyName;
@@ -33,17 +35,22 @@ namespace OhioVoter.ViewModels.Ballot
 
             CandidateId = candidateVM.CandidateId;
             VoteSmartCandidateId = candidateVM.VoteSmartCandidateId;
+            CandidatePhoto = candidateVM.CandidatePhoto;
             CandidateFirstName = candidateVM.CandidateFirstName;
             CandidateMiddleName = candidateVM.CandidateMiddleName;
             CandidateLastName = candidateVM.CandidateLastName;
             CandidateSuffix = candidateVM.CandidateSuffix;
+            CandidateGender = candidateVM.CandidateGender;
 
-            RunningMateId = candidateDTO.Id;
-            VoteSmartRunningMateId = candidateDTO.VoteSmartCandidateId;
-            RunningMateFirstName = candidateDTO.FirstName;
-            RunningMateMiddleName = candidateDTO.MiddleName;
-            RunningMateLastName = candidateDTO.LastName;
-            RunningMateSuffix = candidateDTO.Suffix;
+            RunningMateId = runningmateDTO.Id;
+            VoteSmartRunningMateId = runningmateDTO.VoteSmartCandidateId;
+            VoteSmartRunningMatePhoto = runningmateDTO.VoteSmartPhotoUrl;
+            RunningMatePhoto = runningmateDTO.VoteSmartPhotoUrl;
+            RunningMateFirstName = runningmateDTO.FirstName;
+            RunningMateMiddleName = runningmateDTO.MiddleName;
+            RunningMateLastName = runningmateDTO.LastName;
+            RunningMateSuffix = runningmateDTO.Suffix;
+            RunningMateGender = runningmateDTO.Gender;
         }
 
 
@@ -54,11 +61,13 @@ namespace OhioVoter.ViewModels.Ballot
 
         public int CandidateId { get; set; }
         public string VoteSmartCandidateId { get; set; }
-        public string VoteSmartCandidateImageUrl { get; set; }
+        public string VoteSmartCandidatePhoto { get; set; }
+        public string CandidatePhoto { get; set; }
         public string CandidateFirstName { get; set; }
         public string CandidateMiddleName { get; set; }
         public string CandidateLastName { get; set; }
         public string CandidateSuffix { get; set; }
+        public string CandidateGender { get; set; }
 
         public string CandidateName
         {
@@ -82,11 +91,13 @@ namespace OhioVoter.ViewModels.Ballot
 
         public int RunningMateId { get; set; }
         public string VoteSmartRunningMateId { get; set; }
-        public string VoteSmartRunningMateImageUrl { get; set; }
+        public string VoteSmartRunningMatePhoto { get; set; }
+        public string RunningMatePhoto { get; set; }
         public string RunningMateFirstName { get; set; }
         public string RunningMateMiddleName { get; set; }
         public string RunningMateLastName { get; set; }
         public string RunningMateSuffix { get; set; }
+        public string RunningMateGender { get; set; }
 
         public string RunningMateName
         {

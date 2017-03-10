@@ -9,7 +9,7 @@ namespace OhioVoter.ViewModels.Ballot
     {
         public BallotVoterViewModel() { }
 
-        public BallotVoterViewModel(BallotLocationViewModel locationVM)
+        public BallotVoterViewModel(VoterAddressViewModel locationVM)
         {
             AddressNumber = locationVM.StreetNumber;
             AddressStreetName = locationVM.StreetName;
@@ -48,6 +48,7 @@ namespace OhioVoter.ViewModels.Ballot
         public string AddressStreetName { get; set; }
         public string AddressNumberAndStreetName { get; set; }
         public string AddressSuffix { get; set; }
+        public string AddressStreetNameAndSuffix { get; set; }
         public string AddressCityName { get; set; }
         public string AddressZip { get; set; }
         public int CountyId { get; set; }

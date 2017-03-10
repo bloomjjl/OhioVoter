@@ -13,6 +13,7 @@ namespace OhioVoter.ViewModels.Ballot
         {
             ElectionVotingDateId = officeDTO.ElectionVotingDateId;
             ElectionVotingDate = officeDTO.ElectionVotingDate.Date.ToShortDateString();
+            ElectionOfficeId = officeDTO.Id;
             OfficeId = officeDTO.OfficeId;
             OfficeName = officeDTO.Office.OfficeName;
             OfficeTerm = officeDTO.OfficeTerm;
@@ -22,6 +23,7 @@ namespace OhioVoter.ViewModels.Ballot
 
         public int ElectionVotingDateId { get; set; }
         public string ElectionVotingDate { get; set; }
+        public int ElectionOfficeId { get; set; }
         public int OfficeId { get; set; }
         public string OfficeName { get; set; }
         public string OfficeTerm { get; set; }

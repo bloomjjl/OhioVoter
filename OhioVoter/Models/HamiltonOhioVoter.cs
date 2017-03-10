@@ -49,7 +49,9 @@ namespace OhioVoter.Models
 
         public string BirthYear { get; set; }
 
-        public string AddressPreDirectional { get; set; }
+        public string AddressPreDirectional_Short { get; set; }
+
+        public string AddressPreDirectional_Long { get; set; }
 
         [Required]
         public int AddressNumber { get; set; }
@@ -59,9 +61,17 @@ namespace OhioVoter.Models
         [Required]
         public string AddressStreet { get; set; }
 
-        public string AddressSuffix { get; set; }
+        public string AddressSuffix_Short { get; set; }
 
-        public string AddressStreetAndSuffix { get; set; }
+        public string AddressSuffix_Long { get; set; }
+
+        public string AddressStreetAndSuffix_Short { get; set; }
+
+        public string AddressPreDirectionAndStreetAndSuffix_Short { get; set; }
+
+        public string AddressNumberAndStreetAndSuffix_Short { get; set; }
+
+        public string AddressNumberAndPreDirectionAndStreetAndSuffix_Short { get; set; }
 
         public string AddressOther { get; set; }
 

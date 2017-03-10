@@ -17,26 +17,237 @@ namespace OhioVoter.Controllers
 
         public ActionResult Index()
         {
-            // update session with controller info
-            UpdateSessionWithNewControllerNameForSideBar(_controllerName);
-
-            // get details for view model
-            BallotViewModel viewModel = new BallotViewModel()
+            // is user in process of filling out ballot?
+            if (TempData["Ballot"] != null)
             {
-                ControllerName = _controllerName
-            };
+                // get details for view model                
+                BallotViewModel ballotVM = (BallotViewModel)TempData["Ballot"];
+                ballotVM.ControllerName = _controllerName;
 
-            return View(viewModel);
+                return View(ballotVM);
+            }
+            else
+            {
+                // update session with controller info
+                UpdateSessionWithNewControllerNameForSideBar(_controllerName);
+
+                // get details for view model
+                BallotViewModel viewModel = new BallotViewModel()
+                {
+                    ControllerName = _controllerName
+                };
+
+                // add gender for candidate from votesmart to database
+                using (OhioVoterDbContext context = new OhioVoterDbContext())
+                {
+                    List<Models.Candidate> candidate = context.Candidates.ToList();
+                    VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
+
+                    context.SaveChanges();
+                }
+
+                return View(viewModel);
+            }
         }
 
 
+        /*
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Save(BallotViewModel ballotVM)
+        public ActionResult DELETE_EmailBallot(BallotViewModel ballotVM)
         {
-            if (!ModelState.IsValid) { return View("Index"); }
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Email Address is required");
+                return RedirectToAction("Index");
+            }
 
-            return View("Index");
+            string ballotEmail;
+
+            // get date for election
+            ballotEmail = string.Format("Ballot for Election Date: {0}{1}{2}", ballotVM.SelectedVotingDateId, Environment.NewLine, Environment.NewLine);
+
+            // get each office on ballot
+            for (int i = 0; i < ballotVM.BallotOfficeViewModel.Count(); i++)
+            {
+                // get office name
+                ballotEmail = string.Format("{0}. {1}", i, ballotVM.BallotOfficeViewModel[i].OfficeName);
+
+                // get office term if provided
+                if (ballotVM.BallotOfficeViewModel[i].OfficeTerm != "")
+                {
+                    ballotEmail = string.Format("{0} ({1})", ballotEmail, ballotVM.BallotOfficeViewModel[i].OfficeTerm);
+                }
+
+                // get selected listed candidate(s)
+                for (int j = 0; j < ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel.Count; j++)
+                {
+                    // check for selected listed candidate
+                    if (ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].IsSelected == true)
+                    {
+                        // add the selected candidate's name to email
+                        ballotEmail = string.Format("{0}{1}", ballotEmail, Environment.NewLine, ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateName);
+
+                        // check for listed runningmate
+                        if (ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateId > 0)
+                        {
+                            // add selected runningmate's name to email
+                            ballotEmail = string.Format("{0} / {1}", ballotEmail, ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateName);
+                        }
+                        // add new line for next candidate
+                        ballotEmail = string.Format("{0}{1}", ballotEmail, Environment.NewLine);
+                    }
+
+                    // check for selected write-in candidate
+                    if (ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].IsSelected == true)
+                    {
+                        // add the selected candidate's name to email
+                        ballotEmail = string.Format("{0}{1}", ballotEmail, Environment.NewLine, ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateName);
+
+                        // check for listed runningmate
+                        if (ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateId > 0)
+                        {
+                            // add selected runningmate's name to email
+                            ballotEmail = string.Format("{0} / {1}", ballotEmail, ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateName);
+                        }
+                        // add new line for next candidate
+                        ballotEmail = string.Format("{0}{1}", ballotEmail, Environment.NewLine);
+                    }
+
+                    // add extra line between offices
+                    ballotEmail = string.Format("{0}{1}", ballotEmail, Environment.NewLine);
+                }
+            }
+
+            // get each issue on ballot
+            for (int i = 0; i < ballotVM.BallotOfficeViewModel.Count(); i++)
+            {
+                // get issue name
+                ballotEmail = string.Format("{0}. {1}", i, ballotVM.BallotIssueViewModel[i].Title);
+
+                // get selected option for issue
+                for (int j = 0; j < ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel.Count; j++)
+                {
+                    // check for selected option
+                    * if (ballotVM.BallotIssueViewModel[i].Option1. == true)
+                     {
+
+                     }
+                     *
+
+                }
+            }
+            // get issues
+            // get selected option
+            // email information
+
+            return RedirectToAction("Index");
+        }
+
+        */
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EmailBallot(BallotViewModel ballotVM)
+        {
+            TempData["Ballot"] = new BallotViewModel();
+
+            if (!ModelState.IsValid)
+            {
+                TempData["Ballot"] = ballotVM;
+                ModelState.AddModelError("", "Please supply your email address and fill out the ballot");
+                return RedirectToAction("Index", "Ballot");
+            }
+
+            BallotViewModel copyBallotVM = ballotVM;
+
+            if (string.IsNullOrWhiteSpace(copyBallotVM.VoterEmailAddress))
+            {
+                TempData["Ballot"] = ballotVM;
+
+                TempData["EmailBallotMessage"] = "Email Addres is required";
+                ModelState.AddModelError("", "Email Address is required");
+                return RedirectToAction("Index", copyBallotVM);
+            }
+
+            // validate at least one item has been selected on ballot
+            if (ValidateBallotHasSelections(copyBallotVM))
+            {
+                // see if user has logged in to connect saved ballot
+                string message = "message";
+                // validate email provided from user / user account (if logged in)
+
+                // save ballot 
+
+                // display SUCCESS message to user when done
+                TempData["Ballot"] = ballotVM;
+                TempData["EmailBallotMessage"] = "SUCCESS";
+            }
+            else
+            {
+                TempData["Ballot"] = ballotVM;
+                TempData["EmailBallotMessage"] = "Ballot has not been filled out";
+                ModelState.AddModelError("", "Ballot has not been filled out");
+            }
+
+            return RedirectToAction("Index", copyBallotVM);
+        }
+
+
+
+        private bool ValidateBallotHasSelections(BallotViewModel ballotVM)
+        {
+            // make sure ballot is provided
+            if (ballotVM == null) { return false; }
+
+
+            // make sure at least one office is on ballot
+            if (ballotVM.BallotOfficeViewModel != null)
+            {
+                // check each office
+                for (int i = 0; i < ballotVM.BallotOfficeViewModel.Count(); i++)
+                {
+                    // check listeted candidates
+                    for (int j = 0; j < ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel.Count(); j++)
+                    {
+                        // stop checking if one is found
+                        if (ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].IsSelected)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // check write-in candidates if there are any
+                    if (ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel != null)
+                    {
+                        for (int j = 0; j < ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel.Count(); j++)
+                        {
+                            // stop checking if one is found
+                            if (ballotVM.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].IsSelected)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // make sure at least one issue is on ballot
+            if (ballotVM.BallotIssueViewModel != null)
+            {
+                // check each issue
+                for (int i = 0; i < ballotVM.BallotIssueViewModel.Count(); i++)
+                {
+                    // stop checking if one is found
+                    if (ballotVM.BallotIssueViewModel[i].SelectedOption != null && ballotVM.BallotIssueViewModel[i].SelectedOption != "")
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
 
@@ -50,51 +261,114 @@ namespace OhioVoter.Controllers
 
 
         [ChildActionOnly]
-        public ActionResult DisplayBallotInformation()
+        public ActionResult DisplayBallotInformation(BallotViewModel ballotVM)
         {
-            // get election voting date from View (id / date)
-            int votingDateId = GetVotingDateForNextElectionFromDatabase();
-            if (votingDateId == 0) { return Content(""); }
+            // has user started filling out ballot?
+            if (ModelState.IsValid)
+            {
+                return PartialView("_Ballot", ballotVM);
+            }
 
-            // make sure user has provided location
-            BallotLocationViewModel ballotLocationVM = GetLocationInformationFromSessionForVoter();
-            ballotLocationVM.ControllerName = _controllerName;
+            // validate dateId
+            int intDateId = 1; // set to Nov 2016 election
 
-            bool hasLocation = ValidateLocationInformationForVoter(ballotLocationVM);
+            // make sure a voter provided their address
+            VoterAddressViewModel voterAddressVM = GetVoterAddressFromSession();
+            voterAddressVM.ControllerName = _controllerName;
+
+            // was address found?
+            bool hasLocation = ValidateSuppliedVoterAddress(voterAddressVM);
             if (hasLocation == false)
             {
-                // location not available -- get location information 
-                ViewModels.Location.VoterLocationViewModel voterLocationVM = new ViewModels.Location.VoterLocationViewModel(ballotLocationVM);
+                // location not available -- get voter's location information 
+                ViewModels.Location.VoterLocationViewModel voterLocationVM = new ViewModels.Location.VoterLocationViewModel(voterAddressVM);
                 return PartialView("_VoterLocationForm", voterLocationVM);
             }
 
-            // get view model
-            BallotViewModel ballotVM = new BallotViewModel()
+            // make sure supplied dateId is a valid votingDateId
+            int votingDateId = GetVotingDateForNextElectionFromDatabase();
+            if (intDateId > votingDateId) { intDateId = votingDateId; }
+
+            // get general ballot information
+            BallotViewModel newBallotVM = new BallotViewModel(_controllerName, intDateId.ToString(), GetDropDownListOfVotingDates());
+
+            // get voter LocationID from Session
+            string voterLocationId = GetVoterLocationIdFromSession();
+
+            if (validVoterLocationId(voterLocationId))
             {
-                BallotVoterViewModel = GetVoterInformationforBallotLocationFromDatabase(ballotLocationVM)
-            };
 
-            // get voter information from database
-            ballotVM.BallotVoterViewModel = GetVoterInformationforBallotLocationFromDatabase(ballotLocationVM);
-            ballotVM.BallotVoterViewModel.ElectionVotingDateId = votingDateId;
+                // get voter information from database
+                BallotVoterViewModel ballotVoterVM = GetBallotInformationForVoterAddressFromDatabase(voterLocationId);
 
-            // get office information for voter from databse
-            ballotVM.BallotOfficeViewModel = GetListOfOfficesForBallotVoterFromDatabase(ballotVM.BallotVoterViewModel);
+                // get office information for voter from databse
+                List<BallotOfficeViewModel> collectionBallotOfficeVM = GetListOfOfficesForBallot(ballotVoterVM, intDateId);
 
-            // get candidate information for each office from database
-            ballotVM.BallotOfficeViewModel = GetListOfCandidatesForBallotOfficeFromDatabase(ballotVM.BallotOfficeViewModel);
+                // get issue information for voter from database
+                List<BallotIssueViewModel> collectionBallotIssueVM = GetListOfIssuesForBallotVoterFromDatabase(ballotVoterVM);
 
-            // get runningmate information from database
-            ballotVM.BallotOfficeViewModel = GetRunningMateInformationForBallotOfficeFromDatabase(ballotVM.BallotOfficeViewModel);
+                // display ballot
+                return PartialView("_Ballot", new BallotViewModel(newBallotVM, ballotVoterVM, collectionBallotOfficeVM, collectionBallotIssueVM));
+            }
 
-            // get candidate images from VoteSmart
-            //ballotVM.BallotOfficeViewModel = GetCandidateImagesForBallotOfficeFromDatabase(ballotVM.BallotOfficeViewModel);
+            // proof of concept for Hamilton County
+            // Not a registered voter in Hamilton County - can not display ballot
+            return PartialView("_Ballot", new BallotViewModel());
+        }
 
-            // get issue information for voter from database
-            ballotVM.BallotIssueViewModel = GetListOfIssuesForBallotVoterFromDatabase(ballotVM.BallotVoterViewModel);
 
-            // display ballot
-            return PartialView("_Ballot", ballotVM);
+
+        public string GetVoterLocationIdFromSession()
+        {// Tests not generated because of session testing null reference error
+            SessionExtensions session = new SessionExtensions();
+            return session.GetVoterLocationId();
+        }
+
+
+
+        public bool validVoterLocationId(string voterLocationId)
+        {
+            if (voterLocationId == null || voterLocationId == "" || voterLocationId == "0")
+            {
+                return false;
+            }
+
+            int intVoterLocationId = GetIntegerFromStringValue(voterLocationId);
+
+            if (intVoterLocationId > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+
+        /// <summary>
+        /// Validate parameter is an integer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>value if integer, or zero if not valid integer</returns>
+        public int ValidateAndReturnInteger(int? id)
+        {
+            int intId;
+
+            if (id == null)
+            {// no value provided
+                // default to zero.
+                return 0;
+            }
+            else if (int.TryParse(id.ToString(), out intId))
+            {// value is an integer
+                // return supplied integer
+                return int.Parse(id.ToString());
+            }
+            else
+            {// value provided is not an integer
+                // default to zero
+                return 0;
+            }
         }
 
 
@@ -114,43 +388,81 @@ namespace OhioVoter.Controllers
 
 
 
-        public BallotLocationViewModel GetLocationInformationFromSessionForVoter()
+        public VoterAddressViewModel GetVoterAddressFromSession()
         {
             // get voter location from session
             Services.SessionExtensions session = new Services.SessionExtensions();
             ViewModels.Location.VoterLocationViewModel locationVM = session.GetVoterLocationFromSession();
-            return new BallotLocationViewModel(locationVM);
+            return new VoterAddressViewModel(locationVM);
         }
 
 
 
-        public bool ValidateLocationInformationForVoter(BallotLocationViewModel ballotLocationVM)
+        public bool ValidateSuppliedVoterAddress(VoterAddressViewModel voterAddressVM)
         {
             // validate voter location
             Controllers.LocationController location = new Controllers.LocationController();
-            ViewModels.Location.VoterLocationViewModel locationVM = new ViewModels.Location.VoterLocationViewModel(ballotLocationVM);
+            ViewModels.Location.VoterLocationViewModel locationVM = new ViewModels.Location.VoterLocationViewModel(voterAddressVM);
 
             return location.ValidateVoterLocation(locationVM);
         }
 
 
 
-        public BallotVoterViewModel GetVoterInformationforBallotLocationFromDatabase(BallotLocationViewModel ballotLocationVM)
+        public BallotVoterViewModel GetBallotInformationForVoterAddressFromDatabase(string voterLocationId)
         {
             // convert string values to integer
-            int intStreetNumber = GetIntegerFromStringValue(ballotLocationVM.StreetNumber);
-            int intZipCode = GetIntegerFromStringValue(ballotLocationVM.ZipCode);
+            //int intStreetNumber = GetIntegerFromStringValue(voterAddressVM.StreetNumber);
+            int intLocationId = GetIntegerFromStringValue(voterLocationId);
 
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
-                Models.HamiltonOhioVoter hamiltonOhioVoterDTO = context.HamiltonOhioVoters.Where(x => x.AddressNumber == intStreetNumber)
-                                                                                            .Where(x => x.AddressStreetAndSuffix == ballotLocationVM.StreetName)
-                                                                                            .Where(x => x.AddressCityName == ballotLocationVM.City)
-                                                                                            .FirstOrDefault(x => x.AddressZip == intZipCode);
+                // only checking for ballots in hamilton County, OHIO for proof of concept
+                // voter address already checked
+                // use voterId?
+                // check most precise address
+                Models.HamiltonOhioVoter hamiltonOhioVoterDTO = context.HamiltonOhioVoters.FirstOrDefault(x => x.Id == intLocationId);
 
                 if (hamiltonOhioVoterDTO == null) { return new BallotVoterViewModel(); }
 
                 return new BallotVoterViewModel(hamiltonOhioVoterDTO);
+            }
+        }
+
+
+
+        public List<SelectListItem> GetDropDownListOfVotingDates()
+        {
+            List<Models.ElectionVotingDate> dboDates = GetVotingDateListFromDatabase();
+            List<SelectListItem> dates = new List<SelectListItem>();
+
+            for (int i = 0; i < dboDates.Count; i++)
+            {
+                dates.Add(new SelectListItem()
+                {
+                    Value = dboDates[i].Id.ToString(),
+                    Text = dboDates[i].Date.ToShortDateString()
+                });
+            }
+
+            return dates;
+        }
+
+
+
+
+        public List<Models.ElectionVotingDate> GetVotingDateListFromDatabase()
+        {
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                List<Models.ElectionVotingDate> dboDates = context.ElectionVotingDates.Where(x => x.Active == true).ToList();
+
+                if (dboDates == null)
+                {
+                    return new List<Models.ElectionVotingDate>();
+                }
+
+                return dboDates;
             }
         }
 
@@ -169,14 +481,38 @@ namespace OhioVoter.Controllers
 
 
 
-        public List<BallotOfficeViewModel> GetListOfOfficesForBallotVoterFromDatabase(BallotVoterViewModel ballotVoterVM)
+        public List<BallotOfficeViewModel> GetListOfOfficesForBallot(BallotVoterViewModel ballotVoterVM, int dateId)
+        {
+            // get office information for voter from databse
+            List<BallotOfficeViewModel> collectionBallotOfficeVM = GetListOfOfficesForBallotVoterFromDatabase(ballotVoterVM, dateId);
+
+            // remove offices for runningmate and combine office name listed for both candidate / runningmate
+            List<BallotOfficeViewModel> collectionBallotOfficeNoRunningmateOfficeVM = RemoveOfficesForRunningMates(collectionBallotOfficeVM);
+
+            // get candidate information for each office from database
+            List<BallotOfficeViewModel> collectionBallotOfficeWithCandidateVM = GetListOfCandidatesForBallotOfficeFromDatabase(collectionBallotOfficeNoRunningmateOfficeVM);
+
+            // get runningmate information from database
+            List<BallotOfficeViewModel> collectionBallotOfficeWithCandidateAndRunningmateVM = GetRunningMateInformationForBallotOfficeFromDatabase(collectionBallotOfficeWithCandidateVM);
+
+            // make sure images are provided for all candidates/runningmates
+            return GetImagesForAllCandidatesAndRunningMates(collectionBallotOfficeWithCandidateAndRunningmateVM);
+
+
+            // get candidate images from VoteSmart and return View Model
+            //return GetCandidateImagesFromVoteSmart(collectionBallotOfficeWithRunningmateVM);
+        }
+
+
+
+        public List<BallotOfficeViewModel> GetListOfOfficesForBallotVoterFromDatabase(BallotVoterViewModel ballotVoterVM, int dateId)
         {
             List<BallotOfficeViewModel> officeVM = new List<BallotOfficeViewModel>();
 
             // get list of all offices for current election date
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
-                List<Models.ElectionOffice> dbOffices = context.ElectionOffices.Where(x => x.ElectionVotingDateId == ballotVoterVM.ElectionVotingDateId)
+                List<Models.ElectionOffice> dbOffices = context.ElectionOffices.Where(x => x.ElectionVotingDateId == dateId)
                                                                                        .Distinct()
                                                                                        .OrderBy(x => x.Office.OfficeSortOrder)
                                                                                        .ToList();
@@ -243,52 +579,101 @@ namespace OhioVoter.Controllers
 
 
 
-        public List<BallotOfficeViewModel> GetListOfCandidatesForBallotOfficeFromDatabase (List<BallotOfficeViewModel> ballotOfficesVM)
+        public List<BallotOfficeViewModel> RemoveOfficesForRunningMates(List<BallotOfficeViewModel> ballotOfficesVM)
+        {
+            int presidentOfficeId = 1;
+            int vicePresidentOfficeId = 2;
+
+            int presidentOfficeIndex = -1;
+            int vicePresidentOfficeIndex = -1;
+
+            // get office ID for President and Vice President
+            for (int i = 0; i < ballotOfficesVM.Count(); i++)
+            {
+                int currentOfficeId = ballotOfficesVM[i].OfficeId;
+
+                // get indexes for offices
+                if (currentOfficeId == presidentOfficeId)
+                {
+                    presidentOfficeIndex = i;
+                }
+                else if (currentOfficeId == vicePresidentOfficeId)
+                {
+                    vicePresidentOfficeIndex = i;
+                }
+
+                // do not display offices for runningmates
+                if (presidentOfficeIndex != -1 && vicePresidentOfficeIndex != -1)
+                {
+                    // combine offices for "President / Vice President"
+                    ballotOfficesVM[presidentOfficeIndex].OfficeName = String.Format("{0} / {1}", ballotOfficesVM[presidentOfficeIndex].OfficeName, ballotOfficesVM[vicePresidentOfficeIndex].OfficeName);
+
+                    // remove runningmate office
+                    ballotOfficesVM.RemoveAt(vicePresidentOfficeIndex);
+
+                    // stop checking
+                    i = ballotOfficesVM.Count();
+                }
+            }
+
+            return ballotOfficesVM;
+
+        }
+
+
+
+        public List<BallotOfficeViewModel> GetCandidateAndRunningMateInformationFromCandidateAndRunningMateIdOnBallot(List<BallotOfficeViewModel> ballotOfficesVM, int dateId)
+        {
+            // get candidate information for each office from database
+            List<BallotOfficeViewModel> collectionBallotOfficeWithCandidateVM = GetListOfCandidatesForBallotOfficeFromDatabase(ballotOfficesVM);
+
+            // get runningmate information from database
+            List<BallotOfficeViewModel> collectionBallotOfficeWithCandidateAndRunningmateVM = GetRunningMateInformationForBallotOfficeFromDatabase(collectionBallotOfficeWithCandidateVM);
+
+            // update candidates selected on ballot
+            List<BallotOfficeViewModel> collectionBallotOfficeWithSelectedCandidatesVM = GetSelectedCandidatesOnBallot(collectionBallotOfficeWithCandidateAndRunningmateVM, ballotOfficesVM);
+
+            // make sure images are provided for all candidates/runningmates
+            return GetImagesForAllCandidatesAndRunningMates(collectionBallotOfficeWithSelectedCandidatesVM);
+        }
+
+
+
+        public List<BallotOfficeViewModel> GetListOfCandidatesForBallotOfficeFromDatabase(List<BallotOfficeViewModel> ballotOfficesVM)
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
                 // get office ID
                 for (int i = 0; i < ballotOfficesVM.Count(); i++)
                 {
-                    // create candidate object
-                    //ballotOfficesVM[i].BallotCandidatesViewModel = new 
+                    int currentOfficeId = ballotOfficesVM[i].ElectionOfficeId;
+                    string currentOfficeName = ballotOfficesVM[i].OfficeName;
+                    string currentOfficeTerm = ballotOfficesVM[i].OfficeTerm;
 
-                    int currentOfficeId = ballotOfficesVM[i].OfficeId;
+                    // get election candidate/runningmate for office ID
+                    List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == currentOfficeId)
+                                                                                            .OrderBy(x => x.Candidate.FirstName)
+                                                                                            .OrderBy(x => x.Candidate.LastName)
+                                                                                            .ToList();
 
-                    // do not display offices for runningmates
-                    if (currentOfficeId == 2)
+                    List<BallotCandidateViewModel> collectionListedCandidateVM = new List<BallotCandidateViewModel>();
+                    List<BallotCandidateViewModel> collectionWriteInCandidateVM = new List<BallotCandidateViewModel>();
+
+                    // group candidates by how they will appear on the ballot (Listed or WriteIn)
+                    foreach (var candidateDTO in dbCandidates)
                     {
-                        ballotOfficesVM.RemoveAt(i);
-                        i -= 1;
-                    }
-                    else
-                    {
-
-                        // get election candidate/runningmate for office ID
-                        List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == currentOfficeId)
-                                                                                                .OrderBy(x => x.Candidate.FirstName)
-                                                                                                .OrderBy(x => x.Candidate.LastName)
-                                                                                                .ToList();
-
-                        List<BallotCandidateViewModel> collectionListedCandidateVM = new List<BallotCandidateViewModel>();
-                        List<BallotCandidateViewModel> collectionWriteInCandidateVM = new List<BallotCandidateViewModel>();
-
-                        // group candidates by how they will appear on the ballot (Listed or WriteIn)
-                        foreach (var candidateDTO in dbCandidates)
+                        if (candidateDTO.CertifiedCandidate.Id == "L")
                         {
-                            if (candidateDTO.CertifiedCandidate.Id == "L")
-                            {
-                                collectionListedCandidateVM.Add(new BallotCandidateViewModel(candidateDTO));
-                            }
-                            else
-                            {
-                                collectionWriteInCandidateVM.Add(new BallotCandidateViewModel(candidateDTO));
-                            }
+                            collectionListedCandidateVM.Add(new BallotCandidateViewModel(candidateDTO));
                         }
-
-                        ballotOfficesVM[i].BallotListedCandidatesViewModel = collectionListedCandidateVM;
-                        ballotOfficesVM[i].BallotwriteInCandidatesViewModel = collectionWriteInCandidateVM;
+                        else
+                        {
+                            collectionWriteInCandidateVM.Add(new BallotCandidateViewModel(candidateDTO));
+                        }
                     }
+
+                    ballotOfficesVM[i].BallotListedCandidatesViewModel = collectionListedCandidateVM;
+                    ballotOfficesVM[i].BallotwriteInCandidatesViewModel = collectionWriteInCandidateVM;
                 }
             }
 
@@ -297,12 +682,31 @@ namespace OhioVoter.Controllers
 
 
 
+        public string GetCandidateImageFromDatabase(int candidateId)
+        {
+            using (OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                Models.Candidate candidateDTO = context.Candidates.FirstOrDefault(x => x.Id == candidateId);
+
+                // candidate not found
+                if (candidateDTO == null) { return string.Empty; }
+
+                // return photo location
+                return candidateDTO.Photo;
+            }
+        }
+
+
+
         public List<BallotOfficeViewModel> GetRunningMateInformationForBallotOfficeFromDatabase(List<BallotOfficeViewModel> ballotOfficesVM)
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
+                // get list of all candidates
                 List<Models.Candidate> dbCandidates = context.Candidates.ToList();
 
+                // add only the runningmate candidates to their offices
+                // only checking for President/Vice President runningmate
                 for (int i = 0; i < ballotOfficesVM.Count; i++)
                 {
                     // find Listed Candidates where office = President
@@ -336,29 +740,105 @@ namespace OhioVoter.Controllers
 
 
 
-        public List<BallotOfficeViewModel>  GetCandidateImagesForBallotOfficeFromDatabase(List<BallotOfficeViewModel> ballotOfficesVM)
+        public List<BallotOfficeViewModel> GetSelectedCandidatesOnBallot(List<BallotOfficeViewModel> ballotOfficeVM, List<BallotOfficeViewModel> selectedCanidatesVM)
         {
-            VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
-            
-            for (int i = 0; i < ballotOfficesVM.Count(); i++)
+            if (ballotOfficeVM == null) { return new List<BallotOfficeViewModel>(); }
+
+            if (selectedCanidatesVM == null) { return ballotOfficeVM; }
+
+            List<BallotOfficeViewModel> ballotOfficeWithSelectedCanidatesVM = new List<BallotOfficeViewModel>();
+
+            // get selected candidates
+
+
+
+            return ballotOfficeWithSelectedCanidatesVM;
+        }
+
+
+
+        public List<BallotOfficeViewModel> GetImagesForAllCandidatesAndRunningMates(List<BallotOfficeViewModel> ballotOfficeVM)
+        {
+            if(ballotOfficeVM == null)
             {
-                for (int j = 0; j < ballotOfficesVM[i].BallotListedCandidatesViewModel.Count(); j++)
+                return new List<BallotOfficeViewModel>();
+            }
+            
+            // check all offices
+            for (int i = 0; i < ballotOfficeVM.Count(); i++)
+            {
+                // get silhouettes for listed candidates/runningmates missing images
+                for (int j = 0; j < ballotOfficeVM[i].BallotListedCandidatesViewModel.Count(); j++)
                 {
-                    // get listed candidates
-                    ballotOfficesVM[i].BallotListedCandidatesViewModel[j].VoteSmartCandidateImageUrl = voteSmart.GetVoteSmartCandidateImageUrlFromSuppliedVoteSmartCandidateId(ballotOfficesVM[i].BallotListedCandidatesViewModel[j].VoteSmartCandidateId);
-                    // get listed runningmates
-                    ballotOfficesVM[i].BallotListedCandidatesViewModel[j].VoteSmartRunningMateId = voteSmart.GetVoteSmartCandidateImageUrlFromSuppliedVoteSmartCandidateId(ballotOfficesVM[i].BallotListedCandidatesViewModel[j].VoteSmartRunningMateId);
+                    // check listed candidate
+                    if (ballotOfficeVM[i].BallotListedCandidatesViewModel[j].CandidatePhoto == null || ballotOfficeVM[i].BallotListedCandidatesViewModel[j].CandidatePhoto == "")
+                    {
+                        ballotOfficeVM[i].BallotListedCandidatesViewModel[j].CandidatePhoto = GetImageSilhouetteForGender(ballotOfficeVM[i].BallotListedCandidatesViewModel[j].CandidateGender);
+                    }
+
+                    // is there a listed runningmate?
+                    if (ballotOfficeVM[i].BallotListedCandidatesViewModel[j].RunningMateFirstName != null)
+                    {
+                        // check listed runningmate
+                        if (ballotOfficeVM[i].BallotListedCandidatesViewModel[j].RunningMatePhoto == null || ballotOfficeVM[i].BallotListedCandidatesViewModel[j].RunningMatePhoto == "")
+                        {
+                            ballotOfficeVM[i].BallotListedCandidatesViewModel[j].RunningMatePhoto = GetImageSilhouetteForGender(ballotOfficeVM[i].BallotListedCandidatesViewModel[j].RunningMateGender);
+                        }
+                    }
                 }
-                for (int j = 0; j < ballotOfficesVM[i].BallotwriteInCandidatesViewModel.Count(); j++)
+
+                // get silhouettes for write-in candidates/runningmates missing images
+                for (int j = 0; j < ballotOfficeVM[i].BallotwriteInCandidatesViewModel.Count(); j++)
                 {
-                    // get writein candidates
-                    ballotOfficesVM[i].BallotwriteInCandidatesViewModel[j].VoteSmartCandidateImageUrl = voteSmart.GetVoteSmartCandidateImageUrlFromSuppliedVoteSmartCandidateId(ballotOfficesVM[i].BallotwriteInCandidatesViewModel[j].VoteSmartCandidateId);
-                    // get writein runningmates0
-                    ballotOfficesVM[i].BallotwriteInCandidatesViewModel[j].VoteSmartRunningMateImageUrl = voteSmart.GetVoteSmartCandidateImageUrlFromSuppliedVoteSmartCandidateId(ballotOfficesVM[i].BallotwriteInCandidatesViewModel[j].VoteSmartRunningMateId);
+                    // check write-in candidate
+                    if (ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidatePhoto == null || ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidatePhoto == "")
+                    {
+                        ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidatePhoto = GetImageSilhouetteForGender(ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidateGender);
+                    }
+
+                    // is there a write-in runningmate?
+                    if (ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMateFirstName != null)
+                    {
+                        // check write-in runningmate
+                        if (ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMatePhoto == null || ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMatePhoto == "")
+                        {
+                            ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMatePhoto = GetImageSilhouetteForGender(ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMateGender);
+                        }
+                    }
                 }
             }
 
-            return ballotOfficesVM;
+            return ballotOfficeVM;
+        }
+
+
+
+
+        public string GetImageUrlForCandidate(string imageUrl, string gender)
+        {
+            if (imageUrl == null || imageUrl == "")
+            {
+                return GetImageSilhouetteForGender(gender);
+            }
+            else
+            {
+                return imageUrl;
+            }
+        }
+
+
+
+        public string GetImageSilhouetteForGender(string gender)
+        {
+            // gender image
+            if (gender == "F")
+            {
+                return "~/Content/images/image_female.png";
+            }
+            else
+            {
+                return "~/Content/images/image_male.png";
+            }
         }
 
 
@@ -367,6 +847,7 @@ namespace OhioVoter.Controllers
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
+                // get all issues for current precinct
                 List<Models.ElectionIssuePrecinct> dbIssuesPrecincts = context.ElectionIssuePrecincts.Where(x => x.OhioPrecinctId == ballotVoterVM.OhioPrecinctId).ToList();
 
                 if (dbIssuesPrecincts == null) { return new List<BallotIssueViewModel>(); }
@@ -375,7 +856,19 @@ namespace OhioVoter.Controllers
 
                 foreach (var issueDTO in dbIssuesPrecincts)
                 {
-                    issueVM.Add(new BallotIssueViewModel(issueDTO));
+                    // Check if issue is for precinct with mutliple school districts
+                    if (issueDTO.ElectionIssue.SchoolCode != null && issueDTO.ElectionIssue.SchoolCode != "")
+                    {
+                        if (issueDTO.ElectionIssue.SchoolCode == ballotVoterVM.SchoolOfficeCode)
+                        {
+                            issueVM.Add(new BallotIssueViewModel(issueDTO));
+                        }
+                    }
+                    else
+                    {
+                        // Issue is for everyone at precinct
+                        issueVM.Add(new BallotIssueViewModel(issueDTO));
+                    }
                 }
 
                 return issueVM;

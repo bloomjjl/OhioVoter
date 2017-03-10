@@ -552,6 +552,30 @@ textarea {
 
 
 
+
+
+.img_ballot_office {
+    float: left;
+    vertical-align: central;
+}
+
+
+.show_ballot_office {
+    float: right;
+    vertical-align: central;
+}
+
+
+.hide_ballot_office {
+    float: right;
+    vertical-align: center;
+}
+
+
+
+
+
+
 footer {
     background-color: #006ddb;
     border-color: #006ddb;

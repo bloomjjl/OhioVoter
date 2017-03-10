@@ -37,5 +37,11 @@ namespace OhioVoter.Models
                 return string.Format("{0} {1}", FirstName, LastName);
             }
         }
+
+        public string Gender { get; set; }
+
+        public string Photo { get; set; }
+
+        public string VoteSmartPhotoUrl { get; set; }
     }
 }

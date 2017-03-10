@@ -196,6 +196,8 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\VoteSmartController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BallotController.cs" />
     <Compile Include="Controllers\CandidateController.cs" />
@@ -215,6 +217,7 @@
     <Compile Include="Models\ElectionOffice.cs" />
     <Compile Include="Models\OfficeHolder.cs" />
     <Compile Include="Models\HamiltonOhioVoter.cs" />
+    <Compile Include="Models\OhioBoardOfElection.cs" />
     <Compile Include="Models\Party.cs" />
     <Compile Include="Models\OhioPrecinct.cs" />
     <Compile Include="Models\ElectionVotingDate.cs" />
@@ -236,7 +239,7 @@
     <Compile Include="ViewModels\Ballot\BallotIssueViewModel.cs" />
     <Compile Include="ViewModels\Ballot\BallotOfficeViewModel.cs" />
     <Compile Include="ViewModels\Ballot\BallotViewModel.cs" />
-    <Compile Include="ViewModels\Ballot\BallotLocationViewModel.cs" />
+    <Compile Include="ViewModels\Ballot\VoterAddressViewModel.cs" />
     <Compile Include="ViewModels\Ballot\BallotVoterViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareAdditionalSecondViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareAdditionalFirstViewModel.cs" />
@@ -310,6 +313,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\box_checked.png" />
+    <Content Include="Content\images\box_unchecked.png" />
     <Content Include="Content\images\image_female.png" />
     <Content Include="Content\images\image_male.png" />
     <Content Include="Content\images\logo_ohiovoter.png" />
@@ -327,11 +332,17 @@
     <Content Include="Content\images\2016November_Hamilton_Issue07.pdf" />
     <Content Include="Content\images\2016November_Hamilton_Issue08.pdf" />
     <Content Include="Content\images\2016November_Hamilton_Issue29.pdf" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\VoteSmart\Index.cshtml" />
     <None Include="Properties\PublishProfiles\OhioVoterWebsite.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -437,6 +448,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Views\Location\" />
   </ItemGroup>
   <ItemGroup>

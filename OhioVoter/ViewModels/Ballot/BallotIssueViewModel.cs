@@ -22,6 +22,7 @@ namespace OhioVoter.ViewModels.Ballot
             Details = issueDTO.ElectionIssue.IssueDetails;
             Option1 = issueDTO.ElectionIssue.IssueOption1;
             Option2 = issueDTO.ElectionIssue.IssueOption2;
+            SelectedOption = issueDTO.ElectionIssueId.ToString();
             FullTextUrl = issueDTO.ElectionIssue.IssueFullTextLink;
         }
 
@@ -37,6 +38,7 @@ namespace OhioVoter.ViewModels.Ballot
         public string Details { get; set; }
         public string Option1 { get; set; }
         public string Option2 { get; set; }
+        public string SelectedOption { get; set; }
         public string FullTextUrl { get; set; }
     }
 }

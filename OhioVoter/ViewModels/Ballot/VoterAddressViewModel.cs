@@ -6,13 +6,14 @@ using System.Web;
 
 namespace OhioVoter.ViewModels.Ballot
 {
-    public class BallotLocationViewModel
+    public class VoterAddressViewModel
     {
-        public BallotLocationViewModel() { }
+        public VoterAddressViewModel() { }
 
-        public BallotLocationViewModel(ViewModels.Location.VoterLocationViewModel locationVM )
+        public VoterAddressViewModel(ViewModels.Location.VoterLocationViewModel locationVM )
         {
             ControllerName = locationVM.ControllerName;
+            VoterLocationId = locationVM.VoterLocationId;
             Status = locationVM.Status;
             Message = locationVM.Message;
             StreetNumber = locationVM.StreetNumber;
@@ -24,8 +25,8 @@ namespace OhioVoter.ViewModels.Ballot
             County = locationVM.County;
         }
 
-
         public string ControllerName { get; set; }
+        public string VoterLocationId { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
         public string StreetNumber { get; set; }
