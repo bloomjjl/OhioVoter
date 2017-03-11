@@ -28,6 +28,7 @@ namespace OhioVoter.ViewModels.Ballot
         public string OfficeName { get; set; }
         public string OfficeTerm { get; set; }
         public int NumberOfSeats { get; set; }
+        public bool HasSelectedCandidate { get; set; }
         public List<BallotCandidateViewModel> BallotListedCandidatesViewModel { get; set; }
         public List<BallotCandidateViewModel> BallotwriteInCandidatesViewModel { get; set; }
     }

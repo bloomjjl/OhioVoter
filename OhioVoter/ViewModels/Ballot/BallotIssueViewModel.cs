@@ -11,7 +11,7 @@ namespace OhioVoter.ViewModels.Ballot
 
         public BallotIssueViewModel(Models.ElectionIssuePrecinct issueDTO)
         {
-            Id = issueDTO.ElectionIssueId;
+            ElectionIssueId = issueDTO.ElectionIssueId;
             VotingDateId = issueDTO.ElectionIssue.ElectionVotingDateId;
             VotingDate = issueDTO.ElectionIssue.ElectionVotingDate.Date.ToShortDateString();
             CountyId = issueDTO.ElectionIssue.OhioCountyId;
@@ -20,13 +20,13 @@ namespace OhioVoter.ViewModels.Ballot
             Title = issueDTO.ElectionIssue.IssueTitle;
             Requirement = issueDTO.ElectionIssue.IssueRequirement;
             Details = issueDTO.ElectionIssue.IssueDetails;
-            Option1 = issueDTO.ElectionIssue.IssueOption1;
-            Option2 = issueDTO.ElectionIssue.IssueOption2;
-            SelectedOption = issueDTO.ElectionIssueId.ToString();
+            Option1Value = issueDTO.ElectionIssue.IssueOption1;
+            Option2Value = issueDTO.ElectionIssue.IssueOption2;
+            SelectedValue = issueDTO.ElectionIssueId.ToString();
             FullTextUrl = issueDTO.ElectionIssue.IssueFullTextLink;
         }
 
-        public int Id { get; set; }
+        public int ElectionIssueId { get; set; }
         public int VotingDateId { get; set; }
         public string VotingDate { get; set; }
         public int CountyId { get; set; }
@@ -36,9 +36,12 @@ namespace OhioVoter.ViewModels.Ballot
         public string Title { get; set; }
         public string Requirement { get; set; }
         public string Details { get; set; }
-        public string Option1 { get; set; }
-        public string Option2 { get; set; }
-        public string SelectedOption { get; set; }
+        public string Option1Value { get; set; }
+        public string Option2Value { get; set; }
+        public int OptionChecked { get; set; } // 0 = none, 1 = option1, 2 = option2
+        public string Option1Checked { get; set; } // checked -or- ""
+        public string Option2Checked { get; set; } // checked -or- ""
+        public string SelectedValue { get; set; }
         public string FullTextUrl { get; set; }
     }
 }

@@ -572,6 +572,24 @@ textarea {
 }
 
 
+.img_ballot_issue {
+    float: left;
+    vertical-align: central;
+}
+
+
+.show_ballot_issue {
+    float: right;
+    vertical-align: central;
+}
+
+
+.hide_ballot_issue {
+    float: right;
+    vertical-align: center;
+}
+
+
 
 
 

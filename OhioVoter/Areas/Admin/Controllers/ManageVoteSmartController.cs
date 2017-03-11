@@ -9,7 +9,7 @@ using System.Web.Mvc;
 namespace OhioVoter.Areas.Admin.Controllers
 {
     [Authorize]
-    public class VoteSmartController : Controller
+    public class ManageVoteSmartController : Controller
     {
         // GET: Admin/VoteSmart
         public ActionResult Index()

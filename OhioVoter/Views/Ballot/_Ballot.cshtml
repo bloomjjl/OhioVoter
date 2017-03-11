@@ -73,8 +73,8 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
         @* ** BALLOT TITLE ** *@
         <div class="panel-title panel-main-title ballot_office_title">
             <div>
-                <img src="~/Content/images/box_checked.png" id="img_selected_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="img_ballot_office" style="display:none" width="30" height="30" />
-                <img src="~/Content/images/box_unchecked.png" id="img_notselected_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="img_ballot_office" width="30" height="30" />
+                <img src="~/Content/images/box_checked.png" id="img_selected_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="img_ballot_office" style="@(Model.BallotOfficeViewModel[i].HasSelectedCandidate ? "display:inline-block" : "display:none")" width="30" height="30" />
+                <img src="~/Content/images/box_unchecked.png" id="img_notselected_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="img_ballot_office" style="@(Model.BallotOfficeViewModel[i].HasSelectedCandidate ? "display:none" : "display:inline-block")" width="30" height="30" />
             </div>
             <div>
                 <button type="button" id="btn_show_ballot_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="show_ballot_office" style="display:inline-block"
@@ -86,7 +86,8 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                         onclick="hideBallotOffice(@Model.BallotOfficeViewModel[i].ElectionOfficeId)">
                     Hide
                 </button>
-            </div>            <div>
+            </div>
+            <div>
                 @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].ElectionOfficeId)
                 @Model.BallotOfficeViewModel[i].OfficeName <br />
                 @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].OfficeTerm) <br />
@@ -252,19 +253,37 @@ for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
 {
     var issue = Model.BallotIssueViewModel[i];
 
-    <div class="panel panel-group panel-main panel-main-group ballot_office">
+    <div class="panel panel-group panel-main panel-main-group ballot_issue">
         <div class="panel-title panel-main-title ballot_issue_title">
-            @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Id)
-            <p>@Model.BallotIssueViewModel[i].Title</p>
+            <div>
+                <img src="~/Content/images/box_checked.png" id="img_selected_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="img_ballot_issue" style="@(Model.BallotIssueViewModel[i].OptionChecked > 0? "display:inline-block" : "display:none")" width="30" height="30" />
+                <img src="~/Content/images/box_unchecked.png" id="img_notselected_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="img_ballot_issue" style="@(Model.BallotIssueViewModel[i].OptionChecked > 0 ? "display:none" : "display:inline-block")" width="30" height="30" />
+            </div>
+            <div>
+                <button type="button" id="btn_show_ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="show_ballot_issue" style="display:inline-block"
+                        onclick="showBallotIssue(@Model.BallotIssueViewModel[i].ElectionIssueId)">
+                    Show
+                </button>
+
+                <button type="button" id="btn_hide_ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="hide_ballot_issue" style="display:none"
+                        onclick="hideBallotIssue(@Model.BallotIssueViewModel[i].ElectionIssueId)">
+                    Hide
+                </button>
+            </div>
+            <div>
+                @Html.HiddenFor(x => Model.BallotIssueViewModel[i].ElectionIssueId)
+                <p>@Model.BallotIssueViewModel[i].Title</p>
+            </div>
         </div>
 
-        <div class="panel-body panel-main-body ballot_issue_information">
+        <div id="ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="panel-body panel-main-body ballot_issue_information" style="display:none">
             <p>
-                @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Id)
+                @Html.HiddenFor(x => Model.BallotIssueViewModel[i].ElectionIssueId)
                 <i>@Html.DisplayFor(x => Model.BallotIssueViewModel[i].Requirement)</i> <br />
                 @Html.DisplayFor(x => Model.BallotIssueViewModel[i].Details)
 
-                @{ if (Model.BallotIssueViewModel[i].FullTextUrl != "")
+                @{
+                    if (Model.BallotIssueViewModel[i].FullTextUrl != "")
                     {
                         <br />
                         <a href="@Model.BallotIssueViewModel[i].FullTextUrl" target="_blank">Learn More</a>
@@ -272,8 +291,33 @@ for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
                 }
             </p>
             <p>
-                @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedOption, Model.BallotIssueViewModel[i].Option1) @Model.BallotIssueViewModel[i].Option1 <br />
-                @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedOption, Model.BallotIssueViewModel[i].Option2) @Model.BallotIssueViewModel[i].Option2
+                @{
+                    if (Model.BallotIssueViewModel[i].OptionChecked == 0)
+                    {
+                        @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" } ) @Model.BallotIssueViewModel[i].Option1Value <br />
+                        @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')" }) @Model.BallotIssueViewModel[i].Option2Value
+                    }
+                    else if (Model.BallotIssueViewModel[i].OptionChecked == 1)
+                    {
+                        @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')", @checked = "checked" }) @Model.BallotIssueViewModel[i].Option1Value <br />
+                        @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')" }) @Model.BallotIssueViewModel[i].Option2Value
+
+                    }
+                    else if (Model.BallotIssueViewModel[i].OptionChecked == 2)
+                    {
+                        @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" }) @Model.BallotIssueViewModel[i].Option1Value <br />
+                        @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')", @checked = "checked" }) @Model.BallotIssueViewModel[i].Option2Value
+                    }
+                    /*
+                    new
+                    {
+                        @id = id_OfficeCandidiate,
+                        @class = class_Office,
+                        @name = id_OfficeCandidiate,
+                        @onclick = "ballotOfficeCandidateSelection('" + office.ElectionOfficeId + "', '" + class_Office + "', '" + id_OfficeCandidiate + "', " + Model.BallotOfficeViewModel[i].NumberOfSeats + ", $('." + class_Office + ":checked').size() )"
+                    }
+                    */
+                }
             </p>
         </div>
     </div>
@@ -327,11 +371,6 @@ for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
             document.getElementById(idName).checked = true;
         }
 
-        console.log("officeId: " + officeId);
-        console.log("candidates selected: " + numSelected);
-        console.log("img_selected_office_" + officeId);
-        console.log("img_notselected_office_" + officeId);
-
         // has a candidate been selected for office?
         if (numSelected == "0") {
             document.getElementById("img_selected_office_" + officeId).style.display = 'none';
@@ -342,5 +381,30 @@ for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
             document.getElementById("img_notselected_office_" + officeId).style.display = 'none';
         }
     }
+
+    @* allow user to show/hide issues on the ballot *@
+    function showBallotIssue(id) {
+        document.getElementById('btn_show_ballot_issue_' + id).style.display = 'none';
+        document.getElementById('btn_hide_ballot_issue_' + id).style.display = 'inline-block';
+        document.getElementById('ballot_issue_' + id).style.display = 'inline-block';
+    };
+    function hideBallotIssue(id) {
+        document.getElementById('btn_show_ballot_issue_' + id).style.display = 'inline-block';
+        document.getElementById('btn_hide_ballot_issue_' + id).style.display = 'none';
+        document.getElementById('ballot_issue_' + id).style.display = 'none';
+    };
+
+    @* let user know when issue selected on ballot *@
+    function BallotIssueSelection(id, optionSelected) {
+        if (optionSelected == "0") {
+            document.getElementById("img_selected_issue_" + id).style.display = 'none';
+            document.getElementById("img_notselected_issue_" + id).style.display = 'inline-block';
+        }
+        else {
+            document.getElementById("img_selected_issue_" + id).style.display = 'inline-block';
+            document.getElementById("img_notselected_issue_" + id).style.display = 'none';
+        }
+    }
+
 </script>
 
