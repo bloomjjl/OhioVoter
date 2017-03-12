@@ -152,8 +152,17 @@ namespace OhioVoter.Controllers
                 StateLocationViewModel = GetAddressForOhioSecretaryOfState()
             };
 
-            sideBar.PollingLocationViewModel = GetVoterLocationInformationToDisplayOnMap(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
-            
+            // is user in process of filling out ballot?
+            if (TempData["VoterLocation"] != null)
+            {
+                VoterLocationViewModel location = (VoterLocationViewModel)TempData["VoterLocation"];
+            }
+            if (sideBar.VoterLocationViewModel.Message != "")
+            {
+                ModelState.AddModelError("VoterLocationViewModel", sideBar.VoterLocationViewModel.Message);
+            }
+                sideBar.PollingLocationViewModel = GetVoterLocationInformationToDisplayOnMap(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
+                        
             return sideBar;
         }
 
@@ -221,7 +230,9 @@ namespace OhioVoter.Controllers
 
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Model Error");
+                TempData["VoterLocation"] = new VoterLocationViewModel();
+                TempData["VoterLocation"] = voterLocation;
+                ModelState.AddModelError("", "Valid street address and zip code are required.");
                 voterLocation.Message = "Please enter a valid street address and zip code";
                 UpdateSessionInformationForVoterLocation(voterLocation);
                 return RedirectToAction("Index", controllerName);
@@ -317,7 +328,6 @@ namespace OhioVoter.Controllers
 
                 // NOT A REGISTERED VOTER! Check if location is found on Google Map
                 voterLocation = GetLocationFromGoogle(voterLocation);
-                voterLocation = CheckVoterLocationIsValid(voterLocation);
                 if (voterLocation.Status == "Update")
                 {
                     return voterLocation;
@@ -359,14 +369,10 @@ namespace OhioVoter.Controllers
             {
                 googleLocation.Status = "Update";
                 googleLocation.Message = "Street address and/or zip code are not valid.";
-            }
-            else
-            {
-                googleLocation.Status = "Display";
-                googleLocation.Message = "";
+                return googleLocation;
             }
 
-            return googleLocation;
+            return CheckVoterLocationIsValid(googleLocation);
         }
 
 
@@ -674,19 +680,19 @@ namespace OhioVoter.Controllers
 
     public bool ValidateStateIsOhio(string stateAbbreviation)
     {
-    return stateAbbreviation == "OH" ? true : false;
+        return stateAbbreviation == "OH" ? true : false;
     }
 
 
     public bool ValidateStreetAddressIsFound(string streetAddress )
     {
-    return streetAddress == null || streetAddress == "" ? false : true;
+        return streetAddress == null || streetAddress == "" ? false : true;
     }
 
 
     public bool ValidateZipCodeIsFound(string zipCode)
     {
-    return zipCode == null || zipCode == "" ? false : true;
+        return zipCode == null || zipCode == "" ? false : true;
     }
 
 
@@ -699,7 +705,7 @@ namespace OhioVoter.Controllers
 
     public bool ValidateCityIsFound(string city)
     {
-    return city == null || city == "" ? false : true;
+        return city == null || city == "" ? false : true;
     }
 
 
@@ -817,8 +823,8 @@ namespace OhioVoter.Controllers
     /// </summary>
     public void UpdateSessionInformationForVoterLocation(VoterLocationViewModel voterLocation)
     {// Tests not generated because of session testing null reference error
-    SessionExtensions session = new SessionExtensions();
-    session.UpdateVoterLocationInSession(voterLocation);
+        SessionExtensions session = new SessionExtensions();
+        session.UpdateVoterLocationInSession(voterLocation);
     }
 
 
