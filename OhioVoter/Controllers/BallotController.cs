@@ -38,15 +38,6 @@ namespace OhioVoter.Controllers
                     ControllerName = _controllerName
                 };
 
-                // add gender for candidate from votesmart to database
-                using (OhioVoterDbContext context = new OhioVoterDbContext())
-                {
-                    List<Models.Candidate> candidate = context.Candidates.ToList();
-                    VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
-
-                    context.SaveChanges();
-                }
-
                 return View(viewModel);
             }
         }
@@ -178,6 +169,7 @@ namespace OhioVoter.Controllers
             {
                 // see if user has logged in to connect saved ballot
                 string message = "message";
+
                 // validate email provided from user / user account (if logged in)
 
                 // save ballot 
@@ -636,32 +628,6 @@ namespace OhioVoter.Controllers
         }
 
 
-        /*
-        public BallotViewModel GetCandidatesAndIssuesSelectedOnBallot(BallotViewModel ballotSelectionsVM)
-        {
-            // get list of selected candidates from ballot
-            List<int> listSelectedCandidatesOnBallot = GetListOfSelectedCandidateIdFromBallot(ballotSelectionsVM.BallotOfficeViewModel);
-
-            // get list of selected issues from ballot
-            List<BallotIssueViewModel> listSelectedIssuesOnBallot = GetListOfSelectedIssueIdFromBallot(ballotSelectionsVM.BallotIssueViewModel);
-
-
-            *
-            // get candidate information for each office from database
-            List<BallotOfficeViewModel> collectionBallotOfficeWithCandidateVM = GetListOfCandidatesForBallotOfficeFromDatabase(ballotOfficesVM);
-            *
-            // update candidates that have been selected on ballot
-            List<BallotOfficeViewModel> collectionBallotOfficeWithSelectedCandidateVM = UpdateCandidatesThatHaveBeenSelectedOnBallot(collectionBallotOfficeWithCandidateVM, listSelectedCandidatesOnBallot);
-            *
-            // get runningmate information from database
-            List<BallotOfficeViewModel> collectionBallotOfficeWithCandidateAndRunningmateVM = GetRunningMateInformationForBallotOfficeFromDatabase(collectionBallotOfficeWithSelectedCandidateVM);
-
-            // make sure images are provided for all candidates/runningmates
-            return GetImagesForAllCandidatesAndRunningMates(collectionBallotOfficeWithCandidateAndRunningmateVM);
-            *
-        }
-        */
-
 
         public List<int> GetListOfSelectedCandidateIdFromBallot(List<BallotOfficeViewModel> ballotOfficesVM)
         {
@@ -796,20 +762,6 @@ namespace OhioVoter.Controllers
             return collectionBallotOfficeWithCandidateVM;
         }
 
-
-        /*
-        private List<BallotIssueViewModel> GetIssueInformationFromIssueIdOnBallot(List<BallotIssueViewModel> BallotIssueVM, int dateId)
-        {
-            // get list of selected candidates from ballot
-            List<BallotIssueViewModel> listSelectedIssuesOnBallot = GetListOfSelectedIssueIdFromBallot(BallotIssueVM);
-
-            // get candidate information for each office from database
-            List<BallotIssueViewModel> collectionBallotOfficeWithCandidateVM = GetListOfIssuesForBallotFromDatabase(BallotIssueVM);
-
-            // update candidates that have been selected on ballot
-            return UpdateIssuesThatHaveBeenSelectedOnBallot(collectionBallotOfficeWithCandidateVM, listSelectedIssuesOnBallot);
-        }
-        */
 
 
         private List<BallotIssueViewModel> GetListOfSelectedIssueIdFromBallot(List<BallotIssueViewModel> BallotIssueVM)

@@ -112,7 +112,7 @@ namespace OhioVoter.Controllers
             {
                 dates.Add(new ElectionDate()
                 {
-                    DateId = electionDates[i].ElectionDateId,
+                    DateId = electionDates[i].Id,
                     Date = electionDates[i].Date,
                     Description = electionDates[i].Description
                 });

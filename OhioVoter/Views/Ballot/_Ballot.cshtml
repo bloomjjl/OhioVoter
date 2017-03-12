@@ -18,7 +18,7 @@
                 {
                     <div class="alert alert-success">
                         <span class="glyphicon glyphicon-ok"></span>
-                        SUCCESS: YOU SHOULD RECEIVE YOUR BALLOT SHORTLY
+                        YOU SHOULD RECEIVE YOUR BALLOT SHORTLY
                     </div>
                 }
                 else if (TempData["EmailBallotMessage"].ToString() != "")
@@ -308,15 +308,6 @@ for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
                         @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" }) @Model.BallotIssueViewModel[i].Option1Value <br />
                         @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')", @checked = "checked" }) @Model.BallotIssueViewModel[i].Option2Value
                     }
-                    /*
-                    new
-                    {
-                        @id = id_OfficeCandidiate,
-                        @class = class_Office,
-                        @name = id_OfficeCandidiate,
-                        @onclick = "ballotOfficeCandidateSelection('" + office.ElectionOfficeId + "', '" + class_Office + "', '" + id_OfficeCandidiate + "', " + Model.BallotOfficeViewModel[i].NumberOfSeats + ", $('." + class_Office + ":checked').size() )"
-                    }
-                    */
                 }
             </p>
         </div>

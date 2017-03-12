@@ -79,6 +79,15 @@ namespace OhioVoter.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        [Display(Name = "Street Address")]
+        public string StreetAddress { get; set; }
+
+        [Required]
+        [StringLength(5, ErrorMessage = "The zip code must be a set of 5 numbers.")]
+        [DataType(DataType.PostalCode)]
+        public string ZipCode { get; set; }
     }
 
     public class ResetPasswordViewModel

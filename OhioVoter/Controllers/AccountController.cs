@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using OhioVoter.Models;
+using System.Web.Security;
 
 namespace OhioVoter.Controllers
 {
@@ -79,6 +80,9 @@ namespace OhioVoter.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    // get user's address & zipcode then update session
+                    ApplicationUser user = UserManager.FindByName(model.Email);
+                    UpdateVoterLocationInSession(user.StreetAddress, user.ZipCode);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -90,6 +94,16 @@ namespace OhioVoter.Controllers
                     return View(model);
             }
         }
+
+
+
+        public void UpdateVoterLocationInSession(string userStreetAddress, string userZipCode)
+        {
+            LocationController location = new LocationController();
+            location.UpdateSideBarInformationStoredInSessionFromVoterSuppliedStreetAddressAndZipCode(userStreetAddress, userZipCode);
+        }
+
+
 
         //
         // GET: /Account/VerifyCode
@@ -151,7 +165,16 @@ namespace OhioVoter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                // Add the following to populate the new user properties
+                // from the ViewModel data:
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    StreetAddress = model.StreetAddress,
+                    ZipCode = model.ZipCode
+                };
+
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

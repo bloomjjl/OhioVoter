@@ -7,12 +7,12 @@ using System.Web;
 
 namespace OhioVoter.Models
 {
-    [Table("ElectionDate")]
+    [Table("tblElectionDate")]
     public class ElectionDate
     {
         [Required]
         [Key]
-        public int ElectionDateId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
