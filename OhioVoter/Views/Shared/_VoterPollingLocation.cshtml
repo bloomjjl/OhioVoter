@@ -3,9 +3,21 @@
 <div id="polling-location" class="panel-body panel-left-body">
 
     <b>Local Polling Location:</b><br />
-    @Model.LocationName<br />
-    @Model.StreetAddress<br />
-    @Model.City, @Model.StateAbbreviation @Model.ZipCode
+    @if (Model.Message == "")
+    {
+        <p>
+            @Model.LocationName<br />
+            @Model.StreetAddress<br />
+            @Model.City, @Model.StateAbbreviation @Model.ZipCode
+        </p>
+    }
+    else
+    {
+        <p>
+            @Model.Message
+        </p>
+    }
+
 
     <div id="results"></div>
 

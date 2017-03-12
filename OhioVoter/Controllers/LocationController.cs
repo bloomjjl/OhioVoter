@@ -238,63 +238,15 @@ namespace OhioVoter.Controllers
                 return RedirectToAction("Index", controllerName);
             }
 
-            // ********************************************
-            // update session with supplied voter location
-            // ********************************************
-
             VoterLocationViewModel location = UpdateSideBarInformationStoredInSessionFromVoterSuppliedStreetAddressAndZipCode(voterLocation.StreetAddress, voterLocation.ZipCode);
             
-            if (location.Status == "Display")
+            if (location.Status == "Update")
             {
-                if (location.Message == "")
-                {
-                    // Success: sidebar updated
-                }
-                else if (location.Message == "No registered voters at supplied address.")
-                {
-                    // Success: Valid Ohio location provided but Voter Location not in database of voters
-                }
-            }
-            else if (location.Status == "Update")
-            {
-                if (location.Message == "Street address must be provided.")
-                {
-                    // Error: Street Address
-                }
-                else if (location.Message == "Zip code must be provided.")
-                {
-                    // Error: Zip Code
-                }
-                else if (location.Message == "Zip code must be 5 numbers.")
-                {
-                    // Error: Zip Code
-                }
-                else if (location.Message == "Street address and/or zip code are not valid.")
-                {
-                    // Error: Voter Location not found on Google Map
-                }
-                else if (location.Message == "Address not found.")
-                {
-                    // Error: Voter Location must be in Ohio
-                }
-                else if (location.Message == "Invalid address.")
-                {
-                    // Error: Voter Location must be in Ohio
-                }
-                else if (location.Message == "Address must be in Ohio.")
-                {
-                    // Error: Voter Location must be in Ohio
-                }
-
                 location.StreetAddress = voterLocation.StreetAddress;
                 location.ZipCode = voterLocation.ZipCode;
                 UpdateSessionInformationForVoterLocation(location);
                 UpdateSessionStatusToShowVoterLocationForm();
                 return RedirectToAction("Index", controllerName);
-            }
-            else
-            {
-                // status has not been set yet
             }
 
             return RedirectToAction("Index", controllerName);
@@ -459,8 +411,8 @@ namespace OhioVoter.Controllers
     /// <returns></returns>
     public bool ValidateStreetAddressAndZipCodeLocatedInOhio(string streetAddress, string zipCode)
     {// Tests Generated
-    GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
-    return instanceGoogleAPIManagement.GetStateAbbreviationForSuppliedStreetAddressAndZipCode(streetAddress, zipCode) == "OH" ? true : false;
+        GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
+        return instanceGoogleAPIManagement.GetStateAbbreviationForSuppliedStreetAddressAndZipCode(streetAddress, zipCode) == "OH" ? true : false;
     }
 
 
@@ -473,11 +425,11 @@ namespace OhioVoter.Controllers
     /// <returns></returns>
     public bool ValidateSideBarLocations(SideBarViewModel sideBar)
     {// Tests Generated
-    return ValidateVoterLocation(sideBar.VoterLocationViewModel) &&
-    ValidatePollingLocation(sideBar.PollingLocationViewModel) &&
-    ValidateCountyLocation(sideBar.CountyLocationViewModel) &&
-    ValidateStateLocation(sideBar.StateLocationViewModel) ?
-    true : false;
+        return ValidateVoterLocation(sideBar.VoterLocationViewModel) &&
+        ValidatePollingLocation(sideBar.PollingLocationViewModel) &&
+        ValidateCountyLocation(sideBar.CountyLocationViewModel) &&
+        ValidateStateLocation(sideBar.StateLocationViewModel) ?
+        true : false;
     }
 
 
@@ -485,12 +437,12 @@ namespace OhioVoter.Controllers
 
     public SideBarViewModel CheckEachLocationInSideBarIsValid(SideBarViewModel sideBar)
     {
-    sideBar.VoterLocationViewModel = CheckVoterLocationIsValid(sideBar.VoterLocationViewModel);
-    sideBar.PollingLocationViewModel = CheckPollingLocationIsValid(sideBar.PollingLocationViewModel);
-    sideBar.CountyLocationViewModel = CheckCountyLocationIsValid(sideBar.CountyLocationViewModel);
-    sideBar.StateLocationViewModel = CheckStateLocationIsValid(sideBar.StateLocationViewModel);
+        sideBar.VoterLocationViewModel = CheckVoterLocationIsValid(sideBar.VoterLocationViewModel);
+        sideBar.PollingLocationViewModel = CheckPollingLocationIsValid(sideBar.PollingLocationViewModel);
+        sideBar.CountyLocationViewModel = CheckCountyLocationIsValid(sideBar.CountyLocationViewModel);
+        sideBar.StateLocationViewModel = CheckStateLocationIsValid(sideBar.StateLocationViewModel);
 
-    return sideBar;
+        return sideBar;
     }
 
 
@@ -535,34 +487,34 @@ namespace OhioVoter.Controllers
 
     public PollingLocationViewModel CheckPollingLocationIsValid(PollingLocationViewModel location)
     {
-    location.Message = "";
-    location.Status = "Display";
+        location.Message = "";
+        location.Status = "Display";
 
-    // check street address and zip code
-    if (!ValidateStreetAddressIsFound(location.StreetAddress) || !ValidateZipCodeIsFound(location.ZipCode))
-    {
-    location.Message = "Address not found.";
-    location.Status = "Update";
-    return location;
-    }
+        // check street address and zip code
+        if (!ValidateStreetAddressIsFound(location.StreetAddress) || !ValidateZipCodeIsFound(location.ZipCode))
+        {
+            location.Message = "Address not found.";
+            location.Status = "Update";
+            return location;
+        }
 
-    // check state
-    if (!ValidateStateIsOhio(location.StateAbbreviation))
-    {
-    location.Message = "Address must be in Ohio.";
-    location.Status = "Update";
-    return location;
-    }
+        // check state
+        if (!ValidateStateIsOhio(location.StateAbbreviation))
+        {
+            location.Message = "Address must be in Ohio.";
+            location.Status = "Update";
+            return location;
+        }
 
-    // check city
-    if (!ValidateCityIsFound(location.City))
-    {
-    location.Message = "Invalid address.";
-    location.Status = "Update";
-    return location;
-    }
+        // check city
+        if (!ValidateCityIsFound(location.City))
+        {
+            location.Message = "Invalid address.";
+            location.Status = "Update";
+            return location;
+        }
 
-    return location;
+        return location;
     }
 
 
@@ -716,50 +668,50 @@ namespace OhioVoter.Controllers
 
     public bool ValidateVoterLocation(VoterLocationViewModel location)
     {// Tests Generated
-    if (location.Status != "Display")
-    {
-    return false;
-    }
-    else if (location.StreetAddress == null || location.StreetAddress == "" ||
-    location.City == null || location.City == "" ||
-    location.StateAbbreviation == null || location.StateAbbreviation == "" ||
-    location.ZipCode == null || location.ZipCode == "")
-    {
-    return false;
-    }
-    else if (location.Message == null || location.Message == "")
-    {
-    return true;
-    }
-    else
-    {
-    return false;
-    }
+        if (location.Status != "Display")
+        {
+            return false;
+        }
+        else if (location.StreetAddress == null || location.StreetAddress == "" ||
+        location.City == null || location.City == "" ||
+        location.StateAbbreviation == null || location.StateAbbreviation == "" ||
+        location.ZipCode == null || location.ZipCode == "")
+        {
+            return false;
+        }
+        else if (location.Message == null || location.Message == "")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
 
     public bool ValidatePollingLocation(PollingLocationViewModel location)
     {// Tests Generated
-    if (location.Status != "Display")
-    {
-    return false;
-    }
-    else if (location.StreetAddress == null || location.StreetAddress == "" ||
-    location.City == null || location.City == "" ||
-    location.StateAbbreviation == null || location.StateAbbreviation == "" ||
-    location.ZipCode == null || location.ZipCode == "")
-    {
-    return false;
-    }
-    else if (location.Message == null || location.Message == "")
-    {
-    return true;
-    }
-    else
-    {
-    return false;
-    }
+        if (location.Status != "Display")
+        {
+            return false;
+        }
+        else if (location.StreetAddress == null || location.StreetAddress == "" ||
+        location.City == null || location.City == "" ||
+        location.StateAbbreviation == null || location.StateAbbreviation == "" ||
+        location.ZipCode == null || location.ZipCode == "")
+        {
+            return false;
+        }
+        else if (location.Message == null || location.Message == "")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -767,49 +719,49 @@ namespace OhioVoter.Controllers
 
     public bool ValidateCountyLocation(CountyLocationViewModel location)
     {// Tests Generated
-    if (location.Status != "Display")
-    {
-    return false;
-    }
-    else if (location.StreetAddress == null || location.StreetAddress == "" ||
-    location.City == null || location.City == "" ||
-    location.StateAbbreviation == null || location.StateAbbreviation == "" ||
-    location.ZipCode == null || location.ZipCode == "")
-    {
-    return false;
-    }
-    else if (location.Message == null || location.Message == "")
-    {
-    return true;
-    }
-    else
-    {
-    return false;
-    }
+        if (location.Status != "Display")
+        {
+            return false;
+        }
+        else if (location.StreetAddress == null || location.StreetAddress == "" ||
+        location.City == null || location.City == "" ||
+        location.StateAbbreviation == null || location.StateAbbreviation == "" ||
+        location.ZipCode == null || location.ZipCode == "")
+        {
+            return false;
+        }
+        else if (location.Message == null || location.Message == "")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
     public bool ValidateStateLocation(StateLocationViewModel location)
     {// Tests Generated
-    if (location.Status != "Display")
-    {
-    return false;
-    }
-    else if (location.StreetAddress == null || location.StreetAddress == "" ||
-    location.City == null || location.City == "" ||
-    location.StateAbbreviation == null || location.StateAbbreviation == "" ||
-    location.ZipCode == null || location.ZipCode == "")
-    {
-    return false;
-    }
-    else if (location.Message == null || location.Message == "")
-    {
-    return true;
-    }
-    else
-    {
-    return false;
-    }
+        if (location.Status != "Display")
+        {
+            return false;
+        }
+        else if (location.StreetAddress == null || location.StreetAddress == "" ||
+            location.City == null || location.City == "" ||
+            location.StateAbbreviation == null || location.StateAbbreviation == "" ||
+            location.ZipCode == null || location.ZipCode == "")
+        {
+            return false;
+        }
+        else if (location.Message == null || location.Message == "")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -834,8 +786,8 @@ namespace OhioVoter.Controllers
     /// </summary>
     public void UpdateSessionStatusToShowVoterLocationForm()
     {// Tests not generated because of session testing null reference error
-    SessionExtensions session = new SessionExtensions();
-    session.ChangeVoterLocationStatusToUpdateVoterLocationForm();
+        SessionExtensions session = new SessionExtensions();
+        session.ChangeVoterLocationStatusToUpdateVoterLocationForm();
     }
 
 
@@ -845,8 +797,8 @@ namespace OhioVoter.Controllers
     /// </summary>
     public void UpdateSessionStatusToDisplayVoterLocationInformation()
     {// Tests not generated because of session testing null reference error
-    SessionExtensions session = new SessionExtensions();
-    session.ChangeVoterLocationStatusToDisplayVoterLocation();
+        SessionExtensions session = new SessionExtensions();
+        session.ChangeVoterLocationStatusToDisplayVoterLocation();
     }
 
 
@@ -854,28 +806,28 @@ namespace OhioVoter.Controllers
 
     public PollingLocationViewModel GetPollingLocationFromDatabase(VoterLocationViewModel voterLocation)
     {
-    using (OhioVoterDbContext context = new OhioVoterDbContext())
-    {
-    Models.OhioPrecinct precinctDTO = context.OhioPrecincts.FirstOrDefault(x => x.Id == voterLocation.PrecinctId);
+        using (OhioVoterDbContext context = new OhioVoterDbContext())
+        {
+            Models.OhioPrecinct precinctDTO = context.OhioPrecincts.FirstOrDefault(x => x.Id == voterLocation.PrecinctId);
 
-    if (precinctDTO == null) { return new PollingLocationViewModel(); }
+            if (precinctDTO == null) { return new PollingLocationViewModel(); }
 
-    return new PollingLocationViewModel(precinctDTO);
-    }
+            return new PollingLocationViewModel(precinctDTO);
+        }
     }
 
 
 
     public CountyLocationViewModel GetCountyLocationFromDatabase(PollingLocationViewModel pollingLocationVM)
     {
-    using (OhioVoterDbContext context = new OhioVoterDbContext())
-    {
-    Models.OhioBoardOfElection countyDTO = context.OhioBoardOfElections.FirstOrDefault(x => x.CountyId == pollingLocationVM.CountyId);
+        using (OhioVoterDbContext context = new OhioVoterDbContext())
+        {
+            Models.OhioBoardOfElection countyDTO = context.OhioBoardOfElections.FirstOrDefault(x => x.CountyId == pollingLocationVM.CountyId);
 
-    if (countyDTO == null) { return new CountyLocationViewModel(); }
+            if (countyDTO == null) { return new CountyLocationViewModel(); }
 
-    return new CountyLocationViewModel(countyDTO);
-    }
+            return new CountyLocationViewModel(countyDTO);
+        }
     }
 
 
@@ -887,8 +839,8 @@ namespace OhioVoter.Controllers
     /// <returns></returns>
     public SideBarViewModel GetSideBarViewModelFromGoogleCivicInformationAPI(VoterLocationViewModel voterLocation)
     {// Tests Generated
-    GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
-    return instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
+        GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
+        return instanceGoogleAPIManagement.GetGoogleCivicInformationForVoterLocation(voterLocation);
     }
 
 
@@ -901,8 +853,8 @@ namespace OhioVoter.Controllers
     /// <returns></returns>
     public string GetGoogleMapForPollingLocation(VoterLocationViewModel voterLocation, PollingLocationViewModel pollingLocation)
     {// Tests Generated
-    GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
-    return instanceGoogleAPIManagement.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
+        GoogleApiManagement instanceGoogleAPIManagement = new GoogleApiManagement();
+        return instanceGoogleAPIManagement.GetGoogleMapAPIRequestForVoterAndPollingLocation(voterLocation, pollingLocation);
     }
 
 
@@ -913,11 +865,11 @@ namespace OhioVoter.Controllers
     /// <param name="sideBarViewModel"></param>
     public void UpdateSessionFromSideBarViewModel(SideBarViewModel sideBarViewModel)
     {// Tests not generated because of session testing null reference error
-    SessionExtensions session = new SessionExtensions();
+        SessionExtensions session = new SessionExtensions();
 
-    session.UpdateVoterLocationInSession(sideBarViewModel.VoterLocationViewModel);
-    session.UpdatePollingLocationInSession(sideBarViewModel.PollingLocationViewModel);
-    session.UpdateCountyLocationInSession(sideBarViewModel.CountyLocationViewModel);
+        session.UpdateVoterLocationInSession(sideBarViewModel.VoterLocationViewModel);
+        session.UpdatePollingLocationInSession(sideBarViewModel.PollingLocationViewModel);
+        session.UpdateCountyLocationInSession(sideBarViewModel.CountyLocationViewModel);
     }
 
 

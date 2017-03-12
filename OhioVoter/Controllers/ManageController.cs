@@ -7,6 +7,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using OhioVoter.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
+using OhioVoter.ViewModels.Location;
 
 namespace OhioVoter.Controllers
 {
@@ -55,7 +57,8 @@ namespace OhioVoter.Controllers
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+                message == ManageMessageId.ChangeAddressSuccess ? "Your address has been changed."
+                : message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessageId.Error ? "An error has occurred."
@@ -212,6 +215,79 @@ namespace OhioVoter.Controllers
             }
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
+
+
+
+        // GET: /Manage/ChangeAddress
+        public async Task<ActionResult> ChangeAddress()
+        {
+            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            ChangeAddressViewModel changeAddressVM = new ChangeAddressViewModel()
+            {
+                StreetAddress = user.StreetAddress,
+                ZipCode = user.ZipCode
+            };
+
+            ApplicationUser userApp = UserManager.FindById(User.Identity.GetUserId());
+            UpdateVoterLocationInSession(userApp.StreetAddress, userApp.ZipCode);
+
+            return View(changeAddressVM);
+        }
+
+        //
+        // POST: /Manage/ChangeAddress
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeAddress(ChangeAddressViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // get current user
+            ApplicationUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            if (user != null)
+            {
+                // validate new address
+                LocationController location = new LocationController();
+                VoterLocationViewModel locationResult = location.UpdateSideBarInformationStoredInSessionFromVoterSuppliedStreetAddressAndZipCode(model.StreetAddress, model.ZipCode);
+                if (locationResult.Status == "Display")
+                {
+
+                    UpdateVoterLocationInSession(model.StreetAddress, model.ZipCode);
+
+                    user.StreetAddress = model.StreetAddress;
+                    user.ZipCode = model.ZipCode;
+
+                    IdentityResult result = await UserManager.UpdateAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", new { Message = ManageMessageId.ChangeAddressSuccess });
+                    }
+
+                    AddErrors(result);
+                    return View(model);
+                }
+                ModelState.AddModelError("", "Enter a valid address .");
+                return View(model);
+            }
+
+            return View(model);
+        }
+
+
+
+
+        public void UpdateVoterLocationInSession(string userStreetAddress, string userZipCode)
+        {
+            LocationController location = new LocationController();
+            location.UpdateSideBarInformationStoredInSessionFromVoterSuppliedStreetAddressAndZipCode(userStreetAddress, userZipCode);
+        }
+
+
 
         //
         // GET: /Manage/ChangePassword
@@ -375,6 +451,7 @@ namespace OhioVoter.Controllers
 
         public enum ManageMessageId
         {
+            ChangeAddressSuccess,
             AddPhoneSuccess,
             ChangePasswordSuccess,
             SetTwoFactorSuccess,

@@ -25,6 +25,19 @@ namespace OhioVoter.Models
         public string Purpose { get; set; }
     }
 
+    public class ChangeAddressViewModel
+    {
+        [Required]
+        [Display(Name = "Street Address")]
+        public string StreetAddress { get; set; }
+
+        [Required]
+        [StringLength(5, MinimumLength = 5, ErrorMessage = "Zip Code Must Be A Set Of 5 Numbers")]
+        [Range(0, 99999, ErrorMessage = "Zip Code Must Be All Numbers")]
+        [Display(Name = "Zip Code")]
+        public string ZipCode { get; set; }
+    }
+
     public class SetPasswordViewModel
     {
         [Required]

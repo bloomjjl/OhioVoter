@@ -306,7 +306,7 @@
     <Compile Include="ViewModels\Location\VoterLocationViewModel.cs" />
     <Compile Include="ViewModels\Location\PollingLocationViewModel.cs" />
     <Compile Include="ViewModels\Location\CountyLocationViewModel.cs" />
-    <Compile Include="ViewModels\Location\StateLocationViewModel - Copy.cs" />
+    <Compile Include="ViewModels\Location\StateLocationViewModel.cs" />
     <Compile Include="ViewModels\Location\SideBarViewModel.cs" />
     <Compile Include="ViewModels\Rss\Feed.cs" />
     <Compile Include="ViewModels\VoteSmart\Candidate.cs" />
@@ -450,6 +450,7 @@
     <Content Include="Views\Ballot\_BallotCandidate.cshtml" />
     <Content Include="Views\Ballot\_BallotOffice.cshtml" />
     <Content Include="Views\Ballot\_BallotIssue.cshtml" />
+    <Content Include="Views\Manage\ChangeAddress.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
