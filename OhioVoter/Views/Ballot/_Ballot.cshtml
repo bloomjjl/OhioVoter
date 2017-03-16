@@ -18,26 +18,25 @@
                 {
                     <div class="alert alert-success">
                         <span class="glyphicon glyphicon-ok"></span>
-                        YOU SHOULD RECEIVE YOUR BALLOT SHORTLY
+                        YOU'RE BALLOT HAS BEEN EMAILED AND SHOULD ARRIVE SHORTLY
                     </div>
                 }
                 else if (TempData["EmailBallotMessage"].ToString() != "")
                 {
                     <div class="alert alert-danger">
                         <span class="glyphicon glyphicon-ok"></span>
-                        PROBLEM: @TempData["EmailBallotMessage"].ToString()
+                        @TempData["EmailBallotMessage"].ToString()
                     </div>
                 }
             }
 
-            @Html.ValidationSummary()
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
             <table id="ballot_lookup_table" style="margin-right: auto; margin-left: auto;">
 
                 <tr>
-                    <td style="text-align: right; padding-right: 10px;">@Html.LabelFor(x => x.SelectedVotingDateId, htmlAttributes: new { @class = "ballot_lookup_date_label" })</td>
-                    <td>@Html.DropDownListFor(x => x.SelectedVotingDateId, Model.VotingDates, "-- Select A Date --", new { @class = "form-control", onchange = "this.form.submit()" })</td>
-                    <td>@Html.ValidationMessageFor(x => x.SelectedVotingDateId, "", new { @class = "text-danger" })</td>
+                    <td style="text-align: right; padding-right: 10px;">@Html.LabelFor(x => x.VotingDate, htmlAttributes: new { @class = "ballot_lookup_date_label" })</td>
+                    <td>@Html.TextBoxFor(x => x.VotingDate, new { @readonly = "readonly" })</td>
                 </tr>
                 <tr>
                     <td style="text-align: right; padding-right: 10px;">@Html.LabelFor(x => x.VoterEmailAddress, htmlAttributes: new { @class = "ballot_email_label" })</td>
@@ -48,7 +47,10 @@
                     <td colspan="3">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td colspan="3"><button type="submit" id="btn_send_ballot" class="btn btn-block panel-main-btn"> Email Your Ballot</button></td>
+                    <td colspan="3">
+                        <input type="text" name="VotingDateId" value="@Model.VotingDateId" style="display: none;" />
+                        <button type="submit" id="btn_send_ballot" class="btn btn-block panel-main-btn"> Email Your Ballot</button>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -89,6 +91,9 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
             </div>
             <div>
                 @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].ElectionOfficeId)
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].OfficeId)
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].OfficeName)
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].OfficeTerm)
                 @Model.BallotOfficeViewModel[i].OfficeName <br />
                 @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].OfficeTerm) <br />
                 (Select @Model.BallotOfficeViewModel[i].NumberOfSeats Candidate)
@@ -110,11 +115,15 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                         var listedCandidate = Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j];
 
                         // get the candidateId for each candidate listed for current office
-                        id_OfficeCandidiate = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateId;
+                        id_OfficeCandidiate = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].ElectionCandidateId;
 
                         <tr class="ballot_listed_candidate">
                             <td class="ballot_candidate_selected">
-                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].ElectionCandidateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateFirstName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateMiddleName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateLastName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateSuffix)
                                 @Html.CheckBoxFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].IsSelected,
                                                     new
                                                     {
@@ -134,7 +143,7 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                                 @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].PartyName)
                             </td>
                             <td class="ballot_candidate_view">
-                                @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = listedCandidate.CandidateId }, new { target = "_blank" })
+                                @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = listedCandidate.ElectionCandidateId }, new { target = "_blank" })
                             </td>
                         </tr>
 
@@ -144,6 +153,10 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                         <tr class="ballot_listed_runningmate">
                             <td>
                                 @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateFirstName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateMiddleName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateLastName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateSuffix)
                             </td>
                             <td class="ballot_runningmate_name">
                                 <img src="@Url.Content(Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMatePhoto)" width="50" height="50" />
@@ -184,11 +197,15 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                         var writeinCandidate = Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j];
 
                         // get the candidateId for each candidate listed for current office
-                        id_OfficeCandidiate = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateId;
+                        id_OfficeCandidiate = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].ElectionCandidateId;
 
                         <tr class="ballot_writein_candidate">
                             <td class="ballot_candidate_selected">
-                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].ElectionCandidateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateFirstName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateMiddleName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateLastName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateSuffix)
                                 @Html.CheckBoxFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].IsSelected,
                                                     new
                                                     {
@@ -207,7 +224,7 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                                 @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].PartyName)
                             </td>
                             <td class="ballot_candidate_view">
-                                @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = writeinCandidate.CandidateId }, new { target = "_blank" })
+                                @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = writeinCandidate.ElectionCandidateId }, new { target = "_blank" })
                             </td>
                         </tr>
 
@@ -217,6 +234,10 @@ for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
                         <tr class="ballot_writein_runningmate">
                             <td>
                                 @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateFirstName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateMiddleName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateLastName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateSuffix)
                             </td>
                             <td class="ballot_runningmate_name">
                                 <img src="@Url.Content(Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMatePhoto)" width="50" height="50" />
@@ -279,6 +300,9 @@ for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
         <div id="ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="panel-body panel-main-body ballot_issue_information" style="display:none">
             <p>
                 @Html.HiddenFor(x => Model.BallotIssueViewModel[i].ElectionIssueId)
+                @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Title)
+                @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Option1Value)
+                @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Option2Value)
                 <i>@Html.DisplayFor(x => Model.BallotIssueViewModel[i].Requirement)</i> <br />
                 @Html.DisplayFor(x => Model.BallotIssueViewModel[i].Details)
 

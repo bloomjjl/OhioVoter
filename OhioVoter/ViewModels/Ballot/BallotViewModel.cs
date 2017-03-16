@@ -11,18 +11,20 @@ namespace OhioVoter.ViewModels.Ballot
     {
         public BallotViewModel() { }
 
-        public BallotViewModel(string controllerName, string dateId, IEnumerable<SelectListItem> dropDownListOfDates)
+        public BallotViewModel(string controllerName, int dateId, string date)
         {
             ControllerName = controllerName;
-            SelectedVotingDateId = dateId;
-            VotingDates = dropDownListOfDates;
+            VotingDateId = dateId;
+            VotingDate = date;
         }
 
         public BallotViewModel(BallotViewModel ballotVM, BallotVoterViewModel ballotVoterVM, List<BallotOfficeViewModel> ballotOfficeVM, List<BallotIssueViewModel> ballotIssueVM)
         {
             ControllerName = ballotVM.ControllerName;
-            SelectedVotingDateId = ballotVM.SelectedVotingDateId;
-            VotingDates = ballotVM.VotingDates;
+            VotingDateId = ballotVM.VotingDateId;
+            VotingDate = ballotVM.VotingDate;
+            //SelectedVotingDateId = ballotVM.SelectedVotingDateId;
+            //VotingDates = ballotVM.VotingDates;
             BallotVoterViewModel = ballotVoterVM;
             BallotOfficeViewModel = ballotOfficeVM;
             BallotIssueViewModel = ballotIssueVM;
@@ -31,13 +33,14 @@ namespace OhioVoter.ViewModels.Ballot
 
         public string ControllerName { get; set; }
 
-        [Required]
         [Display(Name = "Email Address")]
         public string VoterEmailAddress { get; set; }
 
         [Display(Name = "Election Date")]
-        public string SelectedVotingDateId { get; set; }
-        public IEnumerable<SelectListItem> VotingDates { get; set; }
+        public string VotingDate { get; set; }
+        public int VotingDateId { get; set; }
+        //public string SelectedVotingDateId { get; set; }
+        //public IEnumerable<SelectListItem> VotingDates { get; set; }
 
         public BallotVoterViewModel BallotVoterViewModel { get; set; }
         public List<BallotOfficeViewModel> BallotOfficeViewModel { get; set; }

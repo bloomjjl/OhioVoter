@@ -14,7 +14,7 @@ namespace OhioVoter.ViewModels.Ballot
             ElectionVotingDateId = officeDTO.ElectionVotingDateId;
             ElectionVotingDate = officeDTO.ElectionVotingDate.Date.ToShortDateString();
             ElectionOfficeId = officeDTO.Id;
-            OfficeId = officeDTO.OfficeId;
+            OfficeId = officeDTO.Office.Id;
             OfficeName = officeDTO.Office.OfficeName;
             OfficeTerm = officeDTO.OfficeTerm;
             NumberOfSeats = officeDTO.NumberOfSeats;
