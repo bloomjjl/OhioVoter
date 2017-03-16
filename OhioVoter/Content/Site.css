@@ -553,42 +553,194 @@ textarea {
 
 
 
-
-.img_ballot_office {
+#voter_location_form_address, #voter_location_form_zipcode {
     float: left;
-    vertical-align: central;
+    width: 100%;
 }
 
-
-.show_ballot_office {
-    float: right;
-    vertical-align: central;
-}
-
-
-.hide_ballot_office {
-    float: right;
-    vertical-align: center;
-}
-
-
-.img_ballot_issue {
+#voter_location_form_address, #voter_location_form_zipcode .control-label {
     float: left;
-    vertical-align: central;
+    width: 100%;
+}
+
+#voter_location_form_address, #voter_location_form_zipcode .form-control {
+    float: left;
+    width: 100%;
+}
+
+.voter_location_form_btn {
+    width: 160px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 
-.show_ballot_issue {
+
+
+
+#ballot_lookup_body p {
+    text-align: center;
+}
+
+#ballot_location_form_address, #ballot_location_form_zipcode {
+    text-align: center;
+}
+
+#ballot_location_form_address .form-control,
+#ballot_location_form_zipcode .form-control {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ballot_location_form_btn {
+    width: 160px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+
+
+#ballot_title{
+
+}
+
+#ballot_lookup_table {
+    margin-right: auto; 
+    margin-left: auto;
+    width: 80%;
+}
+
+#ballot_date_label {
+    text-align: right; 
+    padding-right: 10px;
+    vertical-align: middle;
+}
+
+#ballot_email_label {
+    text-align: right; 
+    padding-right: 10px;
+    vertical-align: middle;
+}
+
+#ballot_email_input {
+
+}
+
+#ballot_send {
+}
+
+#ballot_send_button {
+    display: block;
+    margin: auto;
+    width: 160px;
+}
+
+.ballot_office {
+
+}
+
+.ballot_office_title, .ballot_issue_title {
+    min-height: 70px;
+}
+
+.img_ballot_office, .img_ballot_issue {
+    float: left;
+    vertical-align: middle;
+    width: 30px; 
+    height: 30px;
+}
+
+.show_ballot_office, .show_ballot_issue {
     float: right;
-    vertical-align: central;
+    vertical-align: middle;
+    display: block;
+    min-width: 65px;
 }
 
-
-.hide_ballot_issue {
+.hide_ballot_office, .hide_ballot_issue {
     float: right;
-    vertical-align: center;
+    vertical-align: middle;
+    display: none;
+    min-width: 65px;
 }
 
+
+
+.ballot_office_candidates {
+    display: none;
+    width: 100%;
+}
+
+/* listed/writein candidate tables */
+.ballot_candidate_group {
+    width: 100%;
+    border-bottom: 1px solid #006ddb;
+}
+.ballot_candidate_Instruction {
+    font-weight: bold;
+    padding-bottom: 15px;
+}
+
+.ballot_candidate {
+    border-top: 1px solid #006ddb;
+    padding-top: 50px;
+    padding-bottom: 5px;
+    width: 100%;
+}
+
+.ballot_candidate_selected {
+    width: 5%;
+}
+
+.ballot_candidate_name, .ballot_runningmate_name {
+    width: 50%;
+}
+
+.ballot_candidate_name img {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    width: 3.5em;
+    height: 3.5em;
+}
+
+.ballot_runningmate_name img {
+    margin-bottom: 5px;
+    margin-right: 10px;
+    width: 3.5em;
+    height: 3.5em;
+}
+
+.ballot_candidate_party, .ballot_runningmate_party {
+    width: 30%;
+}
+
+.ballot_candidate_view, .ballot_runningmate_view {
+    text-align: right;
+}
+
+.show_writein_candidate {
+    display: none;
+    min-width: 200px;
+    margin-top: 20px;
+}
+
+.hide_writein_candidate {
+    display: block;
+    min-width: 200px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+
+
+
+.ballot_issue_information {
+    display: none;
+}
 
 
 

@@ -188,59 +188,6 @@ namespace OhioVoter.Controllers
             // make sure email address supplied
             if (string.IsNullOrWhiteSpace(ballotVM.VoterEmailAddress)) { return false; }
 
-            /*
-            // Create an Email Message Object
-            System.Net.Mail.MailMessage email = new System.Net.Mail.MailMessage();
-
-            // Populate Object
-            email.To.Add(ballotVM.VoterEmailAddress);
-            email.From = new System.Net.Mail.MailAddress(ballotVM.VoterEmailAddress);
-            email.Subject = string.Format("Sample ballot for {0} Election", ballotVM.VotingDate);
-            email.Body = GetEmailBodyForBallot(ballotVM);
-            email.IsBodyHtml = false;
-
-            // Setup SMTP Client (to send the email message)
-            System.Net.Mail.SmtpClient smtpClient = new System.Net.Mail.SmtpClient();
-            smtpClient.Host = "smtp.mail.yahoo.com"; // Yahoo
-            smtpClient.Port = 465;
-            smtpClient.Credentials = "";
-            client.
-            //smtpClient.Host = "mail.twc.com"; // Time Warner Cable
-            //smtpClient.Host = "smtp.fuse.net";  // Cincinnati Bell
-
-            // Send Message
-            smtpClient.Send(email);
-            */
-
-            /*
-             *  on website: https://msdn.microsoft.com/en-us/library/system.net.mail.smtpclient.servicepoint(v=vs.110).aspx
-             *
-            SmtpClient client = new SmtpClient()
-            {
-                Host = "smtp.mail.yahoo.com",
-                Port = 465,
-                UseDefaultCredentials = false,
-                Credentials = new System.Net.NetworkCredential ("OhioVoter.org@yahoo.com", "P@$$word!007"),
-                EnableSsl = true
-            };
-
-
-            //string server = "smtp.mail.yahoo.com";
-            //int port = 465; // SSL = 465, TLS = 25, 587
-            string to = ballotVM.VoterEmailAddress;
-            string from = "OhioVoter.org@yahoo.com";
-            string subject = string.Format("Sample ballot for {0} Election", ballotVM.VotingDate);
-            string body = string.Format(@"{0}", GetEmailBodyForBallot(ballotVM));
-            //SmtpClient client = new SmtpClient(server, port);
-            // Credentials are necessary if the server requires the client 
-            // to authenticate before it will send e-mail on the client's behalf.
-            //client.EnableSsl = true;
-            //client.
-            //System.Net.NetworkCredential SMTPUserInfo = new System.Net.NetworkCredential("OhioVoter.org@yahoo.com", "P@$$word!007");
-            //client.Credentials = SMTPUserInfo;
-            MailMessage message = new MailMessage(from, to, subject, body);
-            */
-
             // get email message
             System.Net.Mail.MailMessage email = new System.Net.Mail.MailMessage();
             email.To.Add(ballotVM.VoterEmailAddress);
@@ -252,27 +199,23 @@ namespace OhioVoter.Controllers
             // setup email transfer
             System.Net.Mail.SmtpClient smtpClient = new System.Net.Mail.SmtpClient()
             {
-                //Host = "smtp.mail.yahoo.com", // Yahoo
+                //Host = "smtp.mail.yahoo.com", // Yahoo email
                 Host = "mail.twc.com", // Time Warner Cable
                 //Host = "smtp.fuse.net",  // Cincinnati Bell
                 //Credentials = new System.Net.NetworkCredential("OhioVoter.org@yahoo.com", "P@$$word!007"),
                 //Port = 25, // SSL = 465, TLS = 25, 587
                 //EnableSsl = true
             };
-            //smtp.Send(mail);
-
 
             try
             {
                 // Send Message
                 smtpClient.Send(email);
-
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception caught in CreateTestMessage1(): {0}",
-                            ex.ToString());
+                Console.WriteLine("Exception caught in CreateTestMessage1(): {0}", ex.ToString());
                 return false;
             }
         }
@@ -680,7 +623,7 @@ namespace OhioVoter.Controllers
             {
                 // location not available -- get voter's location information 
                 ViewModels.Location.VoterLocationViewModel voterLocationVM = new ViewModels.Location.VoterLocationViewModel(voterAddressVM);
-                return PartialView("_VoterLocationForm", voterLocationVM);
+                return PartialView("_BallotLookup", voterLocationVM);
             }
 
             // get general ballot information
