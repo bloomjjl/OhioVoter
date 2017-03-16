@@ -16,6 +16,7 @@ namespace OhioVoter.ViewModels.Ballot
             CertifiedCandidateId = candidateDTO.CertifiedCandidateId;
 
             ElectionCandidateId = candidateDTO.Id;
+            CandidateId = candidateDTO.CandidateId;
             VoteSmartCandidateId = candidateDTO.Candidate.VoteSmartCandidateId;
             CandidatePhoto = candidateDTO.Candidate.VoteSmartPhotoUrl;
             CandidateFirstName = candidateDTO.Candidate.FirstName;
@@ -33,6 +34,7 @@ namespace OhioVoter.ViewModels.Ballot
             PartyName = candidateVM.PartyName;
             CertifiedCandidateId = candidateVM.CertifiedCandidateId;
 
+            CandidateId = candidateVM.CandidateId;
             ElectionCandidateId = candidateVM.ElectionCandidateId;
             VoteSmartCandidateId = candidateVM.VoteSmartCandidateId;
             CandidatePhoto = candidateVM.CandidatePhoto;
@@ -59,6 +61,7 @@ namespace OhioVoter.ViewModels.Ballot
         public string CertifiedCandidateId { get; set; }
         public bool IsSelected { get; set; }
 
+        public int CandidateId { get; set; }
         public int ElectionCandidateId { get; set; }
         public string VoteSmartCandidateId { get; set; }
         public string VoteSmartCandidatePhoto { get; set; }

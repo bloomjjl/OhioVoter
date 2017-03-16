@@ -627,7 +627,6 @@ namespace OhioVoter.Controllers
             }
 
             // get general ballot information
-            //BallotViewModel newBallotVM = new BallotViewModel(_controllerName, intDateId.ToString(), GetDropDownListOfVotingDates());
             BallotViewModel newBallotVM = new BallotViewModel(_controllerName, intDateId, GetVotingDateForDateIdFromDatabase(intDateId));
 
             // get voter LocationID from Session
@@ -652,6 +651,21 @@ namespace OhioVoter.Controllers
             // proof of concept for Hamilton County
             // Not a registered voter in Hamilton County - can not display ballot
             return PartialView("_Ballot", new BallotViewModel());
+        }
+
+
+
+        public ActionResult ViewIssue(string fileName)
+        {
+            string filePath = Server.MapPath("~/Content/images/") + fileName;
+            Response.ClearContent();
+            Response.ClearHeaders();
+            Response.AddHeader("Content-Disposition", "inline;filename=" + filePath);
+            Response.ContentType = "application/pdf";
+            Response.WriteFile(filePath);
+            Response.Flush();
+            Response.Clear();
+            return View();
         }
 
 
