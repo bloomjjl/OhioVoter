@@ -604,8 +604,6 @@ namespace OhioVoter.Controllers
             // Store selections on ballot if user started filling out ballot
             if (ModelState.IsValid)
             {
-                // validate Election date
-
                 // get list of selected candidates from ballot
                 listSelectedCandidatesOnBallot = GetListOfSelectedCandidateIdFromBallot(ballotVM.BallotOfficeViewModel);
 
@@ -618,10 +616,10 @@ namespace OhioVoter.Controllers
             voterAddressVM.ControllerName = _controllerName;
 
             // was street address found?
-            bool hasLocation = ValidateSuppliedVoterAddress(voterAddressVM);
-            if (hasLocation == false)
+            bool isLocation = ValidateFormatForSuppliedVoterAddress(voterAddressVM);
+            if (isLocation == false)
             {
-                // location not available -- get voter's location information 
+                // location not valid -- get voter's location information 
                 ViewModels.Location.VoterLocationViewModel voterLocationVM = new ViewModels.Location.VoterLocationViewModel(voterAddressVM);
                 return PartialView("_BallotLookup", voterLocationVM);
             }
@@ -650,7 +648,7 @@ namespace OhioVoter.Controllers
 
             // proof of concept for Hamilton County
             // Not a registered voter in Hamilton County - can not display ballot
-            return PartialView("_Ballot", new BallotViewModel());
+            return PartialView("_BallotLookup", new ViewModels.Location.VoterLocationViewModel());
         }
 
 
@@ -787,7 +785,7 @@ namespace OhioVoter.Controllers
 
 
 
-        public bool ValidateSuppliedVoterAddress(VoterAddressViewModel voterAddressVM)
+        public bool ValidateFormatForSuppliedVoterAddress(VoterAddressViewModel voterAddressVM)
         {
             // validate voter location
             Controllers.LocationController location = new Controllers.LocationController();
