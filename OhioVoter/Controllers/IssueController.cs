@@ -115,6 +115,20 @@ namespace OhioVoter.Controllers
 
 
 
+        public ActionResult ViewIssueFullText(string fileName)
+        {
+            string filePath = Server.MapPath("~/Content/images/") + fileName;
+            Response.ClearContent();
+            Response.ClearHeaders();
+            Response.AddHeader("Content-Disposition", "inline;filename=" + filePath);
+            Response.ContentType = "application/pdf";
+            Response.WriteFile(filePath);
+            Response.Flush();
+            Response.Clear();
+            return View();
+        }
+
+
 
         private void UpdateSessionWithNewControllerNameForSideBar(string controllerName)
         {

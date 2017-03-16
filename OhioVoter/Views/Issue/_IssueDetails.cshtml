@@ -46,7 +46,7 @@
                         </dt>
 
                         <dd>
-                            <a href="@Url.Content(Model.IssueFullTextLink)" target="_blank">View Full Text</a>
+                            @Html.ActionLink("View Full Text", "ViewIssueFullText", "Issue", new { fileName = Model.IssueFullTextLink }, new { target = "_blank" })
                         </dd>
                     }
                 }
