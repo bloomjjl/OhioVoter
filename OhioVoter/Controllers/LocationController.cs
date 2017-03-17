@@ -238,10 +238,15 @@ namespace OhioVoter.Controllers
                 return RedirectToAction("Index", controllerName);
             }
 
+            // remove extra spaces from voterLocation.StreetAddress
+            voterLocation.StreetAddress = RemoveExtraSpacesFromString(voterLocation.StreetAddress);
+
             VoterLocationViewModel location = UpdateSideBarInformationStoredInSessionFromVoterSuppliedStreetAddressAndZipCode(voterLocation.StreetAddress, voterLocation.ZipCode);
             
             if (location.Status == "Update")
             {
+                //if (location.Message != "") { ModelState.AddModelError("", location.Message); }
+
                 location.StreetAddress = voterLocation.StreetAddress;
                 location.ZipCode = voterLocation.ZipCode;
                 UpdateSessionInformationForVoterLocation(location);
@@ -250,6 +255,56 @@ namespace OhioVoter.Controllers
             }
 
             return RedirectToAction("Index", controllerName);
+        }
+
+
+
+        public string RemoveExtraSpacesFromString(string strInput)
+        {
+            // validate input
+            if (string.IsNullOrEmpty(strInput)) { return string.Empty; }
+
+            // initialize values
+            int current = 0;
+            char[] output = new char[strInput.Length];
+            bool skipped = false;
+
+            // loop through each character removing extra spaces leading and between words
+            foreach (char c in strInput.ToCharArray())
+            {
+                if (char.IsWhiteSpace(c))
+                {
+                    if (!skipped)
+                    {
+                        // keep space
+                        if (current > 0) { output[current++] = ' '; }
+
+                        skipped = true;
+                    }
+                }
+                else
+                {
+                    skipped = false;
+                    output[current++] = c;
+                }
+            }
+
+            // remove space from trailing
+            if (char.IsWhiteSpace(output[current-1]))
+            {
+                bool hasTrailingWhiteSpace = true;
+                do
+                {
+                    current--;
+                    if (!char.IsWhiteSpace(output[current-1]))
+                    {
+                        hasTrailingWhiteSpace = false;
+                    }
+                } while (hasTrailingWhiteSpace);
+            }
+
+            // return charArray with first/last index values
+            return new string(output, 0, current);
         }
 
 
@@ -267,7 +322,7 @@ namespace OhioVoter.Controllers
         {
             SideBarViewModel sideBar;            
 
-            // validate format of provided values
+            // only store values if validate format 
             VoterLocationViewModel location = CheckVoterLocationFormFieldsAreValid(streetAddress, zipCode);
             if (location.Status == "Update") { return location; }
 
@@ -275,20 +330,20 @@ namespace OhioVoter.Controllers
             VoterLocationViewModel voterLocation = GetVoterLocationInformationForSuppliedStreetAddressAndZipCodeFromDatabase(streetAddress, zipCode);
             if (voterLocation == null || voterLocation.StateAbbreviation != "OH")
             {
-                voterLocation.StreetAddress = streetAddress;
-                voterLocation.ZipCode = zipCode;
-
                 // NOT A REGISTERED VOTER! Check if location is found on Google Map
-                voterLocation = GetLocationFromGoogle(voterLocation);
+                voterLocation = GetLocationFromGoogle(location);
                 if (voterLocation.Status == "Update")
                 {
+                    // not a valid google address
+                    voterLocation.Message = "Address not found.";
                     return voterLocation;
                 }
 
                 // valid ohio address found on Google Map
-                voterLocation.Message = "No registered voters at supplied address.";
                 sideBar = GetSideBarViewModelFromGoogleCivicInformationAPI(voterLocation);
                 sideBar.StateLocationViewModel = GetAddressForOhioSecretaryOfState();
+                sideBar = CheckEachLocationInSideBarIsValid(sideBar);
+                sideBar.VoterLocationViewModel.Message = "No registered voters at supplied address.";
             }
             else
             {
@@ -296,16 +351,15 @@ namespace OhioVoter.Controllers
                 CountyLocationViewModel countyLocation = GetCountyLocationFromDatabase(pollingLocation);
                 StateLocationViewModel stateLocation = GetAddressForOhioSecretaryOfState();
                 sideBar = new SideBarViewModel(voterLocation.ControllerName, voterLocation, pollingLocation, countyLocation, stateLocation);
+                sideBar = CheckEachLocationInSideBarIsValid(sideBar);
             }
-
-            sideBar = CheckEachLocationInSideBarIsValid(sideBar);
 
             if (sideBar.VoterLocationViewModel.Status == "Display")
             {
                 sideBar.PollingLocationViewModel.GoogleLocationMapAPI = GetGoogleMapForPollingLocation(voterLocation, sideBar.PollingLocationViewModel);
-                UpdateSessionFromSideBarViewModel(sideBar);
             }
 
+            UpdateSessionFromSideBarViewModel(sideBar);
             return voterLocation;
         }
 
@@ -363,7 +417,6 @@ namespace OhioVoter.Controllers
 
 
 
-
         public VoterLocationViewModel GetVoterLocationInformationForSuppliedStreetAddressAndZipCodeFromDatabase(string streetAddress, string zipCode)
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
@@ -371,22 +424,47 @@ namespace OhioVoter.Controllers
                 string capsStreetAddress = streetAddress.ToUpper();
                 int intZipCode = GetIntegerFromStringValue(zipCode);
 
-                // look up most precise address first
-                Models.HamiltonOhioVoter locationDTO = context.HamiltonOhioVoters.Where(x => x.AddressNumberAndPreDirectionAndStreetAndSuffix_Short == capsStreetAddress)
-                                                                     .FirstOrDefault(x => x.AddressZip == intZipCode);
+                if (string.IsNullOrEmpty(capsStreetAddress) || intZipCode == 0) { return new VoterLocationViewModel(); }
 
-                // if not found remove only pre-direction from address
-                if (locationDTO == null)
+                // get voter locations with matching zipcode
+                List<Models.HamiltonOhioVoter> dbLocations = context.HamiltonOhioVoters.Where(x => x.AddressZip == intZipCode).ToList();
+
+                if (dbLocations == null) { return new VoterLocationViewModel(); }
+
+                //for (int i = 0; i < dbLocations.Count(); i++)
+                foreach (var locationDTO in dbLocations)
                 {
-                    locationDTO = context.HamiltonOhioVoters.Where(x => x.AddressNumberAndStreetAndSuffix_Short == capsStreetAddress)
-                                                                             .FirstOrDefault(x => x.AddressZip == intZipCode);
-                    // if not found remove only suffix from address
-                    // if not found remove both pre-direction and suffix from address
-
-                    if (locationDTO == null) { return new VoterLocationViewModel(); }
+                    if (capsStreetAddress == string.Format("{0} {1}", locationDTO.AddressNumber, locationDTO.AddressStreet))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
+                    else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
+                    else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
+                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
+                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
+                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
+                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
+                    {
+                        return new VoterLocationViewModel(locationDTO, "OH");
+                    }
                 }
 
-                return new VoterLocationViewModel(locationDTO, "OH");
+                return new VoterLocationViewModel();
             }
         }
 
@@ -621,6 +699,9 @@ namespace OhioVoter.Controllers
                 location.Status = "Update";
                 return location;
             }
+
+            location.StreetAddress = streetAddress;
+            location.ZipCode = zipCode;
 
             return location;
         }

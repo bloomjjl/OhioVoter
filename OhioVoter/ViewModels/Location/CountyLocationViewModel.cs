@@ -12,6 +12,7 @@ namespace OhioVoter.ViewModels.Location
 
         public CountyLocationViewModel(Models.OhioBoardOfElection countyDTO)
         {
+            LocationName = string.Format("{0} County", countyDTO.OhioCounty.Name);
             StreetAddress = countyDTO.StreetAddress1;
             StreetAddress2 = countyDTO.StreetAddress2;
             City = countyDTO.City;

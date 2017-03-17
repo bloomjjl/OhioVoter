@@ -374,7 +374,7 @@ textarea {
     vertical-align: bottom;
 }
 
-#candidate_compare_summary_first_group 
+/* #candidate_compare_summary_first_group  */
 
 #candidate_compare_summary_first {
     text-align: center;
@@ -405,7 +405,7 @@ textarea {
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    width: 230px;
+    width: 140px;
 }
 
 
@@ -445,7 +445,7 @@ textarea {
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    width: 230px;
+    width: 140px;
 }
 
 
@@ -473,7 +473,7 @@ textarea {
     margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    width: 230px;
+    width: 140px;
 }
 
 #candidate_compare_summary_lookup_hidden {
@@ -592,7 +592,7 @@ textarea {
     margin-right: auto;
 }
 
-.ballot_location_form_btn {
+.ballot_location_form_btn, .voter_location_update_btn, .polling_map_show_btn, .polling_map_hide_btn {
     width: 160px;
     margin-left: auto;
     margin-right: auto;

@@ -11,7 +11,6 @@
     @Html.HiddenFor(x => x.StateAbbreviation)
     @Html.HiddenFor(x => x.ZipCode)
 
-    @*<button id="btn-show-voter-location-form" type="button" class="btn btn-block panel-left-btn" onclick="ShowVoterLocationForm();"> Update Your Location </button>*@
-    @Html.ActionLink("Update Your Location", "Update", "Location", new { controllerName = Model.ControllerName }, new { @class = "btn btn-block panel-left-btn" })
+    @Html.ActionLink("Update Your Location", "Update", "Location", new { controllerName = Model.ControllerName }, new { @class = "btn btn-block panel-left-btn voter_location_update_btn" })
 
 </div>

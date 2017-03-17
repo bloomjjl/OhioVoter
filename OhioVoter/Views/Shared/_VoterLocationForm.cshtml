@@ -12,13 +12,8 @@
 
             <hr />
 
-            @Html.ValidationSummary(false, null, new { @class = "text-danger" })
-
-            @*
-            @Html.ValidationSummary(true, Model.Message, new { @class = "text-danger" })
+            @Html.ValidationSummary(false, Model.Message, new { @class = "text-danger" })  
             
-            <p class="location-error-message"> @Model.Message </p>
-            *@
             <div id="voter_location_form_address" class="form-group">
                 @Html.LabelFor(x => x.StreetAddress, htmlAttributes: new { @class = "control-label" })<br />
                 @Html.EditorFor(x => x.StreetAddress, new { htmlAttributes = new { @class = "form-control" } })
