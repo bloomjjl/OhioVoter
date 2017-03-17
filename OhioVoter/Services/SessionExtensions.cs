@@ -266,7 +266,6 @@ namespace OhioVoter.Services
             {
                 System.Web.HttpContext.Current.Session[VoterLocationId] = "0";
                 System.Web.HttpContext.Current.Session[VoterLocationStatus] = "Update";
-                System.Web.HttpContext.Current.Session[VoterLocationMessage] = "Street address must be a valid location in Ohio.";
                 System.Web.HttpContext.Current.Session[VoterLocationStreetNumber] = "";
                 System.Web.HttpContext.Current.Session[VoterLocationStreetName] = "";
                 System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] = "";
@@ -274,7 +273,6 @@ namespace OhioVoter.Services
             else if (System.Web.HttpContext.Current.Session[VoterLocationStatus] == null)
             {
                 System.Web.HttpContext.Current.Session[VoterLocationStatus] = "Update";
-                System.Web.HttpContext.Current.Session[VoterLocationMessage] = "";
             }
             else if (System.Web.HttpContext.Current.Session[VoterLocationMessage] == null)
             {

@@ -598,7 +598,9 @@ textarea {
     margin-right: auto;
 }
 
-
+.ballot_location_form_msg {
+    text-align: center;
+}
 
 
 

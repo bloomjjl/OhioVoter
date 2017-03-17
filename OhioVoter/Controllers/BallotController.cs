@@ -271,18 +271,21 @@ namespace OhioVoter.Controllers
                         }
                     }
 
-                    for (int j = 0; j < ballotOfficeVM[i].BallotwriteInCandidatesViewModel.Count(); j++)
+                    if (ballotOfficeVM[i].BallotwriteInCandidatesViewModel != null)
                     {
-                        if (ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].IsSelected)
+                        for (int j = 0; j < ballotOfficeVM[i].BallotwriteInCandidatesViewModel.Count(); j++)
                         {
-                            // does this office have a running mate
-                            if (ballotOfficeVM[i].OfficeId == 1)
+                            if (ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].IsSelected)
                             {
-                                strBody = string.Format("{0} [] {1} / {2}\r\n", strBody, ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidateName, ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMateName);
-                            }
-                            else
-                            {
-                                strBody = string.Format("{0} [] {1}\r\n", strBody, ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidateName);
+                                // does this office have a running mate
+                                if (ballotOfficeVM[i].OfficeId == 1)
+                                {
+                                    strBody = string.Format("{0} [] {1} / {2}\r\n", strBody, ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidateName, ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].RunningMateName);
+                                }
+                                else
+                                {
+                                    strBody = string.Format("{0} [] {1}\r\n", strBody, ballotOfficeVM[i].BallotwriteInCandidatesViewModel[j].CandidateName);
+                                }
                             }
                         }
                     }
