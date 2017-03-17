@@ -62,6 +62,15 @@ textarea {
 .logo-title {
     color: #db1116;
     font-weight: bold;
+    display: inline-block;
+}
+
+.header_statement {
+    font-style: italic;
+    font-size: 1.25em;
+    float: right;
+    display: inline;
+    margin-top: -35px;
 }
 
 
