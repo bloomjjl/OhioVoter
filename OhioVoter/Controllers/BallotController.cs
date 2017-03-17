@@ -646,9 +646,9 @@ namespace OhioVoter.Controllers
                 return PartialView("_Ballot", new BallotViewModel(newBallotVM, ballotVoterVM, collectionBallotOfficeVM, collectionBallotIssueVM));
             }
 
-            // proof of concept for Hamilton County
             // Not a registered voter in Hamilton County - can not display ballot
-            return PartialView("_BallotLookup", new ViewModels.Location.VoterLocationViewModel());
+            SessionExtensions session = new SessionExtensions();
+            return PartialView("_BallotLookup", session.GetVoterLocationFromSession());
         }
 
 

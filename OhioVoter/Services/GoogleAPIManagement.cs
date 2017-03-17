@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using OhioVoter.Models;
 using OhioVoter.ViewModels;
 using OhioVoter.ViewModels.Google;
 using System;
@@ -11,7 +12,56 @@ namespace OhioVoter.Services
 {
     public class GoogleApiManagement
     {
-        private static string _googleApiKey = "AIzaSyCmAeCrJzlOqmOlPx0q-MuZYZZnOMVfgXU";
+        private string _googleApiCivicInformationKey;
+        private string _googleApiStaticMapKey;
+        private static string _googleApiCivicInformation = "https://www.googleapis.com/civicinfo/v2/";
+        private static string _googleApiStaticMap = "http://maps.googleapis.com/maps/api/";
+
+
+
+        public GoogleApiManagement()
+        {
+            GetGoogleApiCivicInformationKeyFromDatabase();
+            GetGoogleApiStaticMapKeyFromDatabase();
+        }
+
+
+
+        private void GetGoogleApiCivicInformationKeyFromDatabase()
+        {
+            using (OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                Api dtoApi = context.Apis.FirstOrDefault(x => x.ApiUrl == _googleApiCivicInformation);
+
+                if (dtoApi == null)
+                {
+                    _googleApiCivicInformationKey = "";
+                }
+                else
+                {
+                    _googleApiCivicInformationKey = dtoApi.ApiKey;
+                }
+            }
+        }
+
+
+
+        private void GetGoogleApiStaticMapKeyFromDatabase()
+        {
+            using (OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                Api dtoApi = context.Apis.FirstOrDefault(x => x.ApiUrl == _googleApiStaticMap);
+
+                if (dtoApi == null)
+                {
+                    _googleApiStaticMapKey = "";
+                }
+                else
+                {
+                    _googleApiStaticMapKey = dtoApi.ApiKey;
+                }
+            }
+        }
 
 
 
@@ -20,7 +70,7 @@ namespace OhioVoter.Services
         // **************************
 
 
-        
+
         public ViewModels.Location.SideBarViewModel GetGoogleCivicRepresentativesForVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
             try
@@ -147,8 +197,9 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public string GetUrlRequestForGoogleCivicInformationFromVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
-            string api = "https://www.googleapis.com/civicinfo/v2/voterinfo?";
-            string key = _googleApiKey;
+            string api = _googleApiCivicInformation;
+            string path = "voterinfo?";
+            string key = _googleApiCivicInformationKey;
             string andChar = "&";
             string electionIdValue = "2000"; // this value may need to be adjusted
             string voterAddress = voterLocation.FullAddress;
@@ -158,7 +209,7 @@ namespace OhioVoter.Services
                 voterAddress = voterAddress + "-" + voterLocation.ZipCodeSuffix;
             }
 */
-            return string.Concat(api, "address=", voterAddress,
+            return string.Concat(api, path, "address=", voterAddress,
                                  andChar, "electionId=", electionIdValue,
                                  andChar, "key=", key);
         }
@@ -168,12 +219,13 @@ namespace OhioVoter.Services
 
         public string GetUrlRequestForRepresentativesFromVoterLocation(ViewModels.Location.VoterLocationViewModel voterLocation)
         {
-            string api = "https://www.googleapis.com/civicinfo/v2/representatives?";
-            string key = _googleApiKey;
+            string api = _googleApiCivicInformation;
+            string path = "representatives?";
+            string key = _googleApiCivicInformationKey;
             string andChar = "&";
             string voterAddress = string.Format("{0} {1}", voterLocation.StreetAddress, voterLocation.ZipCode);
 
-            return string.Concat(api, "address=", voterAddress,
+            return string.Concat(api, path, "address=", voterAddress,
                                  andChar, "key=", key);
         }
 
@@ -377,11 +429,12 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public string GetGoogleMapAPIRequestForVoterAndPollingLocation(ViewModels.Location.VoterLocationViewModel voterLocation, ViewModels.Location.PollingLocationViewModel pollingLocation)
         {// Tests Generated
-            string api = "https://maps.googleapis.com/maps/api/staticmap?";
-            string key = _googleApiKey;
+            string api = _googleApiStaticMap;
+            string path = "staticmap?";
+            string key = _googleApiStaticMapKey;
             string andChar = "&";
 
-            return string.Concat(api, "center", voterLocation.FullAddress.ToString(),
+            return string.Concat(api, path, "center", voterLocation.FullAddress.ToString(),
                                  andChar, "size=300x300",
                                  andChar, "maptype=roadmap",
                                  andChar, "markers=color:red%7Clabel:H%7C", voterLocation.FullAddress.ToString(),
@@ -431,12 +484,13 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public string GetUrlRequestForStateAbbreviationFromZipCode(string zipCode)
         {// Tests Generated
-            string api = "http://maps.googleapis.com/maps/api/geocode/json?";
+            string api = _googleApiStaticMap;
+            string path = "geocode/json?";
             string andChar = "&";
             string address = "address=";
             string sensor = "sensor=true";
 
-            return string.Concat(api, 
+            return string.Concat(api, path,
                                  andChar, address, zipCode,
                                  andChar, sensor);
         }
@@ -507,12 +561,13 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public string GetUrlRequestForFullAddressFromStreetAddressAndZipCode(string streetAddress, string zipCode)
         {// Tests Generated
-            string api = "http://maps.googleapis.com/maps/api/geocode/json?";
+            string api = _googleApiStaticMap;
+            string path = "geocode/json?";
             string andChar = "&";
             string address = "address=";
             string sensor = "sensor=true";
 
-            return string.Concat(api,
+            return string.Concat(api, path,
                                  andChar, address, streetAddress, " ", zipCode,
                                  andChar, sensor);
         }
@@ -526,12 +581,13 @@ namespace OhioVoter.Services
         /// <returns></returns>
         public string GetUrlRequestForFullAddressFromZipCode(string zipCode)
         { 
-            string api = "http://maps.googleapis.com/maps/api/geocode/json?";
+            string api = _googleApiStaticMap;
+            string path = "geocode/json?";
             string andChar = "&";
             string address = "address=";
             string sensor = "sensor=true";
 
-            return string.Concat(api,
+            return string.Concat(api, path,
                                  andChar, address, zipCode,
                                  andChar, sensor);
         }

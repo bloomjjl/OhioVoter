@@ -324,7 +324,7 @@ if (Model.BallotIssueViewModel != null)
                         if (Model.BallotIssueViewModel[i].FullTextUrl != null && Model.BallotIssueViewModel[i].FullTextUrl != "")
                         {
                             <br />
-                            @Html.ActionLink("Learn More", "ViewIssue", "Ballot", new { fileName = Model.BallotIssueViewModel[i].FullTextUrl }, new { target = "_blank" })
+                            @Html.ActionLink("View Full Text", "ViewIssue", "Ballot", new { fileName = Model.BallotIssueViewModel[i].FullTextUrl }, new { target = "_blank" })
                         }
                     }
                 </p>

@@ -209,6 +209,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Api.cs" />
     <Compile Include="Models\BallotCandidate.cs" />
     <Compile Include="Models\BallotHeader.cs" />
     <Compile Include="Models\BallotIssue.cs" />

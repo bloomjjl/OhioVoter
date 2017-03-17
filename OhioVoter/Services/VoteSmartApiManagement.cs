@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using OhioVoter.Models;
 using OhioVoter.ViewModels;
 using OhioVoter.ViewModels.VoteSmart;
 using System;
@@ -16,12 +17,38 @@ namespace OhioVoter.Services
 {
     public class VoteSmartApiManagement
     {
-        private static string _votesmartApiKey = "2f03c2e306be0364519648e3878b6337";
+        private string _votesmartApiKey;
+        private static string _votesmartApi = "http://api.votesmart.org/";
 
 
 
+        public VoteSmartApiManagement()
+        {
+            GetApiKeyFromDatabase();
+        }
 
-        public Elections GetVoteSmartElectionInformationFromSuppliedVoteSmartElectionId(string electionId)
+
+
+        private void GetApiKeyFromDatabase()
+        { 
+            using (OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                Api dtoApi = context.Apis.FirstOrDefault(x => x.ApiUrl == _votesmartApi);
+
+                if (dtoApi == null)
+                {
+                    _votesmartApiKey = "";
+                }
+                else
+                {
+                    _votesmartApiKey = dtoApi.ApiKey;
+                }
+            }
+        }
+
+
+
+        public ViewModels.VoteSmart.Elections GetVoteSmartElectionInformationFromSuppliedVoteSmartElectionId(string electionId)
         {// Tests Generated
             try
             {
@@ -31,13 +58,13 @@ namespace OhioVoter.Services
 
                 string urlRequest = GetUrlRequestForElectionInformationForElectionId(electionId);
                 XmlDocument xmlDoc = MakeRequest(urlRequest);
-                Elections election = ProcessResponseForElectionList(xmlDoc);
+                ViewModels.VoteSmart.Elections election = ProcessResponseForElectionList(xmlDoc);
 
                 return election;
             }
             catch (Exception e)
             {// return empty object if bad information supplied
-                return new Elections();
+                return new ViewModels.VoteSmart.Elections();
             }
         }
 
@@ -50,7 +77,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="candidateName"></param>
         /// <returns></returns>
-        public CandidateBio GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(string voteSmartCandidateId)
+        public ViewModels.VoteSmart.CandidateBio GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(string voteSmartCandidateId)
         {// Tests Generated
             try
             {
@@ -60,13 +87,13 @@ namespace OhioVoter.Services
 
                 string urlRequest = GetUrlRequestForBiographyInformationForSpecifiedCandidate(voteSmartCandidateId);
                 XmlDocument xmlDoc = MakeRequest(urlRequest);
-                CandidateBio candidate = ProcessResponseForCandidateBio(xmlDoc);
+                ViewModels.VoteSmart.CandidateBio candidate = ProcessResponseForCandidateBio(xmlDoc);
 
                 return candidate;
             }
             catch (Exception e)
             {// return empty object if bad information supplied
-                return new CandidateBio();
+                return new ViewModels.VoteSmart.CandidateBio();
             }
         }
 
@@ -86,7 +113,7 @@ namespace OhioVoter.Services
 
                 string urlRequest = GetUrlRequestForBiographyInformationForSpecifiedCandidate(voteSmartCandidateId);
                 XmlDocument xmlDoc = MakeRequest(urlRequest);
-                CandidateBio candidate = ProcessResponseForCandidateBio(xmlDoc);
+                ViewModels.VoteSmart.CandidateBio candidate = ProcessResponseForCandidateBio(xmlDoc);
 
                 return candidate.Photo;
             }
@@ -103,7 +130,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="candidateName"></param>
         /// <returns></returns>
-        public List<Candidate> GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear(string lastName, int year, string stageId)
+        public List<ViewModels.VoteSmart.Candidate> GetVoteSmartMatchingCandidateListFromSuppliedLastNameInASpecifiedElectionYear(string lastName, int year, string stageId)
         {// Tests Generated
             try
             {
@@ -113,13 +140,13 @@ namespace OhioVoter.Services
 
                 string urlRequest = GetUrlRequestForCandidateInformationForMatchingLastNameInASpecifiedElectionYear(lastName, year, stageId);
                 XmlDocument xmlDoc = MakeRequest(urlRequest);
-                List<Candidate> candidates = ProcessResponseForCandidateList(xmlDoc);
+                List<ViewModels.VoteSmart.Candidate> candidates = ProcessResponseForCandidateList(xmlDoc);
 
                 return candidates;
             }
             catch (Exception e)
             {// return empty object if bad information supplied
-                return new List<Candidate>();
+                return new List<ViewModels.VoteSmart.Candidate>();
             }
         }
 
@@ -133,7 +160,7 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="candidateName"></param>
         /// <returns></returns>
-        public List<Candidate> GetVoteSmartSimilarCandidateListFromSuppliedLastName(string suppliedLastName)
+        public List<ViewModels.VoteSmart.Candidate> GetVoteSmartSimilarCandidateListFromSuppliedLastName(string suppliedLastName)
         {// Tests Generated
             try
             {
@@ -143,13 +170,13 @@ namespace OhioVoter.Services
 
                 string urlRequest = GetUrlRequestForAllOfficialsWithSimilarLastName(suppliedLastName);
                 XmlDocument xmlDoc = MakeRequest(urlRequest);
-                List<Candidate> candidates = ProcessResponseForCandidateList(xmlDoc);
+                List<ViewModels.VoteSmart.Candidate> candidates = ProcessResponseForCandidateList(xmlDoc);
 
                 return candidates;
             }
             catch (Exception e)
             {// return empty object if bad information supplied
-                return new List<Candidate>();
+                return new List<ViewModels.VoteSmart.Candidate>();
             }
         }
 
@@ -161,7 +188,7 @@ namespace OhioVoter.Services
         /// <param name="location"></param>
         /// <param name="year"></param>
         /// <returns></returns>
-        public Elections GetVoteSmartElectionInformationFromSuppliedZipCodeAndYear(string zipCode, string zipCodeSuffix, int year)
+        public ViewModels.VoteSmart.Elections GetVoteSmartElectionInformationFromSuppliedZipCodeAndYear(string zipCode, string zipCodeSuffix, int year)
         {
             try
             {
@@ -171,13 +198,13 @@ namespace OhioVoter.Services
 
                 string urlRequest = GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear(zipCode, zipCodeSuffix, year);
                 XmlDocument xmlDoc = MakeRequest(urlRequest);
-                Elections elections = ProcessResponseForElectionList(xmlDoc);
+                ViewModels.VoteSmart.Elections elections = ProcessResponseForElectionList(xmlDoc);
 
                 return elections;
             }
             catch (Exception e)
             {// return empty object if bad information supplied
-                return new Elections();
+                return new ViewModels.VoteSmart.Elections();
             }
         }
 
@@ -205,17 +232,17 @@ namespace OhioVoter.Services
 
 
 
-        public List<Candidate> ProcessResponseForCandidateList(XmlDocument xmlDoc)
+        public List<ViewModels.VoteSmart.Candidate> ProcessResponseForCandidateList(XmlDocument xmlDoc)
         {// Tests Generated
             if (xmlDoc == null)
-                return new List<Candidate>();
+                return new List<ViewModels.VoteSmart.Candidate>();
 
             XmlNodeList candidates = xmlDoc.GetElementsByTagName("candidate");
-            List<Candidate> candidatelist = new List<Candidate>();
+            List<ViewModels.VoteSmart.Candidate> candidatelist = new List<ViewModels.VoteSmart.Candidate>();
 
             for (int i = 0; i < candidates.Count; i++)
             {
-                candidatelist.Add(new Candidate()
+                candidatelist.Add(new ViewModels.VoteSmart.Candidate()
                 {
                     ElectionCandidateId = candidates[i].SelectSingleNode("candidateId").InnerText,
                     FirstName = candidates[i].SelectSingleNode("firstName").InnerText,
@@ -284,21 +311,21 @@ namespace OhioVoter.Services
 
 
 
-        public Elections ProcessResponseForElectionList(XmlDocument xmlDoc)
+        public ViewModels.VoteSmart.Elections ProcessResponseForElectionList(XmlDocument xmlDoc)
         {
             if (xmlDoc == null)
                 return new Elections();
 
             XmlNodeList electionList = xmlDoc.GetElementsByTagName("elections");
-            Elections elections = new Elections();
-            elections.Election = new List<Election>();
+            ViewModels.VoteSmart.Elections elections = new ViewModels.VoteSmart.Elections();
+            elections.Election = new List<ViewModels.VoteSmart.Election>();
 
             for (int i = 0; i < electionList[0].ChildNodes.Count; i++)
             {
                 
                 if (electionList[0].ChildNodes[i].Name == "election")
                 {
-                    elections.Election.Add(new Election()
+                    elections.Election.Add(new ViewModels.VoteSmart.Election()
                     {
                         ElectionId = electionList[0].ChildNodes[i].SelectSingleNode("electionId").InnerText,
                         Name = electionList[0].ChildNodes[i].SelectSingleNode("name").InnerText,
@@ -332,7 +359,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForCampaignOfficeInformationForSpecifiedCandidate(string candidateId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Address.getCampaign?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -386,7 +413,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForCandidateInformationForMatchingLastNameInASpecifiedElectionYear(string lastName, int year, string stageId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Candidates.getByLastname?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -455,7 +482,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForBiographyInformationForSpecifiedCandidate(string candidateId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "CandidateBio.getBio?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -507,7 +534,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForDetailedBiographyInformationForSpecifiedCandidate(string candidateId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "CandidateBio.getDetailedBio?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -535,7 +562,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForDistrictInformationForSuppliedZipCode(string zipCode, string zipCodeSuffix)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "District.getByZip?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -569,7 +596,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForElectionInformationForElectionId(string electionId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Election.getElection?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -600,7 +627,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForElectionInformationForSuppliedZipCodeAndYear(string zipCode, string zipCodeSuffix, int year)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Election.getElectionByZip?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -630,7 +657,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForCountiesForSuppliedState(string stateId = "OH")
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Local.getCounties?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -655,7 +682,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForCitiesForSuppliedState(string stateId = "OH")
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Local.getCities?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -693,7 +720,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForCandidatesForSpecifiedLocation(string localId)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Local.getOfficials?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -718,7 +745,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficeTypes()
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getTypes?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -740,7 +767,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllBranchesOfGovernment()
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getBranches?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -762,7 +789,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllLevelsOfGovernment()
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getLevels?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -789,7 +816,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficesForSpecifiedType(string officeTypeId)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getOfficesByType?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -817,7 +844,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficesForSpecifiedLevel(string levelId)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getOfficesByLevel?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -839,7 +866,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficesForSpecifiedTypeAndLevel(string officeTypeId, string officeLevelId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getOfficesByTypeLevel?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -863,7 +890,7 @@ namespace OhioVoter.Services
         /// </returns>        
         public string GetUrlRequestForAllOfficesForSpecifiedBranchAndLevel(string branchId, string levelId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Office.getOfficesByBranchLevel?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -886,7 +913,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsForSpecifiedState(string stateId = "OH")
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getStatewide?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -910,7 +937,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsForSpecifiedOfficeAndState(string officeId, string stateId = "OH")
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getByOfficeState?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -935,7 +962,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsForSpecifiedOfficeTypeAndState(string officeTypeId, string stateId = "OH")
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getByOfficeTypeState?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -973,7 +1000,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsWithMatchingLastName(string lastName)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getByLastname?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -1010,7 +1037,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsWithSimilarLastName(string lastName)
         {// Tests Generated
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getByLevenshtein?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -1031,7 +1058,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsByDistrict(string districtId)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getByDistrict?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -1053,7 +1080,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllOfficialsByDistrict(string zip5, string zip4)
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "Officials.getByZip?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -1075,7 +1102,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForAllStates()
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "State.getStateIDs?";
             string key = _votesmartApiKey;
             string andChar = "&";
@@ -1096,7 +1123,7 @@ namespace OhioVoter.Services
         /// </returns>
         public string GetUrlRequestForInformationForSpecifiedState(string stateId = "OH")
         {
-            string api = "http://api.votesmart.org/";
+            string api = _votesmartApi;
             string path = "State.getState?";
             string key = _votesmartApiKey;
             string andChar = "&";

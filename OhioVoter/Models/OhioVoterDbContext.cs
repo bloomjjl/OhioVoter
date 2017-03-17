@@ -9,6 +9,7 @@ namespace OhioVoter.Models
 {
     public class OhioVoterDbContext : DbContext
     {
+        public DbSet<Api> Apis { get; set; }
         public DbSet<BallotCandidate> BallotCandidates { get; set; }
         public DbSet<BallotHeader> BallotHeaders { get; set; }
         public DbSet<BallotIssue> BallotIssues { get; set; }
