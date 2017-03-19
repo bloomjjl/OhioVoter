@@ -16,12 +16,18 @@
                 <p><b>Election Date:</b> @Model.VotingDate</p>
             </div>
 
+            <div id="candidate_lookup_office" class="form-group">
+                @Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, "-- Select An Office --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
+            </div>
+
+            @*
             <div id="candidate_lookup_candidate" class="form-group">
-                @*@Html.LabelFor(x => x.SelectedCandidateId, htmlAttributes: new { @id = "candidate_lookup_label", @class = "control-label" })*@
+                @Html.LabelFor(x => x.SelectedCandidateId, htmlAttributes: new { @id = "candidate_lookup_label", @class = "control-label" })*
                 @Html.DropDownListFor(x => x.SelectedCandidateId, Model.CandidateNames, "-- Select A Candidate --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(x => x.SelectedCandidateId, "", new { @class = "text-danger" })
             </div>
-
+            *@
 
             <div>
                 <button id="candidate_lookup_btn" type="submit" class="btn btn-block panel-left-btn"> Display Candidate </button>
@@ -30,6 +36,49 @@
 
     </div>
 
+    <div id="candidate_list_group">
+
+        <table class="table candidate_list_select">
+            <tr>
+                <th>
+                    Candidate
+                </th>
+                <th>
+                    Party
+                </th>
+                <th>
+                    Office
+                </th>
+                <th></th>
+            </tr>
+
+            @for (int i = 0; i < Model.CandidateListViewModel.Count(); i++)
+            {
+                var candidate = Model.CandidateListViewModel[i];
+                    <tr>
+                        <td class="candidate_list_candidate">
+                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].ElectionCandidateId)
+                            <img src="@Url.Content(Model.CandidateListViewModel[i].PhotoUrl)" alt="Candidate Photo" class="candidate_list_img"/>
+                            @Html.DisplayFor(x => x.CandidateListViewModel[i].CandidateName)
+                        </td>
+                        <td class="candidate_list_party">
+                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].PartyId)
+                            @Html.DisplayFor(x => x.CandidateListViewModel[i].PartyName)
+                        </td>
+                        <td class="candidate_list_office">
+                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].ElectionOfficeId)
+                            @Html.DisplayFor(x => x.CandidateListViewModel[i].ElectionOfficeName)
+                        </td>
+                        <td class="candidate_list_select">
+                            @Html.ActionLink("Select", "Select", new { id = Model.CandidateListViewModel[i].ElectionCandidateId })
+                        </td>
+                    </tr>
+                }
+            
+
+        </table>
+
+    </div>
 </div>
 
 

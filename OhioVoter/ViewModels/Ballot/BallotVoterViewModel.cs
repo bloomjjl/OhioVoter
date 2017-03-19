@@ -28,6 +28,7 @@ namespace OhioVoter.ViewModels.Ballot
             CountyId = hamiltonOhioVoterDTO.OhioCountyId;
             County = hamiltonOhioVoterDTO.OhioCounty.Name;
             CourtOfAppeasOfficeCode = hamiltonOhioVoterDTO.CourtOfAppealsOfficeCode;
+            StateBoardOfEducationCode = hamiltonOhioVoterDTO.StateBoardOfEducationCode;
             CongressOfficeCode = hamiltonOhioVoterDTO.CongressOfficeCode;
             SenateOfficeCode = hamiltonOhioVoterDTO.SenateOfficeCode;
             HouseOfficeCode = hamiltonOhioVoterDTO.HouseOfficeCode;
@@ -63,5 +64,6 @@ namespace OhioVoter.ViewModels.Ballot
         public string VocationalSchoolOfficeCode { get; set; }
 
         public string CourtOfAppeasOfficeCode { get; set; }
+        public string StateBoardOfEducationCode { get; set; }
     }
 }

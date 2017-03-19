@@ -157,11 +157,13 @@ namespace OhioVoter.Controllers
             {
                 VoterLocationViewModel location = (VoterLocationViewModel)TempData["VoterLocation"];
             }
+
             if (sideBar.VoterLocationViewModel.Message != "")
             {
                 ModelState.AddModelError("VoterLocationViewModel", sideBar.VoterLocationViewModel.Message);
             }
-                sideBar.PollingLocationViewModel = GetVoterLocationInformationToDisplayOnMap(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
+
+            sideBar.PollingLocationViewModel = GetVoterLocationInformationToDisplayOnMap(sideBar.VoterLocationViewModel, sideBar.PollingLocationViewModel);
                         
             return sideBar;
         }
@@ -320,7 +322,7 @@ namespace OhioVoter.Controllers
 
         public VoterLocationViewModel UpdateSideBarInformationStoredInSessionFromVoterSuppliedStreetAddressAndZipCode(string streetAddress, string zipCode)
         {
-            SideBarViewModel sideBar;            
+            SideBarViewModel sideBar = new SideBarViewModel();            
 
             // only store values if validate format 
             VoterLocationViewModel location = CheckVoterLocationFormFieldsAreValid(streetAddress, zipCode);
@@ -330,20 +332,63 @@ namespace OhioVoter.Controllers
             VoterLocationViewModel voterLocation = GetVoterLocationInformationForSuppliedStreetAddressAndZipCodeFromDatabase(streetAddress, zipCode);
             if (voterLocation == null || voterLocation.StateAbbreviation != "OH")
             {
-                // NOT A REGISTERED VOTER! Check if location is found on Google Map
-                voterLocation = GetLocationFromGoogle(location);
-                if (voterLocation.Status == "Update")
+                // NOT A REGISTERED OHIO VOTER! Check if location is found on Google Map
+                VoterLocationViewModel googleLocation = GetLocationFromGoogle(location);
+
+                // no google location found
+                if (string.IsNullOrEmpty(googleLocation.ZipCode))
                 {
                     // not a valid google address
-                    voterLocation.Message = "Address not found.";
+
+                    voterLocation.Message = "Address supplied not found";
                     return voterLocation;
                 }
 
-                // valid ohio address found on Google Map
-                sideBar = GetSideBarViewModelFromGoogleCivicInformationAPI(voterLocation);
-                sideBar.StateLocationViewModel = GetAddressForOhioSecretaryOfState();
-                sideBar = CheckEachLocationInSideBarIsValid(sideBar);
-                sideBar.VoterLocationViewModel.Message = "No registered voters at supplied address.";
+                // Does google location found MATCH user location provided
+                if (zipCode == googleLocation.ZipCode && streetAddress == googleLocation.StreetAddress)
+                {
+                    // YES
+                    sideBar = GetSideBarViewModelFromGoogleCivicInformationAPI(googleLocation);
+                    sideBar.StateLocationViewModel = GetAddressForOhioSecretaryOfState();
+                    sideBar = CheckEachLocationInSideBarIsValid(sideBar);
+                    sideBar.VoterLocationViewModel.Message = "No Ohio voters are registered at supplied address";
+                }
+                else if (zipCode != googleLocation.ZipCode)
+                {
+                    // google location is different
+                    voterLocation.StreetAddress = streetAddress;
+                    voterLocation.ZipCode = zipCode;
+                    voterLocation.Status = "Update";
+                    voterLocation.Message = "Address supplied not found";
+                    UpdateSessionInformationForVoterLocation(voterLocation);
+                    return voterLocation;
+
+                }
+                else
+                { 
+                    // google location might be the same
+                    // check new address from google with voter database
+                    voterLocation = GetVoterLocationInformationForSuppliedStreetAddressAndZipCodeFromDatabase(googleLocation.StreetAddress, googleLocation.ZipCode);
+
+                    if (voterLocation.ZipCode != null && voterLocation.StreetAddress != null)
+                    {
+                        // if found display and notify "No registered voters at supplied address but were found at changed address"
+                        PollingLocationViewModel pollingLocation = GetPollingLocationFromDatabase(voterLocation);
+                        CountyLocationViewModel countyLocation = GetCountyLocationFromDatabase(pollingLocation);
+                        StateLocationViewModel stateLocation = GetAddressForOhioSecretaryOfState();
+                        sideBar = new SideBarViewModel(voterLocation, pollingLocation, countyLocation, stateLocation);
+                        sideBar = CheckEachLocationInSideBarIsValid(sideBar);
+                        sideBar.VoterLocationViewModel.Message = "Address supplied not found but this close matching address was found";
+                    }
+                    else
+                    {
+                        // else notify "No registered voters at supplied or changed address"
+                        sideBar = GetSideBarViewModelFromGoogleCivicInformationAPI(googleLocation);
+                        sideBar.StateLocationViewModel = GetAddressForOhioSecretaryOfState();
+                        sideBar = CheckEachLocationInSideBarIsValid(sideBar);
+                        sideBar.VoterLocationViewModel.Message = "No Ohio voters are registered at supplied address or this close matching address";
+                    }
+                }
             }
             else
             {
@@ -431,36 +476,40 @@ namespace OhioVoter.Controllers
 
                 if (dbLocations == null) { return new VoterLocationViewModel(); }
 
+                // only storing OHIO addresses in database 
+                string stateAbbreviation = "OH";
+
                 //for (int i = 0; i < dbLocations.Count(); i++)
                 foreach (var locationDTO in dbLocations)
                 {
                     if (capsStreetAddress == string.Format("{0} {1}", locationDTO.AddressNumber, locationDTO.AddressStreet))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        string address_short = string.Format("{0} {1}", capsStreetAddress, locationDTO.AddressSuffix_Short);
+                        return new VoterLocationViewModel(locationDTO, address_short.ToUpper(), stateAbbreviation);
                     }
                     else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
                     }
                     else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
                     }
                     else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
                     }
                     else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
                     }
                     else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
                     }
                     else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
                     {
-                        return new VoterLocationViewModel(locationDTO, "OH");
+                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
                     }
                 }
 
@@ -761,13 +810,13 @@ namespace OhioVoter.Controllers
             {
                 return false;
             }
-            else if (location.Message == null || location.Message == "")
+/*            else if (location.Message == null || location.Message == "")
             {
                 return true;
             }
-            else
+*/            else
             {
-                return false;
+                return true;
             }
         }
 

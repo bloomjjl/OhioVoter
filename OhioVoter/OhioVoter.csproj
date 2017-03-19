@@ -216,6 +216,7 @@
     <Compile Include="Models\BallotOffice.cs" />
     <Compile Include="Models\Candidate.cs" />
     <Compile Include="Models\CertifiedCandidate.cs" />
+    <Compile Include="Models\StateBoardOfEducation.cs" />
     <Compile Include="Models\ElectionDate.cs" />
     <Compile Include="Models\ElectionIssue.cs" />
     <Compile Include="Models\ElectionIssuePrecinct.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Models\OfficeHolder.cs" />
     <Compile Include="Models\HamiltonOhioVoter.cs" />
     <Compile Include="Models\OhioBoardOfElection.cs" />
+    <Compile Include="Models\OhioSchoolDistrict.cs" />
     <Compile Include="Models\Party.cs" />
     <Compile Include="Models\OhioPrecinct.cs" />
     <Compile Include="Models\ElectionVotingDate.cs" />
@@ -282,6 +284,8 @@
     <Compile Include="ViewModels\Candidate\CandidateComparePersonalViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateComparePoliticalViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareProfessionalViewModel.cs" />
+    <Compile Include="ViewModels\Candidate\CandidateOfficeListViewModel.cs" />
+    <Compile Include="ViewModels\Candidate\CandidateListViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateSummaryOLD.cs" />
     <Compile Include="ViewModels\Candidate\CandidateCompareSummarySecondViewModel.cs" />
     <Compile Include="ViewModels\Candidate\CandidateViewModel.cs" />
@@ -453,6 +457,7 @@
     <Content Include="Views\Ballot\_BallotIssue.cshtml" />
     <Content Include="Views\Manage\ChangeAddress.cshtml" />
     <Content Include="Views\Ballot\_BallotLookup.cshtml" />
+    <Content Include="Views\Candidate\_CandidateList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

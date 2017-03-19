@@ -9,13 +9,34 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateLookUpViewModel
     {
+        public CandidateLookUpViewModel() { }
+
+        public CandidateLookUpViewModel(string controllerName)
+        {
+            ControllerName = controllerName;
+        }
+
+        public CandidateLookUpViewModel(string controllerName, string date, List<CandidateListViewModel>  candidateListVM, IEnumerable<SelectListItem>  electionOfficeSelectList)
+        {
+            ControllerName = controllerName;
+            VotingDate = date;
+            CandidateListViewModel = candidateListVM;
+            ElectionOfficeNames = electionOfficeSelectList;
+        }
+
+
         public string ControllerName { get; set; }
         public string VotingDate { get; set; }
+
+        [Display(Name = "")]
+        public string SelectedElectionOfficeId { get; set; }
+        public IEnumerable<SelectListItem> ElectionOfficeNames { get; set; }
 
         [Display(Name = "")]
         public string SelectedCandidateId { get; set; }
         public IEnumerable<SelectListItem> CandidateNames { get; set; }
 
+        public List<CandidateListViewModel> CandidateListViewModel { get; set; }
     }
 
 
@@ -29,11 +50,11 @@ namespace OhioVoter.ViewModels.Candidate
     */
 
     /*
-    public class OfficeDropDownList
+    public class ElectionOfficeDropDownList
     {
         [Display(Name = "Office")]
-        public string SelectedOfficeId { get; set; }
-        public IEnumerable<SelectListItem> OfficeNames { get; set; }
+        public string SelectedElectionOfficeId { get; set; }
+        public IEnumerable<SelectListItem> ElectionOfficeNames { get; set; }
     }
     */
 

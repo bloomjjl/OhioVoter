@@ -16,6 +16,7 @@ namespace OhioVoter.Models
         public DbSet<BallotOffice> BallotOffices { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
         public DbSet<CertifiedCandidate> CertifiedCandidates { get; set; }
+        public DbSet<StateBoardOfEducation> StateBoardOfEducations { get; set; }
         public DbSet<ElectionCandidate> ElectionCandidates { get; set; }
         public DbSet<ElectionDate> ElectionDates { get; set; }
         public DbSet<ElectionIssue> ElectionIssues { get; set; }
@@ -29,6 +30,7 @@ namespace OhioVoter.Models
         public DbSet<OhioCounty> OhioCounties { get; set; }
         public DbSet<OhioLocal> OhioLocals { get; set; }
         public DbSet<OhioPrecinct> OhioPrecincts { get; set; }
+        public DbSet<OhioSchoolDistrict> OhioSchoolDistricts { get; set; }
         public DbSet<Party> Parties { get; set; }
         public DbSet<State> States { get; set; }
 

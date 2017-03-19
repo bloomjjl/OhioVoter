@@ -65,17 +65,11 @@ namespace OhioVoter.Models
 
         public string AddressSuffix_Long { get; set; }
 
-        public string AddressStreetAndSuffix_Short { get; set; }
-
-        public string AddressPreDirectionAndStreetAndSuffix_Short { get; set; }
-
-        public string AddressNumberAndStreetAndSuffix_Short { get; set; }
-
-        public string AddressNumberAndPreDirectionAndStreetAndSuffix_Short { get; set; }
-
         public string AddressOther { get; set; }
 
         public string AddressCityName { get; set; }
+
+        public string StateAbbreviation { get; set; }
 
         [Required]
         public int AddressZip { get; set; }
@@ -89,8 +83,14 @@ namespace OhioVoter.Models
         public int CourtOfAppealsOfficeId { get; set; }
 
         [Required]
-        [Column("CourtOfAppealsOfficeCode")]
         public string CourtOfAppealsOfficeCode { get; set; }
+
+        [Required]
+        [Column("StateBoardOfEducation_Id")]
+        public int StateBoardOfEducationId { get; set; }
+
+        [Required]
+        public string StateBoardOfEducationCode { get; set; }
 
         [Required]
         public string CongressOfficeCode { get; set; }
@@ -118,5 +118,8 @@ namespace OhioVoter.Models
 
         [ForeignKey("OhioCountyId")]
         public virtual OhioCounty OhioCounty { get; set; }
+
+        [ForeignKey("StateBoardOfEducationId")]
+        public virtual StateBoardOfEducation StateBoardOfEducation { get; set; }
     }
 }

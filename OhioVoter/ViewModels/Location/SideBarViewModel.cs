@@ -10,11 +10,22 @@ namespace OhioVoter.ViewModels.Location
     {
         public SideBarViewModel() { }
 
-        public SideBarViewModel(string controllerName,
-                                VoterLocationViewModel voterLocationVM,
+        public SideBarViewModel(VoterLocationViewModel voterLocationVM,
                                 PollingLocationViewModel pollingLocationVM,
                                 CountyLocationViewModel countyLocationVM,
                                 StateLocationViewModel stateLocationVM)
+        {
+            VoterLocationViewModel = voterLocationVM;
+            PollingLocationViewModel = pollingLocationVM;
+            CountyLocationViewModel = countyLocationVM;
+            StateLocationViewModel = stateLocationVM;
+        }
+
+        public SideBarViewModel(string controllerName,
+                        VoterLocationViewModel voterLocationVM,
+                        PollingLocationViewModel pollingLocationVM,
+                        CountyLocationViewModel countyLocationVM,
+                        StateLocationViewModel stateLocationVM)
         {
             ControllerName = controllerName;
             VoterLocationViewModel = voterLocationVM;

@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace OhioVoter.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ManageVoteSmartController : Controller
     {
         // GET: Admin/VoteSmart
@@ -26,14 +26,17 @@ namespace OhioVoter.Areas.Admin.Controllers
             // add image url for votesmart to database
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
-                List<Models.Candidate> candidate = context.Candidates.ToList();
+                List<Models.Candidate> dbCandidates = context.Candidates.ToList();
                 VoteSmartApiManagement voteSmart = new VoteSmartApiManagement();
 
                 // loop through each office
-                for (int i = 0; i < candidate.Count(); i++)
+                for (int i = 0; i < dbCandidates.Count(); i++)
                 {
-                    ViewModels.VoteSmart.CandidateBio votesmartCandidate = voteSmart.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(candidate[i].VoteSmartCandidateId);
-                    candidate[i].VoteSmartPhotoUrl = votesmartCandidate.Photo;
+                    if (dbCandidates[i].VoteSmartPhotoUrl == null || dbCandidates[i].VoteSmartPhotoUrl == "")
+                    {
+                        ViewModels.VoteSmart.CandidateBio votesmartCandidate = voteSmart.GetVoteSmartMatchingCandidateFromSuppliedVoteSmartCandidateId(dbCandidates[i].VoteSmartCandidateId);
+                        dbCandidates[i].VoteSmartPhotoUrl = votesmartCandidate.Photo;
+                    }
                 }
 
                 context.SaveChanges();

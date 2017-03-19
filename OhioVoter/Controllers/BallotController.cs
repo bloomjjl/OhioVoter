@@ -957,6 +957,10 @@ namespace OhioVoter.Controllers
                         {
                             officeVM.Add(new BallotOfficeViewModel(officeDTO));
                         }
+                        else if (officeDTO.Office.DistrictCode == ballotVoterVM.StateBoardOfEducationCode)
+                        {
+                            officeVM.Add(new BallotOfficeViewModel(officeDTO));
+                        }
                     }
                     // ** COUNTY LEVEL OFFICES **
                     else if (officeDTO.Office.OfficeLevel == "County")

@@ -10,14 +10,14 @@ namespace OhioVoter.ViewModels.Location
     {
         public VoterLocationViewModel() { }
 
-        public VoterLocationViewModel(Models.HamiltonOhioVoter locationDTO, string strStateAbbreviation)
+        public VoterLocationViewModel(Models.HamiltonOhioVoter locationDTO, string strStreetAddress, string strStateAbbreviation)
         {
             VoterLocationId = locationDTO.Id.ToString();
             StreetNumber = locationDTO.AddressNumber.ToString();
             StreetPreDirection = locationDTO.AddressPreDirectional_Short;
             StreetName = locationDTO.AddressStreet;
             StreetSuffix = locationDTO.AddressSuffix_Short;
-            StreetAddress = locationDTO.AddressNumberAndPreDirectionAndStreetAndSuffix_Short;
+            StreetAddress = strStreetAddress;
             City = locationDTO.AddressCityName;
             StateAbbreviation = strStateAbbreviation;
             ZipCode = locationDTO.AddressZip.ToString();

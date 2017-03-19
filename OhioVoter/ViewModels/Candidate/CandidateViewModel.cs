@@ -11,6 +11,14 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateViewModel
     {
+        public CandidateViewModel() { }
+
+        public CandidateViewModel(string controllerName, int candidateId)
+        {
+            ControllerName = controllerName;
+            CandidateId = candidateId;
+        }
+
         public string ControllerName { get; set; }
         public int CandidateId { get; set; }
         public CandidateLookUpViewModel CandidateLookUpViewModel { get; set; }

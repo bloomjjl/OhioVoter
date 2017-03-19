@@ -27,11 +27,7 @@ namespace OhioVoter.Controllers
             UpdateSessionWithNewControllerNameForSideBar(_controllerName);
 
             // get details for view model
-            CandidateViewModel viewModel = new CandidateViewModel()
-            {
-                ControllerName = _controllerName,
-                CandidateId = suppliedCandidateId
-            };
+            CandidateViewModel viewModel = new CandidateViewModel(_controllerName, suppliedCandidateId);
 
             return View(viewModel);
         }
@@ -189,14 +185,11 @@ namespace OhioVoter.Controllers
             if (!ModelState.IsValid)
             {
                 // create empty model
-                CandidateLookUpViewModel candidateLookUpVM = new CandidateLookUpViewModel()
-                {
-                    ControllerName = _controllerName,
-                };
-
+                CandidateLookUpViewModel candidateLookUpVM = new CandidateLookUpViewModel(_controllerName);
                 return PartialView("_CandidateLookUp", candidateLookUpVM);
             }
 
+            // Election Date to display
             Models.ElectionVotingDate date = GetOldestVotingDate();
 
             if (model.CandidateId > 0)
@@ -217,15 +210,42 @@ namespace OhioVoter.Controllers
             else
             {
                 // get list of candidates added to lookup model
-                CandidateLookUpViewModel candidateLookUpVM = new CandidateLookUpViewModel()
-                {
-                    ControllerName = model.ControllerName,
-                    VotingDate = date.Date.ToShortDateString(),
-                    CandidateNames = GetCandidateListItems(date.Id)
-                    //CandidateDropDownList = GetCandidatesForDropDownList(date.ElectionVotingDateId)
-                };
+                List<CandidateListViewModel> candidateListVM = GetListOfCandidatesForCurrentElectionFromDatabase(date.Id);
+                IEnumerable<SelectListItem> electionOfficeSelectList = GetElectionOfficeListItems(date.Id);
 
-                return PartialView("_CandidateLookUp", candidateLookUpVM);
+                return PartialView("_CandidateLookUp", new CandidateLookUpViewModel(model.ControllerName, date.Date.ToShortDateString(), candidateListVM, electionOfficeSelectList));
+            }
+        }
+
+
+
+        public List<CandidateListViewModel> GetListOfCandidatesForCurrentElectionFromDatabase(int dateId)
+        {
+            // validate input values
+            if (dateId <= 0) { return new List<CandidateListViewModel>(); }
+
+            using (OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                List<CandidateListViewModel> candidateVM = new List<CandidateListViewModel>();
+                List<ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                                                                                 .OrderBy(x => x.Candidate.FirstName)
+                                                                                 .OrderBy(x => x.Candidate.LastName)
+                                                                                 .ToList();
+
+                if (dbCandidates == null) { return new List<CandidateListViewModel>(); }
+
+                foreach (var candidateDTO in dbCandidates)
+                {
+                    if (candidateDTO.Candidate.VoteSmartPhotoUrl == null || candidateDTO.Candidate.VoteSmartPhotoUrl == "")
+                    {
+                        string emptyVoteSmartURL = "";
+                        candidateDTO.Candidate.VoteSmartPhotoUrl = GetValidImageLocationToDisplay(emptyVoteSmartURL, candidateDTO.Candidate.Gender);
+                    }
+
+                    candidateVM.Add(new CandidateListViewModel(candidateDTO));
+                }
+
+                return candidateVM;
             }
         }
 
@@ -1281,7 +1301,7 @@ namespace OhioVoter.Controllers
             }
 
             // if not display blank image base on the candidate's gender
-            if (gender == "Female")
+            if (gender == "F" || gender == "Female")
             {
                 return "~/Content/images/image_female.png";
             }
@@ -1557,6 +1577,52 @@ namespace OhioVoter.Controllers
             candidateIdList.Remove(itemToRemove);
             return candidateIdList;
         }
+
+
+
+        // ****************************************************************
+
+
+
+        private IEnumerable<SelectListItem> GetElectionOfficeListItems(int dateId)
+        {
+            // validate input values
+            if (dateId <= 0) { return new List<SelectListItem>(); }
+
+            using (OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                List<SelectListItem> electionOffices = new List<SelectListItem>();
+                List<ElectionCandidate> dbElectionCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId).ToList();
+                List<ElectionCandidate> dbElectionCandidateOffices = dbElectionCandidates.GroupBy(x => x.ElectionOfficeId)
+                                                                                         .FirstOrDefault()
+                                                                                         .ToList();
+                if (dbElectionCandidateOffices == null) { return new List<SelectListItem>(); }
+
+                foreach (var electionOfficeDTO in dbElectionCandidateOffices)
+                {
+                    string officeName;
+
+                    // add term to office if one is available
+                    if (electionOfficeDTO.ElectionOffice.OfficeTerm != null && electionOfficeDTO.ElectionOffice.OfficeTerm != "")
+                    {
+                        officeName = string.Format("{0} ({1})", electionOfficeDTO.ElectionOffice.Office.OfficeName, electionOfficeDTO.ElectionOffice.OfficeTerm);
+                    }
+                    else
+                    {
+                        officeName = electionOfficeDTO.ElectionOffice.Office.OfficeName;
+                    }
+
+                    electionOffices.Add(new SelectListItem()
+                    {
+                        Value = electionOfficeDTO.ElectionOfficeId.ToString(),
+                        Text = officeName
+                    });
+                }
+
+                return electionOffices;
+            }
+        }
+
 
 
         // ****************************************************************

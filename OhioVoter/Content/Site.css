@@ -62,7 +62,8 @@ textarea {
 .logo-title {
     color: #db1116;
     font-weight: bold;
-    display: inline-block;
+    font-size: 2.5em;
+    padding-top: .25em;
 }
 
 .header_statement {
@@ -324,6 +325,14 @@ textarea {
     display: block;
 }
 
+
+#candidate_list_candidate {
+
+}
+
+#candidate_list_img {
+    width: 10px;
+}
 
 
 

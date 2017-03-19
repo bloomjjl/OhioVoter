@@ -3,6 +3,11 @@
 <div id="voter-address" class="panel-body panel-left-body">
 
     <b>Voter Location:</b><br />
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <span class="text-danger">@Model.Message</span>
+        <br />
+    }
     @Model.StreetAddress <br />
     @Model.City, @Model.StateAbbreviation @Model.ZipCode
 
