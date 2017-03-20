@@ -32,10 +32,10 @@ namespace OhioVoter.ViewModels.Candidate
         public string SelectedElectionOfficeId { get; set; }
         public IEnumerable<SelectListItem> ElectionOfficeNames { get; set; }
 
-        [Display(Name = "")]
-        public string SelectedCandidateId { get; set; }
-        public IEnumerable<SelectListItem> CandidateNames { get; set; }
-
+        //[Display(Name = "")]
+        //public string SelectedCandidateId { get; set; }
+        //public IEnumerable<SelectListItem> CandidateNames { get; set; }
+        public string CandidateName { get; set; }
         public List<CandidateListViewModel> CandidateListViewModel { get; set; }
     }
 

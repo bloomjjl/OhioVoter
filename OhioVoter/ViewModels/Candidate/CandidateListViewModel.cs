@@ -15,6 +15,7 @@ namespace OhioVoter.ViewModels.Candidate
         public CandidateListViewModel(ElectionCandidate candidateDTO)
         {
             ElectionCandidateId = candidateDTO.Id;
+            CandidateId = candidateDTO.CandidateId;
             PhotoUrl = candidateDTO.Candidate.VoteSmartPhotoUrl;
             CandidateName = candidateDTO.Candidate.CandidateName;
             PartyId = candidateDTO.PartyId;

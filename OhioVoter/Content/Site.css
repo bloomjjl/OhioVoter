@@ -308,8 +308,12 @@ textarea {
     width: 230px;
 }
 
-#candidate_lookup_candidate{
-    display: inline-block;
+#candidate_lookup_office {
+
+}
+
+#candidate_lookup_candidate {
+
 }
 
 #candidate_lookup_dropdown {
@@ -325,13 +329,43 @@ textarea {
     display: block;
 }
 
+#candidate_list_group {
+    background: #dee9f4
+}
 
-#candidate_list_candidate {
+.candidate_list_select {
+    margin-left: auto;
+    margin-right: auto;
+    background: #dee9f4
+}
+
+.candidate_list_select tr {
+    vertical-align: middle;
+    border-top: 1px solid #9ebcdb;
+}
+
+.candidate_list_photo {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 10px;
+}
+
+.candidate_list_img {
+    width: 40px;
+}
+
+.candidate_list_candidate {
 
 }
 
-#candidate_list_img {
-    width: 10px;
+.candidate_list_party {
+    padding-right: 10px;
+}
+
+.candidate_list_select {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 

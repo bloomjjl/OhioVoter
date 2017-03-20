@@ -8,7 +8,7 @@
 
     <div id="candidate_lookup_form" class="panel-body panel-main-body">
 
-        @using (Html.BeginForm("Name", "Candidate", FormMethod.Post))
+        @using (Html.BeginForm("Office", "Candidate", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
@@ -17,7 +17,14 @@
             </div>
 
             <div id="candidate_lookup_office" class="form-group">
-                @Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, "-- Select An Office --", new { @class = "form-control" })
+                <p>Lookup By Office:</p>
+                @Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, "-- Select An Office --", new { @class = "form-control", onchange = "this.form.submit()" })
+                @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
+            </div>
+
+            <div id="candidate_lookup_candidate" class="form-group">
+                <p>Lookup By Candidate Name:</p>
+                @Html.EditorFor(x => x.CandidateName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
             </div>
 
@@ -38,8 +45,9 @@
 
     <div id="candidate_list_group">
 
-        <table class="table candidate_list_select">
+        <table class="candidate_list_select">
             <tr>
+                <th></th>
                 <th>
                     Candidate
                 </th>
@@ -56,21 +64,21 @@
             {
                 var candidate = Model.CandidateListViewModel[i];
                     <tr>
+                        <td class="candidate_list_photo">
+                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].CandidateId)
+                            <img src="@Url.Content(Model.CandidateListViewModel[i].PhotoUrl)" alt="Candidate Photo" class="candidate_list_img" />
+                        </td>
                         <td class="candidate_list_candidate">
-                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].ElectionCandidateId)
-                            <img src="@Url.Content(Model.CandidateListViewModel[i].PhotoUrl)" alt="Candidate Photo" class="candidate_list_img"/>
                             @Html.DisplayFor(x => x.CandidateListViewModel[i].CandidateName)
                         </td>
                         <td class="candidate_list_party">
-                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].PartyId)
                             @Html.DisplayFor(x => x.CandidateListViewModel[i].PartyName)
                         </td>
                         <td class="candidate_list_office">
-                            @Html.HiddenFor(x => Model.CandidateListViewModel[i].ElectionOfficeId)
                             @Html.DisplayFor(x => x.CandidateListViewModel[i].ElectionOfficeName)
                         </td>
                         <td class="candidate_list_select">
-                            @Html.ActionLink("Select", "Select", new { id = Model.CandidateListViewModel[i].ElectionCandidateId })
+                            @Html.ActionLink("Select", "Index", new { candidateId = candidate.CandidateId })
                         </td>
                     </tr>
                 }
