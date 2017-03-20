@@ -1,10 +1,8 @@
-﻿@model List<OhioVoter.ViewModels.Candidate.CandidateLookUpViewModel>
+﻿@model List<OhioVoter.ViewModels.Candidate.CandidateListViewModel>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table candidate_List">
+<table>
     <tr>
+        <th></th>
         <th>
             Candidate
         </th>
@@ -12,32 +10,33 @@
             Party
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SelectedCandidateId)
+            Office
         </th>
         <th></th>
     </tr>
 
-    @for (int i = 0; i < Model.CandidateListViewModel.Count(); i++)
-    {
-        var candidate = Model.CandidateListViewModel[i];
+    @for (int i = 0; i < Model.Count(); i++)
+            {
+                var candidate = Model[i];
         <tr>
-            <td>
-                @Html.HiddenFor(modelCandidate => candidate.ElectionCandidateId)
-                <img src="@Url.Content(candidate.PhotoUrl)" />
-                @Html.DisplayFor(modelCandidate => candidate.CandidateName)
+            <td class="candidate_list_photo">
+                @Html.HiddenFor(x => Model[i].CandidateId)
+                <img src="@Url.Content(Model[i].PhotoUrl)" alt="Candidate Photo" class="candidate_list_img" />
             </td>
-            <td>
-                @Html.HiddenFor(modelCandidate => candidate.PartyId)
-                @Html.DisplayFor(modelCandidate => candidate.PartyName)
+            <td class="candidate_list_candidate">
+                @Html.DisplayFor(x => Model[i].CandidateName)
             </td>
-            <td>
-                @Html.HiddenFor(modelCandidate => candidate.ElectionOfficeId)
-                @Html.DisplayFor(modelCandidate => candidate.ElectionOfficeName)
+            <td class="candidate_list_party">
+                @Html.DisplayFor(x => Model[i].PartyName)
             </td>
-            <td>
-                @Html.ActionLink("Select", "Select", new { id = candidate.ElectionCandidateId }) |
+            <td class="candidate_list_office">
+                @Html.DisplayFor(x => Model[i].ElectionOfficeName)
+            </td>
+            <td class="candidate_list_select">
+                @Html.ActionLink("Select", "Index", new { candidateId = candidate.CandidateId })
             </td>
         </tr>
     }
+
 
 </table>

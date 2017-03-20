@@ -203,8 +203,10 @@ namespace OhioVoter.Controllers
             // Election Date to display
             Models.ElectionVotingDate date = GetOldestVotingDate();
 
+            // has a candidate been selected from list
             if (model.CandidateId > 0)
             {
+                // YES
                 // get single candidate (and runningmate) added to display model
                 CandidateDisplayViewModel candidateDisplayVM = new CandidateDisplayViewModel()
                 {
@@ -220,27 +222,43 @@ namespace OhioVoter.Controllers
             }
             else
             {
+                // NO
                 List<CandidateListViewModel> candidateListVM = new List<CandidateListViewModel>();
                 IEnumerable<SelectListItem> electionOfficeSelectList = null;
                 int electionOfficeId = 0;
+                string candidateLookUpName = null;
 
+                // check if candidate list has been sorted by office or candidate name
                 if (model.CandidateLookUpViewModel != null)
                 {
                     electionOfficeId = GetIntegerValueFromStringValue(model.CandidateLookUpViewModel.SelectedElectionOfficeId);
+                    candidateLookUpName = model.CandidateLookUpViewModel.CandidateLookUpName;
                 }
 
+                // has candidate list been sorted by office?
                 if (electionOfficeId != 0)
                 {
+                    // YES
                     // get list of only candidates for selected election office added to lookup model
                     candidateListVM = GetListOfCandidatesForElectionOfficeFromDatabase(electionOfficeId);
-                    electionOfficeSelectList = GetElectionOfficeListItems(date.Id);
+                    electionOfficeSelectList = GetElectionOfficeListItems(date.Id, electionOfficeId);
                 }
                 else
                 {
+                    // NO
                     // get list of all candidates added to lookup model
                     candidateListVM = GetListOfCandidatesForCurrentElectionFromDatabase(date.Id);
-                    electionOfficeSelectList = GetElectionOfficeListItems(date.Id);
+                    electionOfficeSelectList = GetElectionOfficeListItems(date.Id, electionOfficeId);
                 }
+
+                // check if candidate list has been sorted by candidate name
+                if (!string.IsNullOrEmpty(candidateLookUpName))
+                {
+                    // remove candidates from list if don't contain matching string in first/last name
+                    candidateLookUpName = candidateLookUpName.ToLower();
+                    candidateListVM = candidateListVM.Where(o => candidateLookUpName.Any(a => o.CandidateName.ToLower().Contains(candidateLookUpName))).ToList();
+                }
+
                 return PartialView("_CandidateLookUp", new CandidateLookUpViewModel(model.ControllerName, date.Date.ToShortDateString(), candidateListVM, electionOfficeSelectList));
             }
         }
@@ -406,7 +424,7 @@ namespace OhioVoter.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Office(CandidateLookUpViewModel candidateLookUpVM)
+        public ActionResult CandidateLookUp(CandidateLookUpViewModel candidateLookUpVM)
         {
             // validate model
             if (!ModelState.IsValid)
@@ -414,13 +432,10 @@ namespace OhioVoter.Controllers
                 return RedirectToAction("Index", new { candidateId = 0 });
             }
 
+            // make sure view model does not have a candidate selected
             int candidateId = 0;
 
-            // get details for view model
-            CandidateViewModel candidateVM = new CandidateViewModel(_controllerName, candidateId);
-            candidateVM.CandidateLookUpViewModel = candidateLookUpVM;
-
-            return View("Index", candidateVM);
+            return View("Index", new CandidateViewModel(_controllerName, candidateId, candidateLookUpVM));
         }
 
 
@@ -1666,7 +1681,7 @@ namespace OhioVoter.Controllers
 
 
 
-        private IEnumerable<SelectListItem> GetElectionOfficeListItems(int dateId)
+        private IEnumerable<SelectListItem> GetElectionOfficeListItems(int dateId, int selectedOfficeId)
         {
             // validate input values
             if (dateId <= 0) { return new List<SelectListItem>(); }
@@ -1701,7 +1716,8 @@ namespace OhioVoter.Controllers
                     electionOffices.Add(new SelectListItem()
                     {
                         Value = electionOfficeDTO.ElectionOfficeId.ToString(),
-                        Text = officeName
+                        Text = officeName,
+                        Selected = electionOfficeDTO.ElectionOfficeId == selectedOfficeId
                     });
                 }
 

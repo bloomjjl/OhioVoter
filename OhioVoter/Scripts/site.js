@@ -41,7 +41,25 @@ $(function () {
 
 
 
+    // Candidate Lookup
+    // update candidate list when user enters a candidate's name
+    var name = $('#candidate_lookup_name').val();
 
+    $('#candidate_lookup_name').keyup(function () {
+        if ($('#candidate_lookup_name').val() != name) {
+            name = $('#candidate_lookup_name').val();
+            console.log('Content has been changed to ' + name);
+            $.ajax({
+                url: '/Candidate/UpdateCandidateList',
+                type: 'POST',
+                data: { candidateListVM: JSON.stringify(candidateLookUpVM), candidateName: name },
+                dataType: 'json',
+                success: function (data) {
+                    alert(data);
+                } 
+            });
+        }
+    });
 
 
 });

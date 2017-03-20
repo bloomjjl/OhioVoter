@@ -35,7 +35,7 @@ namespace OhioVoter.ViewModels.Candidate
         //[Display(Name = "")]
         //public string SelectedCandidateId { get; set; }
         //public IEnumerable<SelectListItem> CandidateNames { get; set; }
-        public string CandidateName { get; set; }
+        public string CandidateLookUpName { get; set; }
         public List<CandidateListViewModel> CandidateListViewModel { get; set; }
     }
 
