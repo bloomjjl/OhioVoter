@@ -237,6 +237,7 @@
     <Compile Include="Models\OhioVoterDbContext.cs" />
     <Compile Include="Models\State.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Email.cs" />
     <Compile Include="Services\GoogleApiManagement.cs" />
     <Compile Include="Services\RssManagement.cs" />
     <Compile Include="Services\RssReader.cs" />
