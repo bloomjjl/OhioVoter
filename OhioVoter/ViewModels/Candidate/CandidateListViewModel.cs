@@ -17,7 +17,7 @@ namespace OhioVoter.ViewModels.Candidate
             ElectionCandidateId = candidateDTO.Id;
             CandidateId = candidateDTO.CandidateId;
             PhotoUrl = candidateDTO.Candidate.VoteSmartPhotoUrl;
-            CandidateName = candidateDTO.Candidate.CandidateName;
+            CandidateName = candidateDTO.Candidate.CandidateFirstLastName;
             PartyId = candidateDTO.PartyId;
             PartyName = candidateDTO.Party.PartyName;
             ElectionOfficeId = candidateDTO.ElectionOfficeId;

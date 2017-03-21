@@ -17,42 +17,56 @@
             @Html.AntiForgeryToken()
 
             <div id="candidate_lookup_date" class="form-group">
+                @Html.HiddenFor(x => x.VotingDate, new { @class = "candidate_lookup_votingdate"})
                 <p><b>Election Date:</b> @Model.VotingDate</p>
             </div>
 
-            <div id="candidate_lookup_office" class="form-group">
-                <p>Lookup By Office:</p>
-                @Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, "-- Select An Office --", new { @class = "form-control", onchange = "this.form.submit()" })
-                @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
-            </div>
+            <hr/>
+            <div id="candidate_lookup_fields">
 
-            <div id="candidate_lookup_candidate" class="form-group">
-                <p>Lookup By Candidate Name:</p>
-                @Html.TextBoxFor(x => x.CandidateLookUpName, new { @id = "candidate_lookup_name", @class = "form-control" })
-                @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
-                <button id="candidate_lookup_btn" type="submit" class="btn btn-block panel-left-btn"><span class="glyphicon glyphicon-search"></span></button>
-            </div>
+                <table id="candidate_lookup_table">
+                    <tr>
+                        <td>
+                            @Html.LabelFor(x => x.SelectedElectionOfficeId, htmlAttributes: new { @class = "control-label" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, "-- Select An Office --", new { @id = "candidate_lookup_office", @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
+                       </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(x => x.CandidateLookUpName, htmlAttributes: new { @class = "control-label" })<br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(x => x.CandidateLookUpName, new { @id = "candidate_lookup_name", @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                </table>
 
-            @*
-            <div id="candidate_lookup_candidate" class="form-group">
-                @Html.LabelFor(x => x.SelectedCandidateId, htmlAttributes: new { @id = "candidate_lookup_label", @class = "control-label" })*
-                @Html.DropDownListFor(x => x.SelectedCandidateId, Model.CandidateNames, "-- Select A Candidate --", new { @class = "form-control" })
-                @Html.ValidationMessageFor(x => x.SelectedCandidateId, "", new { @class = "text-danger" })
             </div>
-            
-
-            <div>
-                <button id="candidate_lookup_btn" type="submit" class="btn btn-block panel-left-btn"> Display Candidate </button>
-            </div>
-            *@
         }
 
     </div>
 
     <div id="candidate_list_group">
+
+        <div id="candidate_list_loading">
+            @{Html.RenderPartial("_CandidateListLoading");}
+        </div>
+
         <div id="candidate_list_select">
             @{Html.RenderPartial("_CandidateList", Model.CandidateListViewModel);}
         </div>
+
     </div>
 </div>
 

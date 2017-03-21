@@ -28,13 +28,15 @@ namespace OhioVoter.ViewModels.Candidate
         public string ControllerName { get; set; }
         public string VotingDate { get; set; }
 
-        [Display(Name = "")]
+        [Display(Name = "Lookup By Office:")]
         public string SelectedElectionOfficeId { get; set; }
         public IEnumerable<SelectListItem> ElectionOfficeNames { get; set; }
 
         //[Display(Name = "")]
         //public string SelectedCandidateId { get; set; }
         //public IEnumerable<SelectListItem> CandidateNames { get; set; }
+
+        [Display(Name = "Lookup By Candidate Name:")]
         public string CandidateLookUpName { get; set; }
         public List<CandidateListViewModel> CandidateListViewModel { get; set; }
     }

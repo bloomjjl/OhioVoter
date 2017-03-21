@@ -30,7 +30,7 @@ namespace OhioVoter.Models
 
         public string Suffix { get; set; }
 
-        public string CandidateName
+        public string CandidateFirstLastName
         {
             get
             {

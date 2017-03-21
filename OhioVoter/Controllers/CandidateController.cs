@@ -199,73 +199,81 @@ namespace OhioVoter.Controllers
                 return PartialView("_CandidateLookUp", candidateLookUpVM);
             }
 
+            // Election Date to display
+            Models.ElectionVotingDate date = GetOldestVotingDate();
+
+            // get list of all offices for current election
+            int electionOfficeId = 0;
+            IEnumerable<SelectListItem> electionOfficeSelectList = GetElectionOfficeListItems(date.Id, electionOfficeId);
+
+            // performance
+            // 494 - 664 ms
+
+            // get list of all candidates for current election
+            string candidateLookUpName = string.Empty;
+            List<CandidateListViewModel> candidateListVM = GetListOfCandidatesForCurrentElectionOffice(date.Id, electionOfficeId, candidateLookUpName);
+
+            // performance
+            // 1275 - 1314 ms
+
+            return PartialView("_CandidateLookUp", new CandidateLookUpViewModel(model.ControllerName, date.Date.ToShortDateString(), candidateListVM, electionOfficeSelectList)); 
+        }
+
+
+
+        public ActionResult UpdateCandidateLookUpList (string electionOfficeId, string candidateLookUpName)
+        {
+            // validate input values
+            int intElectionOfficeId = GetIntegerValueFromStringValue(electionOfficeId);
+            if(string.IsNullOrWhiteSpace(candidateLookUpName)) { candidateLookUpName = ""; }
 
             // Election Date to display
             Models.ElectionVotingDate date = GetOldestVotingDate();
 
-            // has a candidate been selected from list
-            if (model.CandidateId > 0)
+            // sort list of candidates by office name?
+            List<CandidateListViewModel> candidateListVM = GetListOfCandidatesForCurrentElectionOffice(date.Id, intElectionOfficeId, candidateLookUpName);
+
+            // performance
+            // 1282ms
+
+            if (Request.IsAjaxRequest())
             {
-                // YES
-                // get single candidate (and runningmate) added to display model
-                CandidateDisplayViewModel candidateDisplayVM = new CandidateDisplayViewModel()
+                if (candidateListVM.Count > 0)
                 {
-                    ControllerName = _controllerName,
-                    CandidateLookUpId = model.CandidateId,
-                    VotingDateId = date.Id,
-                    VotingDate = date.Date.ToShortDateString()
-                };
-
-                candidateDisplayVM = GetCandidateDisplayViewModel(candidateDisplayVM);
-
-                return PartialView("_CandidateDisplay", candidateDisplayVM);
-            }
-            else
-            {
-                // NO
-                List<CandidateListViewModel> candidateListVM = new List<CandidateListViewModel>();
-                IEnumerable<SelectListItem> electionOfficeSelectList = null;
-                int electionOfficeId = 0;
-                string candidateLookUpName = null;
-
-                // check if candidate list has been sorted by office or candidate name
-                if (model.CandidateLookUpViewModel != null)
-                {
-                    electionOfficeId = GetIntegerValueFromStringValue(model.CandidateLookUpViewModel.SelectedElectionOfficeId);
-                    candidateLookUpName = model.CandidateLookUpViewModel.CandidateLookUpName;
-                }
-
-                // has candidate list been sorted by office?
-                if (electionOfficeId != 0)
-                {
-                    // YES
-                    // get list of only candidates for selected election office added to lookup model
-                    candidateListVM = GetListOfCandidatesForElectionOfficeFromDatabase(electionOfficeId);
-                    electionOfficeSelectList = GetElectionOfficeListItems(date.Id, electionOfficeId);
+                    return PartialView("_CandidateList", candidateListVM);
                 }
                 else
                 {
-                    // NO
-                    // get list of all candidates added to lookup model
-                    candidateListVM = GetListOfCandidatesForCurrentElectionFromDatabase(date.Id);
-                    electionOfficeSelectList = GetElectionOfficeListItems(date.Id, electionOfficeId);
+                    return PartialView("_CandidateListEmpty");
                 }
-
-                // check if candidate list has been sorted by candidate name
-                if (!string.IsNullOrEmpty(candidateLookUpName))
-                {
-                    // remove candidates from list if don't contain matching string in first/last name
-                    candidateLookUpName = candidateLookUpName.ToLower();
-                    candidateListVM = candidateListVM.Where(o => candidateLookUpName.Any(a => o.CandidateName.ToLower().Contains(candidateLookUpName))).ToList();
-                }
-
-                return PartialView("_CandidateLookUp", new CandidateLookUpViewModel(model.ControllerName, date.Date.ToShortDateString(), candidateListVM, electionOfficeSelectList));
+            }
+            else
+            {
+                return View("Index");
             }
         }
 
 
 
-        public List<CandidateListViewModel> GetListOfCandidatesForCurrentElectionFromDatabase(int dateId)
+        public List<CandidateListViewModel> GetListOfCandidatesForCurrentElectionOffice(int electionDateId, int electionOfficeId, string candidateLookUpName)
+        {
+            if (electionOfficeId == 0)
+            {
+                // no office provided
+                // display all candidates for current election
+                return GetListOfCandidatesForCurrentElectionFromDatabase(electionDateId, candidateLookUpName);
+            }
+            else
+            {
+                // only display candidates for supplied office
+                return GetListOfCandidatesForElectionOfficeFromDatabase(electionOfficeId, candidateLookUpName);
+            }
+
+        }
+
+
+
+        public List<CandidateListViewModel> GetListOfCandidatesForCurrentElectionFromDatabase(int dateId, string candidateLookUpName)
         {
             // validate input values
             if (dateId <= 0) { return new List<CandidateListViewModel>(); }
@@ -273,22 +281,41 @@ namespace OhioVoter.Controllers
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
                 List<CandidateListViewModel> candidateVM = new List<CandidateListViewModel>();
-                List<ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
-                                                                                 .OrderBy(x => x.Candidate.FirstName)
-                                                                                 .OrderBy(x => x.Candidate.LastName)
-                                                                                 .ToList();
+                List<ElectionCandidate> dbCandidates = null;
 
-                if (dbCandidates == null) { return new List<CandidateListViewModel>(); }
-
-                foreach (var candidateDTO in dbCandidates)
+                if (!string.IsNullOrEmpty(candidateLookUpName))
                 {
-                    if (candidateDTO.Candidate.VoteSmartPhotoUrl == null || candidateDTO.Candidate.VoteSmartPhotoUrl == "")
+                    // remove candidates from list if don't contain matching string in first/last name
+                    candidateLookUpName = candidateLookUpName.ToLower();
+
+
+                    dbCandidates = context.ElectionCandidates.Where(e => e.ElectionVotingDateId == dateId)
+                                                             .OrderBy(ec => ec.Candidate.FirstName)
+                                                             .OrderBy(ec => ec.Candidate.LastName)
+                                                             .ToList();
+
+                    // remove candidates from list if don't contain matching string in first/last name
+                    dbCandidates = dbCandidates.Where(c => candidateLookUpName.Any(ec => c.Candidate.CandidateFirstLastName.ToLower().Contains(candidateLookUpName)))
+                                               .ToList();
+                }
+                else
+                {
+                    dbCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                                                             .OrderBy(x => x.Candidate.FirstName)
+                                                             .OrderBy(x => x.Candidate.LastName)
+                                                             .ToList();
+                }
+
+                if (dbCandidates == null || dbCandidates.Count == 0) { return new List<CandidateListViewModel>(); }
+
+                for (int i = 0; i < dbCandidates.Count(); i++)
+                {
+                    if (string.IsNullOrEmpty(dbCandidates[i].Candidate.VoteSmartPhotoUrl))
                     {
-                        string emptyVoteSmartURL = "";
-                        candidateDTO.Candidate.VoteSmartPhotoUrl = GetValidImageLocationToDisplay(emptyVoteSmartURL, candidateDTO.Candidate.Gender);
+                        dbCandidates[i].Candidate.VoteSmartPhotoUrl = GetGenderImageLocationToDisplay(dbCandidates[i].Candidate.Gender);
                     }
 
-                    candidateVM.Add(new CandidateListViewModel(candidateDTO));
+                    candidateVM.Add(new CandidateListViewModel(dbCandidates[i]));
                 }
 
                 return candidateVM;
@@ -297,7 +324,7 @@ namespace OhioVoter.Controllers
 
 
 
-        public List<CandidateListViewModel> GetListOfCandidatesForElectionOfficeFromDatabase(int electionOfficeId)
+        public List<CandidateListViewModel> GetListOfCandidatesForElectionOfficeFromDatabase(int electionOfficeId, string candidateLookUpName)
         {
             // validate supplied values
             if(GetIntegerValueFromStringValue(electionOfficeId.ToString()) <= 0) { return new List<CandidateListViewModel>(); }
@@ -305,19 +332,36 @@ namespace OhioVoter.Controllers
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
                 List<CandidateListViewModel> candidateVM = new List<CandidateListViewModel>();
-                List<ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == electionOfficeId)
-                                                                                 .OrderBy(x => x.Candidate.FirstName)
-                                                                                 .OrderBy(x => x.Candidate.LastName)
-                                                                                 .ToList();
+                List<ElectionCandidate> dbCandidates = null;
 
-                if (dbCandidates == null) { return new List<CandidateListViewModel>(); }
+                if (!string.IsNullOrEmpty(candidateLookUpName))
+                {
+                    // remove candidates from list if don't contain matching string in first/last name
+                    candidateLookUpName = candidateLookUpName.ToLower();
+                    dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == electionOfficeId)
+                                                             .OrderBy(x => x.Candidate.FirstName)
+                                                             .OrderBy(x => x.Candidate.LastName)
+                                                             .ToList();
+
+                    // remove candidates from list if don't contain matching string in first/last name
+                    dbCandidates = dbCandidates.Where(c => candidateLookUpName.Any(ec => c.Candidate.CandidateFirstLastName.ToLower().Contains(candidateLookUpName)))
+                                               .ToList();
+                }
+                else
+                {
+                    dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == electionOfficeId)
+                                                             .OrderBy(x => x.Candidate.FirstName)
+                                                             .OrderBy(x => x.Candidate.LastName)
+                                                             .ToList();
+                }
+
+                if (dbCandidates == null || dbCandidates.Count == 0) { return new List<CandidateListViewModel>(); }
 
                 foreach (var candidateDTO in dbCandidates)
                 {
                     if (candidateDTO.Candidate.VoteSmartPhotoUrl == null || candidateDTO.Candidate.VoteSmartPhotoUrl == "")
                     {
-                        string emptyVoteSmartURL = "";
-                        candidateDTO.Candidate.VoteSmartPhotoUrl = GetValidImageLocationToDisplay(emptyVoteSmartURL, candidateDTO.Candidate.Gender);
+                        candidateDTO.Candidate.VoteSmartPhotoUrl = GetGenderImageLocationToDisplay(candidateDTO.Candidate.Gender);
                     }
 
                     candidateVM.Add(new CandidateListViewModel(candidateDTO));
@@ -1389,15 +1433,16 @@ namespace OhioVoter.Controllers
 
 
 
-        public string GetValidImageLocationToDisplay(string voteSmartURL, string gender)
+        public string GetValidImageLocationToDisplay(string thirdPartyImageUrl, string gender)
         {
-            // was a URL found at VoteSmart?
-            if (voteSmartURL != null && voteSmartURL != "")
-            {
-                return voteSmartURL;
-            }
+            if (string.IsNullOrEmpty(thirdPartyImageUrl)) { return GetGenderImageLocationToDisplay(gender); }
 
-            // if not display blank image base on the candidate's gender
+            return thirdPartyImageUrl;
+        }
+
+
+        public string GetGenderImageLocationToDisplay(string gender)
+        {
             if (gender == "F" || gender == "Female")
             {
                 return "~/Content/images/image_female.png";
@@ -1688,36 +1733,37 @@ namespace OhioVoter.Controllers
 
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
+                // create select list object
                 List<SelectListItem> electionOffices = new List<SelectListItem>();
 
-                List<ElectionCandidate> dbElectionCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId).ToList();
-                if (dbElectionCandidates == null) { return new List<SelectListItem>(); }
-
-                List<ElectionCandidate> dbElectionCandidateOffices = dbElectionCandidates.GroupBy(x => x.ElectionOfficeId)
-                                                                                         .Select(g => g.First())
-                                                                                         .ToList();
+                // get list of offices with candidates for election
+                List<ElectionCandidate> dbElectionCandidateOffices = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                                                                                               .ToArray()
+                                                                                               .GroupBy(x => x.ElectionOfficeId)
+                                                                                               .Select(g => g.First())
+                                                                                               .ToList();
 
                 if (dbElectionCandidateOffices == null) { return new List<SelectListItem>(); }
 
-                foreach (var electionOfficeDTO in dbElectionCandidateOffices)
+                for (int i = 0; i < dbElectionCandidateOffices.Count(); i++)
                 {
                     string officeName;
 
                     // add term to office if one is available
-                    if (electionOfficeDTO.ElectionOffice.OfficeTerm != null && electionOfficeDTO.ElectionOffice.OfficeTerm != "")
+                    if (!string.IsNullOrEmpty(dbElectionCandidateOffices[i].ElectionOffice.OfficeTerm))
                     {
-                        officeName = string.Format("{0} ({1})", electionOfficeDTO.ElectionOffice.Office.OfficeName, electionOfficeDTO.ElectionOffice.OfficeTerm);
+                        officeName = string.Format("{0} ({1})", dbElectionCandidateOffices[i].ElectionOffice.Office.OfficeName.ToUpper(), dbElectionCandidateOffices[i].ElectionOffice.OfficeTerm.ToUpper());
                     }
                     else
                     {
-                        officeName = electionOfficeDTO.ElectionOffice.Office.OfficeName;
+                        officeName = dbElectionCandidateOffices[i].ElectionOffice.Office.OfficeName.ToUpper();
                     }
 
                     electionOffices.Add(new SelectListItem()
                     {
-                        Value = electionOfficeDTO.ElectionOfficeId.ToString(),
+                        Value = dbElectionCandidateOffices[i].ElectionOfficeId.ToString(),
                         Text = officeName,
-                        Selected = electionOfficeDTO.ElectionOfficeId == selectedOfficeId
+                        Selected = dbElectionCandidateOffices[i].ElectionOfficeId == selectedOfficeId
                     });
                 }
 

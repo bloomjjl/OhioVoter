@@ -45,7 +45,6 @@ namespace OhioVoter.Models
 
 
 
-
         [ForeignKey("ElectionVotingDateId")]
         public virtual ElectionVotingDate ElectionVotingDate { get; set; }
 

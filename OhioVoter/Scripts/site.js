@@ -42,24 +42,64 @@ $(function () {
 
 
     // Candidate Lookup
-    // update candidate list when user enters a candidate's name
-    var name = $('#candidate_lookup_name').val();
+    var selectedElectionOfficeId = $('#candidate_lookup_office').val();
+    var candidateLookUpName = $('#candidate_lookup_name').val();
+    var xhr;
 
-    $('#candidate_lookup_name').keyup(function () {
-        if ($('#candidate_lookup_name').val() != name) {
-            name = $('#candidate_lookup_name').val();
-            console.log('Content has been changed to ' + name);
-            $.ajax({
-                url: '/Candidate/UpdateCandidateList',
+    // update candidate list when user selects a new office
+    $('#candidate_lookup_office').on('change', function () {
+        if ($('#candidate_lookup_office').val() != selectedElectionOfficeId) {
+            if (xhr && xhr.readyState != 4) {
+                xhr.abort();
+            }
+            $('#candidate_list_select').hide();
+            $('#candidate_list_loading').show();
+            selectedElectionOfficeId = $('#candidate_lookup_office').val();
+            xhr = $.ajax({
+                url: '/Candidate/UpdateCandidateLookUpList',
                 type: 'POST',
-                data: { candidateListVM: JSON.stringify(candidateLookUpVM), candidateName: name },
-                dataType: 'json',
+                data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateLookUpName },
                 success: function (data) {
-                    alert(data);
-                } 
+                    $('#candidate_list_loading').hide();
+                    $('#candidate_list_select').show();
+                    $('#candidate_list_select').html(data);
+                },
+                error: function (e) {
+                    $('#candidate_list_select').hide();
+                    $('#candidate_list_loading').show();
+                }
             });
         }
     });
+
+    // update candidate list when user enters a candidate's name
+    $('#candidate_lookup_name').keyup(function () {
+        if ($('#candidate_lookup_name').val() != candidateLookUpName) {
+            if (xhr && xhr.readyState != 4) {
+                xhr.abort();
+                console.log('old request has stopped to process new request')
+            }
+            $('#candidate_list_select').hide();
+            $('#candidate_list_loading').show();
+            candidateLookUpName = $('#candidate_lookup_name').val();
+            xhr = $.ajax({
+                url: '/Candidate/UpdateCandidateLookUpList',
+                type: 'POST',
+                data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateLookUpName },
+                success: function (data) {
+                    console.log('data from server ' + data);
+                    $('#candidate_list_loading').hide();
+                    $('#candidate_list_select').show();
+                    $('#candidate_list_select').html(data);
+                },
+                error: function (e) {
+                    $('#candidate_list_select').hide();
+                    $('#candidate_list_loading').show();
+                }
+            });
+        }
+    });
+
 
 
 });

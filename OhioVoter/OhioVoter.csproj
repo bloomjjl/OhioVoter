@@ -459,6 +459,8 @@
     <Content Include="Views\Manage\ChangeAddress.cshtml" />
     <Content Include="Views\Ballot\_BallotLookup.cshtml" />
     <Content Include="Views\Candidate\_CandidateList.cshtml" />
+    <Content Include="Views\Candidate\_CandidateListLoading.cshtml" />
+    <Content Include="Views\Candidate\_CandidateListEmpty.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

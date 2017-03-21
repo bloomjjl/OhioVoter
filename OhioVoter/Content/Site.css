@@ -46,6 +46,11 @@ textarea {
 
 
 
+hr {
+    border-color: #9ebcdb;
+    background-color: #9ebcdb;
+    color: #9ebcdb;
+}
 
 
 
@@ -70,7 +75,6 @@ textarea {
     font-style: italic;
     font-size: 1.25em;
     float: right;
-    display: inline;
     margin-top: -35px;
 }
 
@@ -301,52 +305,67 @@ textarea {
 
 /* #candidate_lookup_group */
 
-#candidate_lookup_btn {
-    margin-top: 10px;
+#candidate_lookup_form {
+    text-align: center;
+    width: 100%;
+}
+
+/* candidate_lookup_date */
+
+#candidate_lookup_fields {
     margin-left: auto;
     margin-right: auto;
-    width: 230px;
+    padding-bottom: 10px;
+}
+
+#candidate_lookup_table {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
 }
 
 #candidate_lookup_office {
+    max-width: 80%;
 
 }
 
-#candidate_lookup_candidate {
-
+#candidate_lookup_btn {
+    width: 40px;
 }
 
-#candidate_lookup_dropdown {
-    top: 100%;
-}
 
-#candidate_lookup_label {
-    float: left;
-}
 
-#candidate_lookup_form {
-    text-align: center;
-    display: block;
-}
+
+
 
 #candidate_list_group {
     background: #dee9f4;
     width: 100%;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-#candidate_list_select {
+#candidate_list_loading {
+    display: none;
+}
+
+#candidate_list_select, 
+#candidate_list_loading {
     background: #dee9f4;
     margin-left: 10px;
     margin-right: 10px;
 }
 
-#candidate_list_select table {
+#candidate_list_select table,
+#candidate_list_loading table {
     margin-left: auto;
     margin-right: auto;
     width: 100%;
 }
 
-#candidate_list_select tr {
+#candidate_list_select tr,
+#candidate_list_loading tr {
     vertical-align: middle;
     border-top: 1px solid #9ebcdb;
 }
@@ -356,7 +375,7 @@ textarea {
     padding-bottom: 5px;
     padding-left: 5px;
     padding-right: 10px;
-    min-width: 10%;
+    width: 95px;
 }
 
 .candidate_list_img {
@@ -364,24 +383,18 @@ textarea {
 }
 
 .candidate_list_candidate {
-    min-width: 20%;
+    width: 30%;
 }
 
 .candidate_list_party {
     padding-right: 10px;
-    min-width: 10%
+    width: 10%;
 }
 
 .candidate_list_office {
-    min-width: 50%;
+    width: 70%;
 }
 
-.candidate_list_select {
-    padding-left: 10px;
-    padding-right: 10px;
-    float: right;
-    min-width: 10%;
-}
 
 
 
@@ -620,19 +633,22 @@ textarea {
 
 
 
-#voter_location_form_address, #voter_location_form_zipcode {
+#voter_location_form_address, 
+#voter_location_form_zipcode {
     float: left;
     width: 100%;
 }
 
-#voter_location_form_address, #voter_location_form_zipcode .control-label {
+#voter_location_form_address .control-label,
+#voter_location_form_zipcode .control-label {
     float: left;
     width: 100%;
 }
 
-#voter_location_form_address, #voter_location_form_zipcode .form-control {
+#voter_location_form_address .form-control,
+#voter_location_form_zipcode .form-control {
     float: left;
-    width: 100%;
+    max-width: 100%;
 }
 
 .voter_location_form_btn {
@@ -649,7 +665,8 @@ textarea {
     text-align: center;
 }
 
-#ballot_location_form_address, #ballot_location_form_zipcode {
+#ballot_location_form_address, 
+#ballot_location_form_zipcode {
     text-align: center;
 }
 
@@ -659,7 +676,10 @@ textarea {
     margin-right: auto;
 }
 
-.ballot_location_form_btn, .voter_location_update_btn, .polling_map_show_btn, .polling_map_hide_btn {
+.ballot_location_form_btn, 
+.voter_location_update_btn, 
+.polling_map_show_btn, 
+.polling_map_hide_btn {
     width: 160px;
     margin-left: auto;
     margin-right: auto;
@@ -869,5 +889,39 @@ footer {
 
     .navbar-header {
         display: inherit;
+    }
+}
+
+
+
+@media (max-width: 480px) {
+
+    .header {
+        display: none;
+    }
+
+    .navbar-logo-img {
+        display: inherit;
+    }
+
+    .navbar-logo-title {
+        display: inherit;
+    }
+
+    .navbar-header {
+        display: inherit;
+    }
+
+
+    #candidate_list_select {
+        font-size: smaller;
+    }
+
+    .candidate_list_photo {
+    width: 35px;
+    }
+
+    .candidate_list_img {
+        width: 20px;
     }
 }
