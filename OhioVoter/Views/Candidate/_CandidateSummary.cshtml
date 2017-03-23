@@ -10,6 +10,13 @@
 
         <div id="candidate_summary">
 
+            <div id="candidate_lookup_date" class="form-group">
+                @Html.HiddenFor(x => x.VotingDate, new { @class = "candidate_summary_votingdate" })
+                <p><b>Election Date:</b> @Model.VotingDate</p>
+            </div>
+
+            <hr />
+
             <div id="candidate_summary_candidate">
                 <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img" /> <br />
                 @Model.CandidateSummary.FullName<br />
@@ -35,7 +42,7 @@
 
         <div id="candidate_summary_btn">
             @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @id= "candidate_summary_new_btn", @class = "btn btn-block panel-main-btn" })
-            @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { firstCandidateId = Model.SelectedCandidateId, secondCandidateId = 0, dateId = Model.SelectedCandidateVotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id= "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
+            @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { firstCandidateId = Model.SelectedCandidateId, secondCandidateId = 0, dateId = Model.VotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id= "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
         </div>
 
     </div>

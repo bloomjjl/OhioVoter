@@ -7,6 +7,31 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateComparePersonalSecondViewModel
     {
+        public CandidateComparePersonalSecondViewModel() { }
+
+        public CandidateComparePersonalSecondViewModel(ViewModels.VoteSmart.CandidateBio voteSmartCandidateBiography, ViewModels.VoteSmart.CandidateBio voteSmartRunningMateBiography, CandidateCompareSummarySecondViewModel summaryVM)
+        {
+            CandidateDisplayId = summaryVM.CandidateSecondDisplayId;
+            CandidateId = summaryVM.CandidateCompareSummarySecond.CandidateId;
+            RunningMateId = summaryVM.RunningMateCompareSummarySecond.CandidateId;
+
+            CandidateFamily = voteSmartCandidateBiography.Family;
+            RunningMateFamily = voteSmartRunningMateBiography.Family;
+            CandidateGender = voteSmartCandidateBiography.Gender;
+            RunningMateGender = voteSmartRunningMateBiography.Gender;
+            CandidateBirthDate = voteSmartCandidateBiography.BirthDate;
+            RunningMateBirthDate = voteSmartRunningMateBiography.BirthDate;
+            CandidateBirthPlace = voteSmartCandidateBiography.BirthPlace;
+            RunningMateBirthPlace = voteSmartRunningMateBiography.BirthPlace;
+            CandidateHomeCity = voteSmartCandidateBiography.HomeCity;
+            RunningMateHomeCity = voteSmartRunningMateBiography.HomeCity;
+            CandidateHomeState = voteSmartCandidateBiography.HomeState;
+            RunningMateHomeState = voteSmartRunningMateBiography.HomeState;
+            CandidateReligion = voteSmartCandidateBiography.Religion;
+            RunningMateReligion = voteSmartRunningMateBiography.Religion;
+        }
+
+
         public int CandidateDisplayId { get; set; }
         public int CandidateId { get; set; }
         public int RunningMateId { get; set; }

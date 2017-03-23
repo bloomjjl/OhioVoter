@@ -7,6 +7,18 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateAdditionalViewModel
     {
+        public CandidateAdditionalViewModel() { }
+
+        public CandidateAdditionalViewModel(List<string> voteSmartCandidateAdditionalInformation, List<string> voteSmartRunningMateAdditionalInformation, int candidateLookUpId, int candidateId, int runningMateId)
+        {
+            CandidateLookUpId = candidateLookUpId;
+            CandidateId = candidateId;
+            RunningMateId = runningMateId;
+            CandidateAdditionalInformation = voteSmartCandidateAdditionalInformation;
+            RunningMateAdditionalInformation = voteSmartRunningMateAdditionalInformation;
+        }
+
+
         public int CandidateLookUpId { get; set; }
         public int CandidateId { get; set; }
         public int RunningMateId { get; set; }

@@ -306,21 +306,18 @@ hr {
 /* #candidate_lookup_group */
 
 #candidate_lookup_form {
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
-    width: 100%;
 }
 
 /* candidate_lookup_date */
 
 #candidate_lookup_fields {
-    margin-left: auto;
-    margin-right: auto;
     padding-bottom: 10px;
 }
 
 #candidate_lookup_table {
-    margin-left: auto;
-    margin-right: auto;
     text-align: left;
 }
 
@@ -329,8 +326,8 @@ hr {
 
 }
 
-#candidate_lookup_btn {
-    width: 40px;
+#candidate_lookup_name {
+
 }
 
 
@@ -452,28 +449,33 @@ hr {
 
 #candidate_compare_summary {
     vertical-align: bottom;
+    width: 100%;
+    display: flex;
 }
 
-/* #candidate_compare_summary_first_group  */
+#candidate_compare_summary_date {
+    text-align: center
+}
+
+#candidate_compare_summary_first_group {
+    max-width: 50%;
+    float: left;
+}
 
 #candidate_compare_summary_first {
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    float: left;
-    width: 45%;
 }
 
 #candidate_compare_summary_first_candidate {
     display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 50%;
+    vertical-align: top;
 }
 
 #candidate_compare_summary_first_runningmate {
     display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 50%;
+    vertical-align: top;
 }
 
 #candidate_compare_summary_first_img {
@@ -493,27 +495,30 @@ hr {
 
 
 
-/* #candidate_compare_summary_second_group */
-
+#candidate_compare_summary_second_group {
+    min-width: 50%;
+    max-width: 50%;
+    float: right;
+    border-left: thick double #9ebcdb;
+    display: -webkit-flex; /* Safari 6.1+ */
+    display: -ms-flexbox; /* IE 10 */
+    display: flex;
+}
 
 #candidate_compare_summary_second {
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    float: right;
-    width: 45%;
 }
 
 #candidate_compare_summary_second_candidate {
     display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 50%;
+    vertical-align: top;
 }
 
 #candidate_compare_summary_second_runningmate {
     display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 50%;
+    vertical-align: top;
 }
 
 #candidate_compare_summary_second_img {
@@ -533,20 +538,24 @@ hr {
 
 
 #candidate_compare_summary_lookup {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    float: right;
-    width: 45%;
+    width: 100%;
     height: 100%;
-    overflow: hidden;
-    flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+    vertical-align: bottom;
+}
+
+#candidate_compare_summary_lookup form{
+
 }
 
 #candidate_compare_summary_lookup_candidate {
-    display: inline-block;
-    margin-left: auto;
+}
+
+#candidate_compare_lookup_second_dropdown {
+        margin-left: auto;
     margin-right: auto;
+
 }
 
 #candidate_compare_summary_lookup_btn {
@@ -567,7 +576,7 @@ hr {
 /* #candidate_compare_political_group */
 
 /* #candidate_compare_political */ 
-
+/*
 .candidate_compare_first_group {
     text-align: left;
     margin-left: auto;
@@ -587,7 +596,7 @@ hr {
     padding-left: 15px;
     border-left: thick double #9ebcdb;
 }
-
+    */
 
 
 

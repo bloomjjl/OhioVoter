@@ -15,12 +15,16 @@
             </div>
 
             <div id="candidate_compare_caucus_second" class="candidate_compare_second_group">
-                @{Html.RenderPartial("_CandidateCompareCaucusSecond", Model.CandidateCompareCaucusSecondViewModel);}
-            </div>
-            
+                @{if (@Model.CandidateCompareCaucusSecondViewModel.CandidateDisplayId != 0)
+                    {
+                        Html.RenderPartial("_CandidateCompareCaucusSecond", Model.CandidateCompareCaucusSecondViewModel);
+                    }
+                }
         </div>
 
-
     </div>
+
+
+</div>
 
 </div>

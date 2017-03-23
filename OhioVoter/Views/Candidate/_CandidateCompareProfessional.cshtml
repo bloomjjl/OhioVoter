@@ -13,9 +13,13 @@
             <div id="candidate_compare_professional_first" class="candidate_compare_first_group">
                 @{Html.RenderPartial("_CandidateCompareProfessionalFirst", Model.CandidateCompareProfessionalFirstViewModel);}
             </div>
-            
+
             <div id="candidate_compare_professional_second" class="candidate_compare_second_group">
-                @{Html.RenderPartial("_CandidateCompareProfessionalSecond", Model.CandidateCompareProfessionalSecondViewModel);}
+                @{if (@Model.CandidateCompareProfessionalSecondViewModel.CandidateDisplayId != 0)
+                    {
+                        Html.RenderPartial("_CandidateCompareProfessionalSecond", Model.CandidateCompareProfessionalSecondViewModel);
+                    }
+                }
             </div>
 
         </div>

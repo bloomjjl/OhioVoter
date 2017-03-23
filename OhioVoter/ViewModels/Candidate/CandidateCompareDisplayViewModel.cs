@@ -7,6 +7,20 @@ namespace OhioVoter.ViewModels.Candidate
 {
     public class CandidateCompareDisplayViewModel
     {
+        public CandidateCompareDisplayViewModel() { }
+
+        public CandidateCompareDisplayViewModel(CandidateCompareViewModel candidateCompareVM)
+        {
+            ControllerName = candidateCompareVM.ControllerName;
+            VotingDateId = candidateCompareVM.VotingDateId;
+            VotingDate = candidateCompareVM.VotingDate;
+            OfficeId = candidateCompareVM.OfficeId;
+            CandidateFirstDisplayId = candidateCompareVM.CandidateFirstDisplayId;
+            CandidateSecondDisplayId = candidateCompareVM.CandidateSecondDisplayId;
+            CandidateSecondCompareCount = candidateCompareVM.CandidateSecondCompareCount;
+        }
+
+
         public string ControllerName { get; set; }
 
         public int VotingDateId { get; set; }

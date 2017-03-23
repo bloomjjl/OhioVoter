@@ -1,14 +1,14 @@
 ﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareSummaryLookUpViewModel
 
-@using (Html.BeginForm("CompareName", "Candidate", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
+<div id="candidate_compare_summary_lookup">
 
-    <div id="candidate_compare_summary_lookup">
+    @using (Html.BeginForm("CompareName", "Candidate", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
 
         <div id="candidate_compare_summary_lookup_candidate" class="form-group">
             @Html.LabelFor(x => x.SelectedCandidateId, htmlAttributes: new { @id = "candidate_compare_lookup_second_label", @class = "control-label" })
-            @Html.DropDownListFor(x => x.SelectedCandidateId, Model.CandidateNames, "-- Select A Candidate --", new { @class = "form-control" })
+            @Html.DropDownListFor(x => x.SelectedCandidateId, Model.CandidateNames, "-- Select A Candidate --", new { @id = "candidate_compare_lookup_second_dropdown", @class = "form-control" })
             @Html.ValidationMessageFor(x => x.SelectedCandidateId, "", new { @class = "text-danger" })
         </div>
 
@@ -21,5 +21,6 @@
         <div>
             <button id="candidate_compare_summary_lookup_btn" type="submit" class="btn btn-block panel-left-btn"> Display Candidate </button>
         </div>
-    </div>
-}
+    }
+
+</div>

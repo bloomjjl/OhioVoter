@@ -11,6 +11,7 @@ namespace OhioVoter.ViewModels.Candidate
 
         public int VotingDateId { get; set; }
         public string VotingDate { get; set; }
+        public int TotalNumberOfCandidates { get; set; }
 
         public string CertifiedCandidateId { get; set; }
         public int OfficeId { get; set; }

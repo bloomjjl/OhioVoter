@@ -8,12 +8,17 @@
 
     <div class="panel-body panel-main-body">
 
+        <div id="candidate_compare_summary_date" class="form-group">
+            <p><b>Election Date:</b> @Model.VotingDate</p>
+        </div>
+
+        <hr />
         <div id="candidate_compare_summary">
 
             <div id="candidate_compare_summary_first_group" class="candidate-group">
                 @{Html.RenderPartial("_CandidateCompareSummaryFirst", Model.CandidateCompareSummaryFirstViewModel);}
             </div>
-            
+
             <div id="candidate_compare_summary_second_group" class="candidate-group">
                 @{Html.RenderAction("DisplayCandidateCompareSummarySecond", "Candidate", Model);}
             </div>

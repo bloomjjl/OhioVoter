@@ -15,7 +15,11 @@
             </div>
             
             <div id="candidate_compare_civic_second" class="candidate_compare_second_group">
-                @{Html.RenderPartial("_CandidateCompareCivicSecond", Model.CandidateCompareCivicSecondViewModel);}
+                @{if (@Model.CandidateCompareCivicSecondViewModel.CandidateDisplayId != 0)
+                    {
+                        Html.RenderPartial("_CandidateCompareCivicSecond", Model.CandidateCompareCivicSecondViewModel);
+                    }
+                }
             </div>
 
         </div>
