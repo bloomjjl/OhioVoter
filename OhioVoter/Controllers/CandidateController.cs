@@ -96,12 +96,13 @@ namespace OhioVoter.Controllers
                     viewModel.CandidateSecondDisplayId = int.Parse(strId);
                     viewModel.CandidateCompareDisplayViewModel = GetCandidateCompareDisplayViewModel(viewModel);
                 }
+                return View(viewModel);
             }
 
             // get information for the candidateCompareDisplayViewModel
             if (viewModel.CandidateSecondCompareCount > 1)
             {
-                string selectedCandidateId = "0";
+                //string selectedCandidateId = "0";
                 /*viewModel.CandidateCompareDisplayViewModel.CandidateCompareSummaryViewModel.CandidateCompareSummaryLookUpViewModel candidateCompareLookUpSecondVM = new CandidateCompareSummaryLookUpViewModel(viewModel.CandidateFirstDisplayId,
                                                                                                                                    viewModel.VotingDateId,
                                                                                                                                    viewModel.OfficeId,
@@ -156,21 +157,16 @@ namespace OhioVoter.Controllers
 
 
 
-        public ActionResult RemoveFirst(int? firstCandidateId, int? secondCandidateId, int? dateId, int? officeId)
+        public ActionResult RemoveFirst(int? firstCandidateId, int? secondCandidateId, int? candidateCount, int? dateId, int? officeId)
         {
             // validate values provided
             int suppliedFirstCandidateId = ValidateAndReturnInteger(firstCandidateId);
             int suppliedSecondCandidateId = ValidateAndReturnInteger(secondCandidateId);
+            int suppliedCandidateCompareCount = ValidateAndReturnInteger(candidateCount);
             int suppliedDateId = ValidateAndReturnInteger(dateId);
             int suppliedOfficeId = ValidateAndReturnInteger(officeId);
 
-            // move second to first
-            suppliedFirstCandidateId = suppliedSecondCandidateId;
-
-            // clear second
-            suppliedSecondCandidateId = 0;
-
-            return RedirectToAction("Compare", "Candidate", new { firstCandidateId = suppliedFirstCandidateId, secondCandidateId = suppliedSecondCandidateId, dateId = suppliedDateId, officeId = suppliedOfficeId });
+            return RedirectToAction("Compare", "Candidate", new { firstCandidateId = suppliedSecondCandidateId, secondCandidateId = 0, dateId = suppliedDateId, officeId = suppliedOfficeId });
         }
 
 
@@ -595,7 +591,7 @@ namespace OhioVoter.Controllers
                     // candidateLookUp == runningmate
                     Models.ElectionCandidate electionCandidateDTO = electionRunningMateLookUpDTO;
                     Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
-                    return new CandidateSummaryViewModel(electionRunningMateLookUpDTO, electionCandidateDTO, electionRunningMateDTO);
+                    return new CandidateSummaryViewModel(electionRunningMateDTO, electionCandidateDTO, electionRunningMateDTO);
                 }
 
                 Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
@@ -1040,7 +1036,7 @@ namespace OhioVoter.Controllers
                 VotingDate = viewModel.VotingDate 
             };
 
-            summaryViewModel.CandidateCompareSummaryFirstViewModel = GetCandidateCompareSummaryFirstViewModel(viewModel);
+            summaryViewModel.CandidateCompareSummaryFirstViewModel = GetCandidateCompareSummaryFirstViewModel(viewModel, totalNumberOfCandidates);
             summaryViewModel.CandidateCompareSummarySecondViewModel = GetCandidateCompareSummarySecondViewModel(viewModel, totalNumberOfCandidates);
             summaryViewModel.CandidateCompareSummaryLookUpViewModel = GetCandidateCompareLookUpSecondViewModel(viewModel.CandidateFirstDisplayId, viewModel.VotingDateId, viewModel.OfficeId);
 
@@ -1049,7 +1045,7 @@ namespace OhioVoter.Controllers
 
 
 
-        public CandidateCompareSummaryFirstViewModel GetCandidateCompareSummaryFirstViewModel(CandidateCompareDisplayViewModel viewModel)
+        public CandidateCompareSummaryFirstViewModel GetCandidateCompareSummaryFirstViewModel(CandidateCompareDisplayViewModel viewModel, int totalNumberOfCandidates)
         {
             // Get candidate/running mate objects for view model
             CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(viewModel.CandidateFirstDisplayId);
@@ -1066,7 +1062,7 @@ namespace OhioVoter.Controllers
                 };
             }
             
-            return new CandidateCompareSummaryFirstViewModel(summaryVM);
+            return new CandidateCompareSummaryFirstViewModel(summaryVM, totalNumberOfCandidates, viewModel.CandidateSecondDisplayId);
         }
 
 

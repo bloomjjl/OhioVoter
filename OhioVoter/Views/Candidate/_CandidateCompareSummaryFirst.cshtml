@@ -1,31 +1,28 @@
 ﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareSummaryFirstViewModel
 
-<div id="candidate_compare_summary_first">
-
-    <div id="candidate_compare_summary_first_candidate">
-        <img src="@Url.Content(Model.CandidateCompareSummaryFirst.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_compare_summary_first_img" /> <br />
-        @Model.CandidateCompareSummaryFirst.FullName<br />
-        @Model.CandidateCompareSummaryFirst.PartyName<br />
-        @Model.CandidateCompareSummaryFirst.OfficeName
-        @Model.CandidateCompareSummaryFirst.OfficeTerm<br />
-        @Model.CandidateCompareSummaryFirst.OfficeHolderName
-    </div>
-
-    <div id="candidate_compare_summary_first_runningmate">
-        @{ if (Model.RunningMateCompareSummaryFirst.CandidateId > 0)
-            {
-                <img src="@Url.Content(@Model.RunningMateCompareSummaryFirst.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_compare_summary_first_img" /> <br />
-                @Model.RunningMateCompareSummaryFirst.FullName<br />
-                @Model.RunningMateCompareSummaryFirst.PartyName<br />
-                @Model.RunningMateCompareSummaryFirst.OfficeName<br />
-                @Model.RunningMateCompareSummaryFirst.OfficeHolderName
-            }
-        }
-    </div>
-
-    @Html.ActionLink("Remove Candidate", "RemoveFirst", "Candidate", new { firstCandidateId = 0, secondCandidateId = Model.CandidateSecondDisplayId, candidateCount = Model.TotalNumberOfCandidates, dateId = Model.VotingDateId, officeId = Model.OfficeId }, new { @id = "candidate_compare_summary_first_btn", @class = "btn btn-block panel-main-btn" })
-
+<div id="candidate_compare_summary_first_candidate">
+    <img src="@Url.Content(Model.CandidateCompareSummaryFirst.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_compare_summary_first_img" /> <br />
+    @Model.CandidateCompareSummaryFirst.FullName<br />
+    @Model.CandidateCompareSummaryFirst.PartyName<br />
+    @Model.CandidateCompareSummaryFirst.OfficeName
+    @Model.CandidateCompareSummaryFirst.OfficeTerm<br />
+    @Model.CandidateCompareSummaryFirst.OfficeHolderName
 </div>
+
+<div id="candidate_compare_summary_first_runningmate">
+    @{ if (Model.RunningMateCompareSummaryFirst.CandidateId > 0)
+        {
+            <img src="@Url.Content(@Model.RunningMateCompareSummaryFirst.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_compare_summary_first_img" /> <br />
+            @Model.RunningMateCompareSummaryFirst.FullName<br />
+            @Model.RunningMateCompareSummaryFirst.PartyName<br />
+            @Model.RunningMateCompareSummaryFirst.OfficeName<br />
+            @Model.RunningMateCompareSummaryFirst.OfficeHolderName
+        }
+    }
+</div>
+
+@Html.ActionLink("Remove Candidate", "RemoveFirst", "Candidate", new { firstCandidateId = Model.CandidateFirstDisplayId, secondCandidateId = Model.CandidateSecondDisplayId, candidateCount = Model.TotalNumberOfCandidates, dateId = Model.VotingDateId, officeId = Model.OfficeId }, new { @id = "candidate_compare_summary_first_btn", @class = "btn btn-block panel-main-btn" })
+
 
 
 

@@ -11,11 +11,14 @@ namespace OhioVoter.ViewModels.Candidate
     {
         public CandidateCompareSummaryFirstViewModel() { }
 
-        public CandidateCompareSummaryFirstViewModel(CandidateSummaryViewModel summaryVM)
+        public CandidateCompareSummaryFirstViewModel(CandidateSummaryViewModel summaryVM, int totalNumberOfCandidates, int candidateSecondDisplayId)
         {
             VotingDateId = summaryVM.VotingDateId;
             OfficeId = summaryVM.SelectedCandidateOfficeId;
             CandidateFirstDisplayId = summaryVM.SelectedCandidateId;
+            CandidateSecondDisplayId = candidateSecondDisplayId;
+            TotalNumberOfCandidates = totalNumberOfCandidates;
+
             CandidateCompareSummaryFirst = new CandidateCompareSummaryFirst()
             {
                 CandidateId = summaryVM.CandidateSummary.CandidateId,

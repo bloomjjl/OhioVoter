@@ -17,6 +17,7 @@ namespace OhioVoter.ViewModels.Candidate
             VotingDateId = selectedCandidateDTO.ElectionVotingDate.Id;
             SelectedCandidateId = selectedCandidateDTO.Candidate.Id;
             SelectedCandidateOfficeId = selectedCandidateDTO.ElectionOfficeId;
+
             CandidateSummary = new CandidateSummary()
             {
                 CandidateId = CandidateDTO.Candidate.Id,
@@ -38,6 +39,7 @@ namespace OhioVoter.ViewModels.Candidate
             VotingDateId = SelectedCandidateDTO.ElectionVotingDate.Id;
             SelectedCandidateId = SelectedCandidateDTO.Candidate.Id;
             SelectedCandidateOfficeId = SelectedCandidateDTO.ElectionOfficeId;
+
             CandidateSummary = new CandidateSummary()
             {
                 CandidateId = CandidateDTO.Candidate.Id,

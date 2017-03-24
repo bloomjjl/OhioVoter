@@ -6,24 +6,19 @@
         <p> Personal Information </p>
     </div>
 
-    <div class="panel-body panel-main-body">
+    <div id="candidate_compare_personal" class="panel-body panel-main-body">
 
-        <div id="candidate_compare_personal">
-
-            <div id="candidate_compare_personal_first" class="candidate_compare_first_group">
-                @{Html.RenderPartial("_CandidateComparePersonalFirst", Model.CandidateComparePersonalFirstViewModel);}
-            </div>
-            
-            <div id="candidate_compare_personal_second" class="candidate_compare_second_group">
-                @{if (@Model.CandidateComparePersonalSecondViewModel.CandidateDisplayId != 0)
-                    {
-                        Html.RenderPartial("_CandidateComparePersonalSecond", Model.CandidateComparePersonalSecondViewModel);
-                    }
-                }
-            </div>
-
+        <div id="candidate_compare_personal_first_group" class="candidate_compare_first_group">
+            @{Html.RenderPartial("_CandidateComparePersonalFirst", Model.CandidateComparePersonalFirstViewModel);}
         </div>
-
+            
+        <div id="candidate_compare_personal_second_group" class="candidate_compare_second_group">
+            @{if (@Model.CandidateComparePersonalSecondViewModel.CandidateDisplayId != 0)
+                {
+                    Html.RenderPartial("_CandidateComparePersonalSecond", Model.CandidateComparePersonalSecondViewModel);
+                }
+            }
+        </div>
 
     </div>
 

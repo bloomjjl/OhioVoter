@@ -6,24 +6,19 @@
         <p> Professional Experience </p>
     </div>
 
-    <div class="panel-body panel-main-body">
+    <div id="candidate_compare_professional" class="panel-body panel-main-body">
 
-        <div id="candidate_compare_professional">
-
-            <div id="candidate_compare_professional_first" class="candidate_compare_first_group">
-                @{Html.RenderPartial("_CandidateCompareProfessionalFirst", Model.CandidateCompareProfessionalFirstViewModel);}
-            </div>
-
-            <div id="candidate_compare_professional_second" class="candidate_compare_second_group">
-                @{if (@Model.CandidateCompareProfessionalSecondViewModel.CandidateDisplayId != 0)
-                    {
-                        Html.RenderPartial("_CandidateCompareProfessionalSecond", Model.CandidateCompareProfessionalSecondViewModel);
-                    }
-                }
-            </div>
-
+        <div id="candidate_compare_professional_first_group" class="candidate_compare_first_group">
+            @{Html.RenderPartial("_CandidateCompareProfessionalFirst", Model.CandidateCompareProfessionalFirstViewModel);}
         </div>
 
+        <div id="candidate_compare_professional_second_group" class="candidate_compare_second_group">
+            @{if (@Model.CandidateCompareProfessionalSecondViewModel.CandidateDisplayId != 0)
+                {
+                    Html.RenderPartial("_CandidateCompareProfessionalSecond", Model.CandidateCompareProfessionalSecondViewModel);
+                }
+            }
+        </div>
 
     </div>
 

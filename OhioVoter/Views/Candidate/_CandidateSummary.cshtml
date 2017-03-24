@@ -27,7 +27,7 @@
             </div>
 
             <div id="candidate_summary_runningmate">
-                @{ if (Model.RunningMateSummary.RunningMateId > 0)
+                @{ if (Model.RunningMateSummary.CandidateId > 0)
                     {
                         <img src="@Url.Content(@Model.RunningMateSummary.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_summary_img" /> <br />
                         @Model.RunningMateSummary.FullName<br />

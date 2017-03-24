@@ -8,11 +8,11 @@
 
     <div id="candidate_compare_education" class="panel-body panel-main-body">
 
-        <div id="candidate_compare_education_first" class="candidate_compare_first_group">
+        <div id="candidate_compare_education_first_group" class="candidate_compare_first_group">
             @{Html.RenderPartial("_CandidateCompareEducationFirst", Model.CandidateCompareEducationFirstViewModel);}
         </div>
             
-        <div id="candidate_compare_education_second" class="candidate_compare_second_group">
+        <div id="candidate_compare_education_second_group" class="candidate_compare_second_group">
             @{if (@Model.CandidateCompareEducationSecondViewModel.CandidateDisplayId != 0)
                 {
                     Html.RenderPartial("_CandidateCompareEducationSecond", Model.CandidateCompareEducationSecondViewModel);

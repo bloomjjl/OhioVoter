@@ -6,24 +6,19 @@
         <p> Additional Information </p>
     </div>
 
-    <div class="panel-body panel-main-body">
+    <div id="candidate_compare_additional" class="panel-body panel-main-body">
 
-        <div id="candidate_compare_additional">
-
-            <div id="candidate_compare_additional_first" class="candidate_compare_first_group">
-                @{Html.RenderPartial("_CandidateCompareAdditionalFirst", Model.CandidateCompareAdditionalFirstViewModel);}
-            </div>
-            
-            <div id="candidate_compare_additional_second" class="candidate_compare_second_group">
-                @{if (@Model.CandidateCompareAdditionalSecondViewModel.CandidateDisplayId != 0)
-                    {
-                        Html.RenderPartial("_CandidateCompareAdditionalSecond", Model.CandidateCompareAdditionalSecondViewModel);
-                    }
-                }
-            </div>
-
+        <div id="candidate_compare_additional_first_group" class="candidate_compare_first_group">
+            @{Html.RenderPartial("_CandidateCompareAdditionalFirst", Model.CandidateCompareAdditionalFirstViewModel);}
         </div>
-
+            
+        <div id="candidate_compare_additional_second_group" class="candidate_compare_second_group">
+            @{if (@Model.CandidateCompareAdditionalSecondViewModel.CandidateDisplayId != 0)
+                {
+                    Html.RenderPartial("_CandidateCompareAdditionalSecond", Model.CandidateCompareAdditionalSecondViewModel);
+                }
+            }
+        </div>
 
     </div>
 
