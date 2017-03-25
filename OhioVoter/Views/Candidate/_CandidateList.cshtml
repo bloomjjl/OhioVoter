@@ -21,7 +21,7 @@
         <tr>
             <td class="candidate_list_photo">
                 @Html.HiddenFor(x => Model[i].CandidateId)
-                <img src="@Url.Content(Model[i].PhotoUrl)" alt="Candidate Photo" class="candidate_list_img" />
+                <img src="@Url.Content(Model[i].VoteSmartPhotoUrl)" alt="Candidate Photo" class="candidate_list_img" />
             </td>
             <td class="candidate_list_candidate">
                 @Html.DisplayFor(x => Model[i].CandidateName)

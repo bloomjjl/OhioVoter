@@ -11,7 +11,7 @@ namespace OhioVoter.ViewModels.Candidate
     {
         public CandidateSummaryViewModel() { }
 
-        public CandidateSummaryViewModel(Models.ElectionCandidate selectedCandidateDTO, Models.ElectionCandidate CandidateDTO)
+        public CandidateSummaryViewModel(Models.ElectionCandidate selectedCandidateDTO, Models.ElectionCandidate candidateDTO)
         {
             VotingDate = selectedCandidateDTO.ElectionVotingDate.Date.ToShortDateString();
             VotingDateId = selectedCandidateDTO.ElectionVotingDate.Id;
@@ -20,20 +20,21 @@ namespace OhioVoter.ViewModels.Candidate
 
             CandidateSummary = new CandidateSummary()
             {
-                CandidateId = CandidateDTO.Candidate.Id,
-                VoteSmartCandidateId = CandidateDTO.Candidate.VoteSmartCandidateId,
-                VoteSmartPhotoUrl = CandidateDTO.Candidate.VoteSmartPhotoUrl,
-                FirstName = CandidateDTO.Candidate.FirstName,
-                MiddleName = CandidateDTO.Candidate.MiddleName,
-                LastName = CandidateDTO.Candidate.LastName,
-                Suffix = CandidateDTO.Candidate.Suffix,
-                PartyName = CandidateDTO.Party.PartyName,
-                OfficeName = CandidateDTO.ElectionOffice.Office.OfficeName,
-                OfficeTerm = CandidateDTO.ElectionOffice.OfficeTerm
+                CandidateId = candidateDTO.Candidate.Id,
+                VoteSmartCandidateId = candidateDTO.Candidate.VoteSmartCandidateId,
+                VoteSmartPhotoUrl = candidateDTO.Candidate.VoteSmartPhotoUrl,
+                GenderPhotUrl = candidateDTO.Candidate.GenderPhotoUrl,
+                FirstName = candidateDTO.Candidate.FirstName,
+                MiddleName = candidateDTO.Candidate.MiddleName,
+                LastName = candidateDTO.Candidate.LastName,
+                Suffix = candidateDTO.Candidate.Suffix,
+                PartyName = candidateDTO.Party.PartyName,
+                OfficeName = candidateDTO.ElectionOffice.Office.OfficeName,
+                OfficeTerm = candidateDTO.ElectionOffice.OfficeTerm
             };
         }
 
-        public CandidateSummaryViewModel(Models.ElectionCandidate SelectedCandidateDTO, Models.ElectionCandidate CandidateDTO, Models.ElectionCandidate RuningMateDTO)
+        public CandidateSummaryViewModel(Models.ElectionCandidate SelectedCandidateDTO, Models.ElectionCandidate candidateDTO, Models.ElectionCandidate runingMateDTO)
         {
             VotingDate = SelectedCandidateDTO.ElectionVotingDate.Date.ToShortDateString();
             VotingDateId = SelectedCandidateDTO.ElectionVotingDate.Id;
@@ -42,29 +43,31 @@ namespace OhioVoter.ViewModels.Candidate
 
             CandidateSummary = new CandidateSummary()
             {
-                CandidateId = CandidateDTO.Candidate.Id,
-                VoteSmartCandidateId = CandidateDTO.Candidate.VoteSmartCandidateId,
-                VoteSmartPhotoUrl = CandidateDTO.Candidate.VoteSmartPhotoUrl,
-                FirstName = CandidateDTO.Candidate.FirstName,
-                MiddleName = CandidateDTO.Candidate.MiddleName,
-                LastName = CandidateDTO.Candidate.LastName,
-                Suffix = CandidateDTO.Candidate.Suffix,
-                PartyName = CandidateDTO.Party.PartyName,
-                OfficeName = CandidateDTO.ElectionOffice.Office.OfficeName,
-                OfficeTerm = CandidateDTO.ElectionOffice.OfficeTerm
+                CandidateId = candidateDTO.Candidate.Id,
+                VoteSmartCandidateId = candidateDTO.Candidate.VoteSmartCandidateId,
+                VoteSmartPhotoUrl = candidateDTO.Candidate.VoteSmartPhotoUrl,
+                GenderPhotUrl = candidateDTO.Candidate.GenderPhotoUrl,
+                FirstName = candidateDTO.Candidate.FirstName,
+                MiddleName = candidateDTO.Candidate.MiddleName,
+                LastName = candidateDTO.Candidate.LastName,
+                Suffix = candidateDTO.Candidate.Suffix,
+                PartyName = candidateDTO.Party.PartyName,
+                OfficeName = candidateDTO.ElectionOffice.Office.OfficeName,
+                OfficeTerm = candidateDTO.ElectionOffice.OfficeTerm
             };
             RunningMateSummary = new RunningMateSummary()
             {
-                CandidateId = RuningMateDTO.Candidate.Id,
-                VoteSmartPhotoUrl = RuningMateDTO.Candidate.VoteSmartPhotoUrl,
-                VoteSmartCandidateId = RuningMateDTO.Candidate.VoteSmartCandidateId,
-                FirstName = RuningMateDTO.Candidate.FirstName,
-                MiddleName = RuningMateDTO.Candidate.MiddleName,
-                LastName = RuningMateDTO.Candidate.LastName,
-                Suffix = RuningMateDTO.Candidate.Suffix,
-                PartyName = RuningMateDTO.Party.PartyName,
-                OfficeName = RuningMateDTO.ElectionOffice.Office.OfficeName,
-                OfficeTerm = RuningMateDTO.ElectionOffice.OfficeTerm
+                CandidateId = runingMateDTO.Candidate.Id,
+                VoteSmartPhotoUrl = runingMateDTO.Candidate.VoteSmartPhotoUrl,
+                GenderPhotUrl = runingMateDTO.Candidate.GenderPhotoUrl,
+                VoteSmartCandidateId = runingMateDTO.Candidate.VoteSmartCandidateId,
+                FirstName = runingMateDTO.Candidate.FirstName,
+                MiddleName = runingMateDTO.Candidate.MiddleName,
+                LastName = runingMateDTO.Candidate.LastName,
+                Suffix = runingMateDTO.Candidate.Suffix,
+                PartyName = runingMateDTO.Party.PartyName,
+                OfficeName = runingMateDTO.ElectionOffice.Office.OfficeName,
+                OfficeTerm = runingMateDTO.ElectionOffice.OfficeTerm
             };
         }
 
@@ -88,6 +91,7 @@ namespace OhioVoter.ViewModels.Candidate
             CandidateId = candidateDTO.Id;
             VoteSmartCandidateId = candidateDTO.VoteSmartCandidateId;
             VoteSmartPhotoUrl = candidateDTO.VoteSmartPhotoUrl;
+            GenderPhotUrl = candidateDTO.GenderPhotoUrl;
             FirstName = candidateDTO.FirstName;
             MiddleName = candidateDTO.MiddleName;
             LastName = candidateDTO.LastName;
@@ -99,6 +103,7 @@ namespace OhioVoter.ViewModels.Candidate
         public int CandidateId { get; set; }
         public string VoteSmartCandidateId { get; set; }
         public string VoteSmartPhotoUrl { get; set; }
+        public string GenderPhotUrl { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
@@ -128,6 +133,7 @@ namespace OhioVoter.ViewModels.Candidate
             CandidateId = candidateDTO.Id;
             VoteSmartCandidateId = candidateDTO.VoteSmartCandidateId;
             VoteSmartPhotoUrl = candidateDTO.VoteSmartPhotoUrl;
+            GenderPhotUrl = candidateDTO.GenderPhotoUrl;
             FirstName = candidateDTO.FirstName;
             MiddleName = candidateDTO.MiddleName;
             LastName = candidateDTO.LastName;
@@ -138,6 +144,7 @@ namespace OhioVoter.ViewModels.Candidate
         public int CandidateId { get; set; }
         public int RunningMateId { get; set; }
         public string VoteSmartCandidateId { get; set; }
+        public string GenderPhotUrl { get; set; }
         public string VoteSmartPhotoUrl { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }

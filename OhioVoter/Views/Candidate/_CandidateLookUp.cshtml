@@ -17,11 +17,11 @@
             @Html.AntiForgeryToken()
 
             <div id="candidate_lookup_date" class="form-group">
-                @Html.HiddenFor(x => x.VotingDate, new { @class = "candidate_lookup_votingdate"})
+                @Html.HiddenFor(x => x.VotingDate, new { @class = "candidate_lookup_votingdate" })
                 <p><b>Election Date:</b> @Model.VotingDate</p>
             </div>
 
-            <hr/>
+            <hr />
 
             <div id="candidate_lookup_fields">
 
@@ -35,7 +35,7 @@
                         <td>
                             @Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, "-- Select An Office --", new { @id = "candidate_lookup_office", @class = "form-control" })
                             @Html.ValidationMessageFor(x => x.SelectedElectionOfficeId, "", new { @class = "text-danger" })
-                       </td>
+                        </td>
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -65,11 +65,15 @@
         </div>
 
         <div id="candidate_list_select">
-            @{Html.RenderPartial("_CandidateList", Model.CandidateListViewModel);}
+            @if (Model.CandidateListViewModel.Count > 0)
+            {
+                Html.RenderPartial("_CandidateList", Model.CandidateListViewModel);
+            }
+        </div>
+
+        <div id="candidate_list_search">
+            @{Html.RenderPartial("_CandidateListSearchCriteriaNeeded");}
         </div>
 
     </div>
 </div>
-
-
-

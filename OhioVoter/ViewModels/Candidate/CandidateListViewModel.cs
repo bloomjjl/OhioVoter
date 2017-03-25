@@ -12,11 +12,13 @@ namespace OhioVoter.ViewModels.Candidate
     {
         public CandidateListViewModel() { }
 
+        
         public CandidateListViewModel(ElectionCandidate candidateDTO)
         {
             ElectionCandidateId = candidateDTO.Id;
             CandidateId = candidateDTO.CandidateId;
-            PhotoUrl = candidateDTO.Candidate.VoteSmartPhotoUrl;
+            GenderPhotoUrl = candidateDTO.Candidate.GenderPhotoUrl;
+            VoteSmartPhotoUrl = candidateDTO.Candidate.VoteSmartPhotoUrl;
             CandidateName = candidateDTO.Candidate.CandidateFirstLastName;
             PartyId = candidateDTO.PartyId;
             PartyName = candidateDTO.Party.PartyName;
@@ -24,9 +26,10 @@ namespace OhioVoter.ViewModels.Candidate
             ElectionOfficeName = candidateDTO.ElectionOffice.Office.OfficeName;
             ElectionOfficeTerm = candidateDTO.ElectionOffice.OfficeTerm;
         }
+        
 
-
-        public string PhotoUrl { get; set; }
+        public string GenderPhotoUrl { get; set; }
+        public string VoteSmartPhotoUrl { get; set; }
         public int ElectionCandidateId { get; set; }
         public int CandidateId { get; set; }
         public string CandidateName { get; set; }

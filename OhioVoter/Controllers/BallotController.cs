@@ -1191,7 +1191,7 @@ namespace OhioVoter.Controllers
                 if (candidateDTO == null) { return string.Empty; }
 
                 // return photo location
-                return candidateDTO.Photo;
+                return candidateDTO.GenderPhotoUrl;
             }
         }
 

@@ -40,7 +40,7 @@ namespace OhioVoter.Models
 
         public string Gender { get; set; }
 
-        public string Photo { get; set; }
+        public string GenderPhotoUrl { get; set; }
 
         public string VoteSmartPhotoUrl { get; set; }
     }

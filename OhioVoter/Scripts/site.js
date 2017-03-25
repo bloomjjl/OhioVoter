@@ -53,6 +53,7 @@ $(function () {
                 xhr.abort();
             }
             $('#candidate_list_select').hide();
+            $('#candidate_list_search').hide();
             $('#candidate_list_loading').show();
             selectedElectionOfficeId = $('#candidate_lookup_office').val();
             xhr = $.ajax({
@@ -61,12 +62,14 @@ $(function () {
                 data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateLookUpName },
                 success: function (data) {
                     $('#candidate_list_loading').hide();
+                    $('#candidate_list_search').hide();
                     $('#candidate_list_select').show();
                     $('#candidate_list_select').html(data);
                 },
                 error: function (e) {
                     $('#candidate_list_select').hide();
-                    $('#candidate_list_loading').show();
+                    $('#candidate_list_loading').hide();
+                    $('#candidate_list_search').show();
                 }
             });
         }
@@ -80,6 +83,7 @@ $(function () {
                 console.log('old request has stopped to process new request')
             }
             $('#candidate_list_select').hide();
+            $('#candidate_list_search').hide();
             $('#candidate_list_loading').show();
             candidateLookUpName = $('#candidate_lookup_name').val();
             xhr = $.ajax({
@@ -89,12 +93,14 @@ $(function () {
                 success: function (data) {
                     console.log('data from server ' + data);
                     $('#candidate_list_loading').hide();
+                    $('#candidate_list_search').hide();
                     $('#candidate_list_select').show();
                     $('#candidate_list_select').html(data);
                 },
                 error: function (e) {
                     $('#candidate_list_select').hide();
-                    $('#candidate_list_loading').show();
+                    $('#candidate_list_loading').hide();
+                    $('#candidate_list_search').show();
                 }
             });
         }

@@ -348,21 +348,24 @@ hr {
 }
 
 #candidate_list_select, 
-#candidate_list_loading {
+#candidate_list_loading,
+#candidate_list_search {
     background: #dee9f4;
     margin-left: 10px;
     margin-right: 10px;
 }
 
 #candidate_list_select table,
-#candidate_list_loading table {
+#candidate_list_loading table,
+#candidate_list_search table {
     margin-left: auto;
     margin-right: auto;
     width: 100%;
 }
 
 #candidate_list_select tr,
-#candidate_list_loading tr {
+#candidate_list_loading tr,
+#candidate_list_search tr {
     vertical-align: middle;
     border-top: 1px solid #9ebcdb;
 }
