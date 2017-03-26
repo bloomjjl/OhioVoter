@@ -20,7 +20,7 @@
                 @{ Html.RenderPartial("_IssueLookUp", Model.IssueLookUpViewModel);}
         </div>
 
-        @{ if (Model.IssueLookUpViewModel.SelectedVotingDateId != "0" && Model.IssueLookUpViewModel.SelectedCountyId != "0")
+        @{ if (Model.IssueLookUpViewModel.VotingDateId != 0 && Model.IssueLookUpViewModel.SelectedCountyId != "0")
             {
                 <div id="issue_display" class="issue_Information">
                     @{Html.RenderAction("DisplayIssueInformation", "Issue", Model);}

@@ -21,13 +21,13 @@ namespace OhioVoter.Services
 
         public GoogleApiManagement()
         {
-            GetGoogleApiCivicInformationKeyFromDatabase();
-            GetGoogleApiStaticMapKeyFromDatabase();
+            _googleApiCivicInformationKey = GetGoogleApiCivicInformationKeyFromDatabase();
+            _googleApiStaticMapKey = GetGoogleApiStaticMapKeyFromDatabase();
         }
 
 
 
-        private void GetGoogleApiCivicInformationKeyFromDatabase()
+        private string GetGoogleApiCivicInformationKeyFromDatabase()
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
@@ -35,18 +35,18 @@ namespace OhioVoter.Services
 
                 if (dtoApi == null)
                 {
-                    _googleApiCivicInformationKey = "";
+                    return string.Empty;
                 }
                 else
                 {
-                    _googleApiCivicInformationKey = dtoApi.ApiKey;
+                    return dtoApi.ApiKey;
                 }
             }
         }
 
 
 
-        private void GetGoogleApiStaticMapKeyFromDatabase()
+        private string GetGoogleApiStaticMapKeyFromDatabase()
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
@@ -54,11 +54,11 @@ namespace OhioVoter.Services
 
                 if (dtoApi == null)
                 {
-                    _googleApiStaticMapKey = "";
+                    return string.Empty;
                 }
                 else
                 {
-                    _googleApiStaticMapKey = dtoApi.ApiKey;
+                    return dtoApi.ApiKey;
                 }
             }
         }

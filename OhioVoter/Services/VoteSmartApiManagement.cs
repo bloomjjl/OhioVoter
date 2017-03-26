@@ -24,12 +24,12 @@ namespace OhioVoter.Services
 
         public VoteSmartApiManagement()
         {
-            GetApiKeyFromDatabase();
+            _votesmartApiKey = GetApiKeyFromDatabase();
         }
 
 
 
-        private void GetApiKeyFromDatabase()
+        private string GetApiKeyFromDatabase()
         { 
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
@@ -37,11 +37,11 @@ namespace OhioVoter.Services
 
                 if (dtoApi == null)
                 {
-                    _votesmartApiKey = "";
+                    return string.Empty;
                 }
                 else
                 {
-                    _votesmartApiKey = dtoApi.ApiKey;
+                    return dtoApi.ApiKey;
                 }
             }
         }

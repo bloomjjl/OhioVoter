@@ -69,7 +69,7 @@ $(function () {
                 error: function (e) {
                     $('#candidate_list_select').hide();
                     $('#candidate_list_loading').hide();
-                    $('#candidate_list_search').show();
+                    $('#candidate_list_search').hide();
                 }
             });
         }
@@ -92,15 +92,15 @@ $(function () {
                 data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateLookUpName },
                 success: function (data) {
                     console.log('data from server ' + data);
-                    $('#candidate_list_loading').hide();
                     $('#candidate_list_search').hide();
+                    $('#candidate_list_loading').hide();
                     $('#candidate_list_select').show();
                     $('#candidate_list_select').html(data);
                 },
                 error: function (e) {
                     $('#candidate_list_select').hide();
                     $('#candidate_list_loading').hide();
-                    $('#candidate_list_search').show();
+                    $('#candidate_list_search').hide();
                 }
             });
         }

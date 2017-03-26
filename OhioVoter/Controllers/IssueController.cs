@@ -1,4 +1,5 @@
-﻿using OhioVoter.Services;
+﻿using OhioVoter.Models;
+using OhioVoter.Services;
 using OhioVoter.ViewModels.Issue;
 using System;
 using System.Collections.Generic;
@@ -20,18 +21,23 @@ namespace OhioVoter.Controllers
             UpdateSessionWithNewControllerNameForSideBar(_controllerName);
 
             // validate supplied ID == integer
-            int validVotingDateId = ValidateAndReturnInteger(votingDateId);
-            int validCountyId = ValidateAndReturnInteger(countyId);
-            int validCommunityId = ValidateAndReturnInteger(communityId);
-            int validIssueId = ValidateAndReturnInteger(issueId);
+            int intVotingDateId = ValidateAndReturnInteger(votingDateId);
+            int intCountyId = ValidateAndReturnInteger(countyId);
+            int intCommunityId = ValidateAndReturnInteger(communityId);
+            int intIssueId = ValidateAndReturnInteger(issueId);
+
+            if (intVotingDateId == 0)
+            {
+                intVotingDateId = GetOldestActiveVotingDateId();
+            }
 
             // get details for view model
             IssueViewModel viewModel = new IssueViewModel()
             {
                 ControllerName = _controllerName,
-                IssueLookUpViewModel = GetIssueLookUpViewModel(validVotingDateId, validCountyId, validCommunityId),
-                IssueDisplayViewModel = GetIssueDisplayViewModel(validVotingDateId, validCountyId, validCommunityId),
-                IssueDetailViewModel = GetIssueDetailViewModel(validVotingDateId, validCountyId, validCommunityId, validIssueId)
+                IssueLookUpViewModel = GetIssueLookUpViewModel(intVotingDateId, intCountyId, intCommunityId),
+                IssueDisplayViewModel = GetIssueDisplayViewModel(intVotingDateId, intCountyId, intCommunityId),
+                IssueDetailViewModel = GetIssueDetailViewModel(intVotingDateId, intCountyId, intCommunityId, intIssueId)
             };
 
             return View(viewModel);
@@ -46,19 +52,6 @@ namespace OhioVoter.Controllers
             int votingDateId = ValidateAndReturnInteger(selectedVotingDateId);
             int countyId = ValidateAndReturnInteger(selectedCountyId);
             int communityId = ValidateAndReturnInteger(selectedCommunityId);
-
-            /*
-            // update session with controller info
-            UpdateSessionWithNewControllerNameForSideBar(_controllerName);
-
-            // get details for view model
-            IssueViewModel viewModel = new IssueViewModel()
-            {
-                ControllerName = _controllerName,
-                IssueLookUpViewModel = GetIssueLookUpViewModel(votingDateId, countyId, communityId),
-                IssueDisplayViewModel = GetIssueDisplayViewModel(votingDateId, countyId, communityId)
-            };
-            */
 
             return RedirectToAction("Index", "Issue", new { votingDateId = votingDateId, countyId = countyId, communityId = communityId });
         }
@@ -310,30 +303,105 @@ namespace OhioVoter.Controllers
 
 
 
-        public IssueLookUpViewModel GetIssueLookUpViewModel(int selectedVotingDateId, int selectedCountyId, int selectedCommunityId)
+        public IssueLookUpViewModel GetIssueLookUpViewModel(int votingDateId, int countyId, int communityId)
         {
             // validate supplied ID == integer
-            //int votingDateId = ValidateAndReturnInteger(selectedVotingDateId);
-            //int countyId = ValidateAndReturnInteger(selectedCountyId);
-            //int communityId = ValidateAndReturnInteger(selectedCommunityId);
+            int intVotingDateId = ValidateAndReturnInteger(votingDateId);
+            int intCountyId = ValidateAndReturnInteger(countyId);
+            int intCommunityId = ValidateAndReturnInteger(communityId);
 
-            // verify selectd community id is valid for county
-            if (!ValidateCommunityLocatedInCountyfromDatabase(selectedCountyId, selectedCommunityId))
+            // verify votingDate 
+            string votingDate = GetVotingDateForSuppliedVotingDateId(intVotingDateId);
+            if (string.IsNullOrEmpty(votingDate))
             {
-                selectedCommunityId = 0;
+                intVotingDateId = GetOldestActiveVotingDateId();
+                votingDate = GetVotingDateForSuppliedVotingDateId(intVotingDateId);
+            }
+
+            // verify selected county
+            if (!ValidateCountyLocatedInOhio(intCountyId))
+            {
+                intCountyId = 0;
+            }
+
+            // verify selected community id is valid for county
+            if (!ValidateCommunityLocatedInCountyfromDatabase(intCountyId, intCommunityId))
+            {
+                intCommunityId = 0;
             }
 
             return new IssueLookUpViewModel()
             {
                 ControllerName = _controllerName,
-                SelectedVotingDateId = selectedVotingDateId.ToString(),
-                VotingDates = GetDropDownListOfVotingDates(),
-                SelectedCountyId = selectedCountyId.ToString(),
-                CountyNames = GetDropDownListOfCounties(),
-                SelectedCommunityId = selectedCommunityId.ToString(),
-                CommunityNames = GetDropDownListOfCommunities(selectedCountyId)
+                VotingDateId = intVotingDateId,
+                VotingDate = votingDate,
+                SelectedCountyId = intCountyId.ToString(),
+                CountyNames = GetDropDownListOfCountiesFromDatabase(),
+                SelectedCommunityId = intCommunityId.ToString(),
+                CommunityNames = GetDropDownListOfCommunities(intCountyId)
             };
         }
+
+
+        private int GetOldestActiveVotingDateId()
+        {
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                List <Models.ElectionVotingDate> dbDate = context.ElectionVotingDates.Where(x => x.Active == true).ToList();
+
+                if (dbDate == null) { return 0; }
+
+                int oldestDateId = dbDate[0].Id;
+                DateTime votingDate = dbDate[0].Date;
+
+
+                foreach (var dateDTO in dbDate)
+                {
+                    if (dateDTO.Date < votingDate )
+                    {
+                        oldestDateId = dateDTO.Id;
+                        votingDate = dateDTO.Date;
+                    }
+                }
+
+                return oldestDateId;
+            }
+        }
+
+
+        public string GetVotingDateForSuppliedVotingDateId(int dateId)
+        {
+            // validate paramenter
+            int intDateId = ValidateAndReturnInteger(dateId);
+
+            // get date from database
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                ElectionVotingDate dateDTO = context.ElectionVotingDates.FirstOrDefault(x => x.Id == intDateId);
+
+                if (dateDTO == null) { return string.Empty; }
+
+                return dateDTO.Date.Date.ToShortDateString();
+            }
+        }
+
+
+
+        public bool ValidateCountyLocatedInOhio(int countyId)
+        {
+            // validate paramenter
+            int intCountyId = ValidateAndReturnInteger(countyId);
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                OhioCounty countyDTO = context.OhioCounties.FirstOrDefault(x => x.Id == intCountyId);
+
+                if (countyDTO != null) { return true; }
+
+                return false;
+            }
+        }
+
 
 
         public bool ValidateCommunityLocatedInCountyfromDatabase(int countyId, int communityId)
@@ -403,21 +471,27 @@ namespace OhioVoter.Controllers
 
 
 
-        public List<SelectListItem> GetDropDownListOfCounties()
+        public List<SelectListItem> GetDropDownListOfCountiesFromDatabase()
         {
-            List<Models.OhioCounty> dboCounties = GetCountyListFromDatabase();
-            List<SelectListItem> counties = new List<SelectListItem>();
-
-            for (int i = 0; i < dboCounties.Count; i++)
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
-                counties.Add(new SelectListItem()
-                {
-                    Value = dboCounties[i].Id.ToString(),
-                    Text = dboCounties[i].Name
-                });
-            }
+                List<Models.OhioCounty> dboCounties = context.OhioCounties.ToList();
 
-            return counties;
+                if (dboCounties == null) { return new List<SelectListItem>(); }
+
+                List<SelectListItem> counties = new List<SelectListItem>();
+
+                for (int i = 0; i < dboCounties.Count; i++)
+                {
+                    counties.Add(new SelectListItem()
+                    {
+                        Value = dboCounties[i].Id.ToString(),
+                        Text = dboCounties[i].Name.ToUpper()
+                    });
+                }
+
+                return counties;
+            }
         }
 
 

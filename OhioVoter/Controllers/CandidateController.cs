@@ -612,34 +612,36 @@ namespace OhioVoter.Controllers
                 {
                     // candidateLookUp == runningmate
                     Models.ElectionCandidate electionCandidateDTO = electionRunningMateLookUpDTO;
-                    // get candidate info from database
+                    // get runningmate info from database
                     Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
                     // convert to ViewModel
                     candidateSummaryVM = new CandidateSummaryViewModel(electionRunningMateDTO, electionCandidateDTO, electionRunningMateDTO);
                 }
-
-                // get candidate/runningmate info
-                Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
-                if (electionCandidateLookUpDTO == null)
-                {
-                    // candidateLookUp == NOT FOUND
-                    return new CandidateSummaryViewModel();
-                }
                 else
                 {
-                    // candidateLookUp == candidate 
-                    if (electionCandidateLookUpDTO.RunningMateId != 0)
+                    // get candidate/runningmate info
+                    Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
+                    if (electionCandidateLookUpDTO == null)
                     {
-                        // get runningmate info from datase
-                        Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == electionCandidateLookUpDTO.RunningMateId);
-                        // convert to ViewModel
-                        candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, electionCandidateLookUpDTO, electionRunningMateDTO);
+                        // candidateLookUp == NOT FOUND
+                        return new CandidateSummaryViewModel();
                     }
                     else
                     {
-                        // NO runningmate
-                        // convert to ViewModel
-                        candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, electionCandidateLookUpDTO);
+                        // candidateLookUp == candidate 
+                        if (electionCandidateLookUpDTO.RunningMateId != 0)
+                        {
+                            // get runningmate info from datase
+                            Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == electionCandidateLookUpDTO.RunningMateId);
+                            // convert to ViewModel
+                            candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, electionCandidateLookUpDTO, electionRunningMateDTO);
+                        }
+                        else
+                        {
+                            // NO runningmate
+                            // convert to ViewModel
+                            candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, electionCandidateLookUpDTO);
+                        }
                     }
                 }
 

@@ -410,6 +410,9 @@ hr {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 10px;
+    min-width: 40%;
+    max-width: 40%;
+    vertical-align: top;
 }
 
 #candidate_summary_runningmate {
@@ -417,11 +420,19 @@ hr {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 10px;
+    min-width: 40%;
+    max-width: 40%;
+    vertical-align: top;
 }
 
 #candidate_summary_img {
     width: 90px;
     margin-bottom: 10px;
+}
+
+#candidate_summary_img_not_selected{
+    width: 90px;
+    filter: opacity(30%);
 }
 
 #candidate_summary_btn {
@@ -477,7 +488,17 @@ hr {
     display: flex;
 }
 
-#candidate_compare_summary_first_group,
+
+
+
+#candidate_compare_summary_first_group {
+    min-width: 50%;
+    max-width: 50%;
+    text-align: center;
+    float: left;
+    padding-right: 10px;
+}
+
 #candidate_compare_political_first_group,
 #candidate_compare_caucus_first_group,
 #candidate_compare_professional_first_group,
@@ -492,25 +513,40 @@ hr {
     padding-right: 10px;
 }
 
-#candidate_compare_summary_first_candidate {
+#candidate_compare_summary_first_candidate,
+#candidate_compare_summary_second_candidate {
+    display: inline-block;
     margin-left: auto;
     margin-right: auto;
-    text-align: center;
+    margin-bottom: 10px;
+    min-width: 45%;
+    max-width: 45%;
     vertical-align: top;
 }
 
-#candidate_compare_summary_first_runningmate {
-    min-width: 49%;
-    max-width: 49%;
+#candidate_compare_summary_first_runningmate,
+#candidate_compare_summary_second_runningmate {
     display: inline-block;
-    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 45%;
+    max-width: 45%;
     vertical-align: top;
 }
 
-#candidate_compare_summary_first_img {
+#candidate_compare_summary_first_img,
+#candidate_compare_summary_second_img  {
     width: 90px;
     margin-bottom: 10px;
 }
+
+#candidate_compare_summary_first_img_not_selected,
+#candidate_compare_summary_second_img_not_selected {
+    width: 90px;
+    filter: opacity(30%);
+    margin-bottom: 10px;
+}
+
 
 #candidate_compare_summary_first_btn {
     margin-top: 10px;
@@ -523,8 +559,15 @@ hr {
 
 
 
+#candidate_compare_summary_second_group {
+    min-width: 50%;
+    max-width: 50%;
+    text-align: center;
+    float: right;
+    padding-left: 10px;
+    border-left: thick double #9ebcdb;
+}
 
-#candidate_compare_summary_second_group,
 #candidate_compare_political_second_group,
 #candidate_compare_caucus_second_group,
 #candidate_compare_professional_second_group,
@@ -538,31 +581,6 @@ hr {
     float: right;
     padding-left: 10px;
     border-left: thick double #9ebcdb;
-}
-
-
-#candidate_compare_summary_second_candidate {
-    min-width: 49%;
-    max-width: 49%;
-    padding-right: 10px;
-    vertical-align: top;
-    text-align: center;
-    display: inline-block;
-}
-
-#candidate_compare_summary_second_runningmate {
-    margin-left: auto;
-    margin-right: auto;
-    min-width: 40%;
-    max-width: 40%;
-    vertical-align: top;
-    text-align: center;
-    display: inline-block;
-}
-
-#candidate_compare_summary_second_img {
-    width: 90px;
-    margin-bottom: 10px;
 }
 
 #candidate_compare_summary_second_btn {
@@ -619,6 +637,10 @@ hr {
 /* #issue_lookup_group */
 
 /* #issue_lookup */ 
+
+#issue_lookup_date {
+    text-align: center;
+}
 
 #issue_lookup_table {
     margin-left: auto;
@@ -913,6 +935,18 @@ footer {
     .navbar-header {
         display: inherit;
     }
+
+
+    #candidate_compare_summary_first_img,
+    #candidate_compare_summary_second_img  {
+        width: 60px;
+    }
+
+    #candidate_compare_summary_first_img_not_selected,
+    #candidate_compare_summary_second_img_not_selected {
+        width: 60px;
+    }
+
 }
 
 
@@ -941,10 +975,16 @@ footer {
     }
 
     .candidate_list_photo {
-    width: 35px;
+        width: 35px;
     }
 
     .candidate_list_img {
         width: 20px;
     }
+
+    #candidate_compare_summary_first_group,
+    #candidate_compare_summary_second_group {
+        font-size: x-small;
+    }
+
 }

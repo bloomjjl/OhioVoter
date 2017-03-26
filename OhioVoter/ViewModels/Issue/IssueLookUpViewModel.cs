@@ -14,12 +14,16 @@ namespace OhioVoter.ViewModels.Issue
 
         }
 
+
         public string ControllerName { get; set; }
 
+        public int VotingDateId { get; set; }
+        public string VotingDate { get; set; }
+
         //public VotingDateDropDownList VotingDateDropDownList { get; set; }
-        [Display(Name = "Voting Date")]
-        public string SelectedVotingDateId { get; set; }
-        public IEnumerable<SelectListItem> VotingDates { get; set; }
+        //[Display(Name = "Voting Date")]
+        //public string SelectedVotingDateId { get; set; }
+        //public IEnumerable<SelectListItem> VotingDates { get; set; }
 
         //public CountyDropDownList CountyDropDownList { get; set; }
         [Display(Name = "County")]

@@ -1,7 +1,14 @@
 ﻿@model OhioVoter.ViewModels.Candidate.CandidateCompareSummarySecondViewModel
 
 <div id="candidate_compare_summary_second_candidate">
-    <img src="@Url.Content(Model.CandidateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_compare_summary_second_img" /> <br />
+    @if (Model.CandidateCompareSummarySecond.CandidateId == Model.CandidateSecondDisplayId)
+    {
+        <img src="@Url.Content(Model.CandidateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_compare_summary_second_img" /> <br />
+    }
+    else
+    {
+        <img src="@Url.Content(Model.CandidateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_compare_summary_second_img_not_selected" /> <br />
+    }
     @Model.CandidateCompareSummarySecond.FullName<br />
     @Model.CandidateCompareSummarySecond.PartyName<br />
     @Model.CandidateCompareSummarySecond.OfficeName
@@ -12,7 +19,14 @@
 <div id="candidate_compare_summary_second_runningmate">
     @{ if (Model.RunningMateCompareSummarySecond.CandidateId > 0)
         {
-            <img src="@Url.Content(@Model.RunningMateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_compare_summary_second_img" /> <br />
+            if (Model.RunningMateCompareSummarySecond.CandidateId == Model.CandidateSecondDisplayId)
+            {
+                <img src="@Url.Content(@Model.RunningMateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_compare_summary_second_img" /> <br />
+            }
+            else
+            {
+                <img src="@Url.Content(@Model.RunningMateCompareSummarySecond.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_compare_summary_second_img_not_selected" /> <br />
+            }
             @Model.RunningMateCompareSummarySecond.FullName<br />
             @Model.RunningMateCompareSummarySecond.PartyName<br />
             @Model.RunningMateCompareSummarySecond.OfficeName<br />

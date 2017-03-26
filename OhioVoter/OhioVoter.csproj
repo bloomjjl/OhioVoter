@@ -216,6 +216,7 @@
     <Compile Include="Models\BallotOffice.cs" />
     <Compile Include="Models\Candidate.cs" />
     <Compile Include="Models\CertifiedCandidate.cs" />
+    <Compile Include="Models\EmailServer.cs" />
     <Compile Include="Models\StateBoardOfEducation.cs" />
     <Compile Include="Models\ElectionDate.cs" />
     <Compile Include="Models\ElectionIssue.cs" />
