@@ -108,11 +108,17 @@ $(function () {
 
 
 
+
+
+
 });
 
 
+
+
+
+// ************ BALLOT ***********
     
-    // ************ BALLOT ***********
 /*
     $('.show-ballot-office').click(function () {
         console.log('button clicked to show office and candidates');

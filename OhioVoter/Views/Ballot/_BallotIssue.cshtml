@@ -1,26 +1,42 @@
 ﻿@model OhioVoter.ViewModels.Ballot.BallotIssueViewModel
 
+@{ 
+    var issue = Model;
+}
 
-<div class="panel-title panel-main-title ballot_issue_title">
-    @Html.HiddenFor(x => Model.Id)
-    <p>@Model.Title</p>
-</div>
 
-<div class="panel-body panel-main-body ballot_issue_information">
-    <p>
-        @Html.HiddenFor(x => Model.Id)
-        <i>@Html.DisplayFor(x => Model.Requirement)</i> <br />
-        @Html.DisplayFor(x => Model.Details) 
+<p>
+    @Html.HiddenFor(x => Model.ElectionIssueId)
+    @Html.HiddenFor(x => Model.Title)
+    @Html.HiddenFor(x => Model.Option1Value)
+    @Html.HiddenFor(x => Model.Option2Value)
+    <i>@Html.DisplayFor(x => Model.Requirement)</i> <br /><br />
+    @Html.DisplayFor(x => Model.Details)
 
-        @{ if (Model.FullTextUrl != "")
-            {
-                <br />
-                <a href="@Model.FullTextUrl" target="_blank">Learn More</a>
-            }
+    @{if (Model.FullTextUrl != null && Model.FullTextUrl != "")
+        {
+            <br />
+            @Html.ActionLink("View Full Text", "ViewIssue", "Ballot", new { fileName = Model.FullTextUrl }, new { target = "_blank" })
         }
-    </p>
-    <p>
-        @Html.RadioButton(@Model.Id.ToString(), Model.Option1) @Model.Option1 <br />
-        @Html.RadioButton(@Model.Id.ToString(), Model.Option2) @Model.Option2
-    </p>
-</div>
+    }
+</p>
+
+<p>
+    @{if (Model.OptionChecked == 0)
+        {
+            @Html.RadioButtonFor(x => Model.SelectedValue, Model.Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" }) <span>&nbsp;</span> @Model.Option1Value <br />
+            @Html.RadioButtonFor(x => Model.SelectedValue, Model.Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')" }) <span>&nbsp;</span> @Model.Option2Value
+        }
+        else if (Model.OptionChecked == 1)
+        {
+            @Html.RadioButtonFor(x => Model.SelectedValue, Model.Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')", @checked = "checked" }) <span>&nbsp;</span> @Model.Option1Value <br />
+            @Html.RadioButtonFor(x => Model.SelectedValue, Model.Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')" }) <span>&nbsp;</span> @Model.Option2Value
+
+        }
+        else if (Model.OptionChecked == 2)
+        {
+            @Html.RadioButtonFor(x => Model.SelectedValue, Model.Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" }) <span>&nbsp;</span> @Model.Option1Value <br />
+            @Html.RadioButtonFor(x => Model.SelectedValue, Model.Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')", @checked = "checked" }) <span>&nbsp;</span> @Model.Option2Value
+        }
+    }
+</p>

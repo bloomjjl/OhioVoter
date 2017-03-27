@@ -135,7 +135,7 @@ namespace OhioVoter.Controllers
                 {
                     // display ERROR message if email does not go through
                     TempData["Ballot"] = ballotVM;
-                    TempData["EmailBallotMessage"] = "There was a problem emailing ballot selections. Please try again.";
+                    TempData["EmailBallotMessage"] = "There was a problem emailing ballot selections. Make sure your email address is correct.";
                 }
             }
             else
@@ -281,13 +281,13 @@ namespace OhioVoter.Controllers
                 {
                     // add issue and selected option on ballot
                     strBody = string.Format("{0}{1}\r\n", strBody, ballotIssueVM[i].Title);
-                    strBody = string.Format("{0}[] {1}\r\n", strBody, ballotIssueVM[i].Option1Value);
+                    strBody = string.Format("{0}[] {1}\r\n\r\n", strBody, ballotIssueVM[i].Option1Value);
                 }
                 if (ballotIssueVM[i].OptionChecked == 2)
                 {
                     // add issue and selected option on ballot
                     strBody = string.Format("{0}{1}\r\n", strBody, ballotIssueVM[i].Title);
-                    strBody = string.Format("{0}[] {1}\r\n", strBody, ballotIssueVM[i].Option2Value);
+                    strBody = string.Format("{0}[] {1}\r\n\r\n", strBody, ballotIssueVM[i].Option2Value);
                 }
             }
 
@@ -489,7 +489,7 @@ namespace OhioVoter.Controllers
                 // check each office
                 for (int i = 0; i < ballotVM.BallotOfficeViewModel.Count(); i++)
                 {
-                    // check listeted candidates
+                    // check listed candidates
                     for (int j = 0; j < ballotVM.BallotOfficeViewModel[i].BallotListedCandidatesViewModel.Count(); j++)
                     {
                         // stop checking office if a selected candidate found

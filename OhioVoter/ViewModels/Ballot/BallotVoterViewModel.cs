@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -23,7 +24,7 @@ namespace OhioVoter.ViewModels.Ballot
         {
             VoterLocationId = hamiltonOhioVoterDTO.Id;
             OhioPrecinctId = hamiltonOhioVoterDTO.OhioPrecinctId;
-            PrecinctName = hamiltonOhioVoterDTO.OhioPrecinct.PrecinctName;
+            OhioPrecinctName = hamiltonOhioVoterDTO.OhioPrecinct.PrecinctName;
             AddressCityName = hamiltonOhioVoterDTO.AddressCityName;
             CountyId = hamiltonOhioVoterDTO.OhioCountyId;
             County = hamiltonOhioVoterDTO.OhioCounty.Name;
@@ -43,7 +44,8 @@ namespace OhioVoter.ViewModels.Ballot
 
         public int VoterLocationId { get; set; }
         public int OhioPrecinctId { get; set; }
-        public string PrecinctName { get; set; }
+        [Display(Name = "Precinct")]
+        public string OhioPrecinctName { get; set; }
 
         public string AddressNumber { get; set; }
         public string AddressStreetName { get; set; }

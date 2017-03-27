@@ -1,0 +1,28 @@
+﻿@model OhioVoter.ViewModels.Ballot.BallotCandidateViewModel
+
+@{ 
+    var writeinCandidate = Model;
+}
+
+
+<tr class="ballot_runningmate ballot_writein_runningmate">
+    <td>
+        @Html.HiddenFor(x => Model.RunningMateId)
+        @Html.HiddenFor(x => Model.RunningMateFirstName)
+        @Html.HiddenFor(x => Model.RunningMateMiddleName)
+        @Html.HiddenFor(x => Model.RunningMateLastName)
+        @Html.HiddenFor(x => Model.RunningMateSuffix)
+    </td>
+    <td class="ballot_runningmate_photo">
+        <img src="@Url.Content(Model.RunningMatePhoto)" />
+    </td>
+    <td class="ballot_runningmate_name">
+        @Html.DisplayFor(x => Model.RunningMateName)
+    </td>
+    <td class="ballot_runningmate_party">
+        &nbsp;
+    </td>
+    <td class="ballot_runningmate_view">
+        @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = writeinCandidate.RunningMateId }, new { target = "_blank" })
+    </td>
+</tr>

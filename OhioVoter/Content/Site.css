@@ -740,7 +740,11 @@ hr {
 
 }
 
-#ballot_lookup_table {
+#ballot_date {
+    text-align: center;
+}
+
+#ballot_information table {
     margin-right: auto; 
     margin-left: auto;
     width: 80%;
@@ -752,10 +756,15 @@ hr {
     vertical-align: middle;
 }
 
-#ballot_email_label {
+#ballot_email_label,
+#ballot_precinct_label {
     text-align: right; 
     padding-right: 10px;
     vertical-align: middle;
+}
+
+#ballot_precinct_value {
+    padding-left: 10px;
 }
 
 #ballot_email_input {
@@ -781,29 +790,39 @@ hr {
     background: #dee9f4;
 }
 
-.ballot_office_title, .ballot_issue_title {
+.ballot_office_title, 
+.ballot_issue_title {
     min-height: 70px;
 }
 
-.img_ballot_office, .img_ballot_issue {
+.ballot_office_checkbox img, 
+.img_ballot_issue {
     float: left;
     vertical-align: middle;
-    width: 30px; 
-    height: 30px;
+    width: 50px; 
+    height: 50px;
 }
 
-.show_ballot_office, .show_ballot_issue {
+.ballot_office_candidate_display {
+
+}
+
+.show_ballot_office, 
+.show_ballot_issue {
     float: right;
     vertical-align: middle;
     display: block;
     min-width: 65px;
+    min-height: 50px;
 }
 
-.hide_ballot_office, .hide_ballot_issue {
+.hide_ballot_office, 
+.hide_ballot_issue {
     float: right;
     vertical-align: middle;
     display: none;
     min-width: 65px;
+    min-height: 50px;
 }
 
 
@@ -833,14 +852,13 @@ hr {
 }
 
 .ballot_candidate_selected {
+    padding-left: 10px;
+    padding-right:5px;
     width: 5%;
 }
 
-.ballot_candidate_name, .ballot_runningmate_name {
-    width: 50%;
-}
-
-.ballot_candidate_name img {
+.ballot_candidate_photo img,
+.ballot_runningmate_photo img {
     margin-top: 5px;
     margin-right: 10px;
     padding-bottom: 5px;
@@ -848,11 +866,9 @@ hr {
     height: 3.5em;
 }
 
-.ballot_runningmate_name img {
-    padding-bottom: 5px;
-    margin-right: 10px;
-    width: 3.5em;
-    height: 3.5em;
+.ballot_candidate_name, 
+.ballot_runningmate_name {
+    width: 50%;
 }
 
 .ballot_candidate_party, .ballot_runningmate_party {

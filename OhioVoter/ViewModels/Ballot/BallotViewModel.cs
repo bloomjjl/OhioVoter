@@ -23,8 +23,6 @@ namespace OhioVoter.ViewModels.Ballot
             ControllerName = ballotVM.ControllerName;
             VotingDateId = ballotVM.VotingDateId;
             VotingDate = ballotVM.VotingDate;
-            //SelectedVotingDateId = ballotVM.SelectedVotingDateId;
-            //VotingDates = ballotVM.VotingDates;
             BallotVoterViewModel = ballotVoterVM;
             BallotOfficeViewModel = ballotOfficeVM;
             BallotIssueViewModel = ballotIssueVM;
@@ -34,7 +32,11 @@ namespace OhioVoter.ViewModels.Ballot
         public string ControllerName { get; set; }
 
         [Display(Name = "Email Address")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string VoterEmailAddress { get; set; }
+
+        public int PrecinctId { get; set; }
+        public string PrecinctName { get; set; }
 
         [Display(Name = "Election Date")]
         public string VotingDate { get; set; }

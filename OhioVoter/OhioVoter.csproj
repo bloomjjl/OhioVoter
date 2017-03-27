@@ -454,7 +454,7 @@
     <Content Include="Views\Issue\_IssueList.cshtml" />
     <Content Include="Views\Issue\_IssueDetails.cshtml" />
     <Content Include="Views\Ballot\_Ballot.cshtml" />
-    <Content Include="Views\Ballot\_BallotCandidate.cshtml" />
+    <Content Include="Views\Ballot\_BallotListedCandidate.cshtml" />
     <Content Include="Views\Ballot\_BallotOffice.cshtml" />
     <Content Include="Views\Ballot\_BallotIssue.cshtml" />
     <Content Include="Views\Manage\ChangeAddress.cshtml" />
@@ -463,6 +463,11 @@
     <Content Include="Views\Candidate\_CandidateListLoading.cshtml" />
     <Content Include="Views\Candidate\_CandidateListEmpty.cshtml" />
     <Content Include="Views\Candidate\_CandidateListSearchCriteriaNeeded.cshtml" />
+    <Content Include="Views\Ballot\_BallotListedRunningMate.cshtml" />
+    <Content Include="Views\Ballot\_BallotWriteInCandidate.cshtml" />
+    <Content Include="Views\Ballot\_BallotWriteInRunningMate.cshtml" />
+    <Content Include="Views\Ballot\_Ballot_OLD.cshtml" />
+    <Content Include="Views\Ballot\_Ballot_CandidateIssueViews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

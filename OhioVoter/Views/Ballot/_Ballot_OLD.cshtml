@@ -1,0 +1,491 @@
+﻿@model OhioVoter.ViewModels.Ballot.BallotViewModel
+
+@using (Html.BeginForm("EmailBallot", "Ballot", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div id="ballot_title" class="panel panel-group panel-main panel-main-group">
+
+        <div class="panel-title panel-main-title">
+            <p>Sample Ballot for @Model.VotingDate Election</p>
+        </div>
+
+        <div class="panel-body panel-main-body">
+
+            <div id="ballot_date" class="form-group">
+                @Html.HiddenFor(x => x.VotingDateId, new { @class = "candidate_summary_votingdate" })
+                <p><b>Election Date:</b> @Model.VotingDate</p>
+            </div>
+
+            <hr />
+
+            @if (TempData["EmailBallotMessage"] != null)
+            {
+                if (TempData["EmailBallotMessage"].ToString() == "SUCCESS")
+                {
+            <div class="alert alert-success">
+                <span class="glyphicon glyphicon-ok"></span>
+                YOU'RE BALLOT HAS BEEN EMAILED
+            </div>
+                }
+                else if (TempData["EmailBallotMessage"].ToString() != "")
+                {
+            <div class="alert alert-danger">
+                <span class="glyphicon glyphicon-ok"></span>
+                @TempData["EmailBallotMessage"].ToString()
+            </div>
+                }
+            }
+
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <div id="ballot_information">
+
+                <table>
+
+                    <tr>
+                        <td id="ballot_email_label">@Html.LabelFor(x => x.VoterEmailAddress)</td>
+                        <td id="ballot_email_input">@Html.TextBoxFor(x => x.VoterEmailAddress, new { @class = "form-control" })</td>
+                        <td>@Html.ValidationMessageFor(x => x.VoterEmailAddress, "", new { @class = "text-danger" })</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <input type="text" name="VotingDateId" value="@Model.VotingDateId" style="display: none;" />
+                            <button type="submit" id="ballot_send_button" class="btn btn-block panel-main-btn"> Email Your Ballot</button>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @* *** LIST OFFICES *** *@
+if (Model.BallotOfficeViewModel != null)
+{
+    @* ** DISPLAY OFFICE ** *@
+for (int i = 0; i < Model.BallotOfficeViewModel.Count; i++)
+{
+    // create office object for current office
+    var office = Model.BallotOfficeViewModel[i];
+
+    // store the officeId to be used with each office group of candidates
+    var class_Office_id = "class_office_" + office.ElectionOfficeId;
+
+    // set up the candidateId object to be used for both listed and write in candidates
+    var id_OfficeCandidiate = "";
+
+    <div class="panel panel-group panel-main panel-main-group ballot_office">
+
+        @* ** BALLOT OFFICE HEADER ** *@
+        <div class="panel-title panel-main-title ballot_office_header">
+
+            <div class="ballot_office_checkbox">
+                <img src="~/Content/images/box_checked.png" id="img_selected_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId"
+                     style="@(Model.BallotOfficeViewModel[i].HasSelectedCandidate ? "display:block" : "display:none")" />
+                <img src="~/Content/images/box_unchecked.png" id="img_notselected_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId"
+                     style="@(Model.BallotOfficeViewModel[i].HasSelectedCandidate ? "display:none" : "display:block")" />
+            </div>
+
+            <div class="ballot_office_candidate_display">
+                <button type="button" id="btn_show_ballot_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="btn panel-main-btn show_ballot_office"
+                        onclick="showBallotOffice(@Model.BallotOfficeViewModel[i].ElectionOfficeId)">
+                    Show
+                </button>
+
+                <button type="button" id="btn_hide_ballot_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="btn panel-main-btn hide_ballot_office"
+                        onclick="hideBallotOffice(@Model.BallotOfficeViewModel[i].ElectionOfficeId)">
+                    Hide
+                </button>
+            </div>
+
+            <div class="ballot_office_title">
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].ElectionOfficeId)
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].OfficeId)
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].OfficeName)
+                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].OfficeTerm)
+                @Model.BallotOfficeViewModel[i].OfficeName <br />
+                @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].OfficeTerm)
+            </div>
+
+        </div>
+        @* ** END BALLOT OFFICE HEADER ** *@
+
+
+        @* ** INDIVIDUAL OFFICES ** *@
+        <div id="ballot_candidates_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="panel-body panel-main-body ballot_office_candidates">
+
+            @* ** LISTED CANDIDATES GO HERE ** *@
+            @if (Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel.Count > 0)
+            {
+                <table id="ballot_listed_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="ballot_candidate_group ballot_Listed_candidate_group">
+                    <tr>
+                        <td colspan="5" class="ballot_candidate_Instruction"><span>(Select @Model.BallotOfficeViewModel[i].NumberOfSeats Candidate)</span></td>
+                    </tr>
+
+                    @* ** DISPLAY LISTED CANDIDATE ** *@
+                    @for (int j = 0; j < Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel.Count(); j++)
+                    {
+                        @*
+                            ViewBag.OfficeCandidateId = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].ElectionCandidateId;
+                            ViewBag.ElectionOfficeId = office.ElectionOfficeId;
+                            ViewBag.class_Office_id = class_Office_id;
+                            ViewBag.NumberOfSeatsForOffice = Model.BallotOfficeViewModel[i].NumberOfSeats;
+                            Html.RenderPartial("_BallotListedCandidate", Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j]);
+                        *@
+
+
+
+                    var listedCandidate = Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j];
+
+                    // get the candidateId for each candidate listed for current office
+                    id_OfficeCandidiate = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].ElectionCandidateId;
+
+
+
+                    <tr class="ballot_candidate ballot_listed_candidate">
+                        <td class="ballot_candidate_selected">
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].ElectionCandidateId)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateFirstName)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateMiddleName)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateLastName)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateSuffix)
+
+                            @Html.CheckBoxFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].IsSelected,
+                                              new
+                                              {
+                                                  @id = id_OfficeCandidiate,
+                                                  @class = class_Office_id,
+                                                  @name = id_OfficeCandidiate,
+                                                  @onclick = "ballotOfficeCandidateSelection('" + office.ElectionOfficeId + "', '" + class_Office_id + "', '" + id_OfficeCandidiate + "', " + Model.BallotOfficeViewModel[i].NumberOfSeats + ", $('." + class_Office_id + ":checked').size() )"
+                                              })
+                        </td>
+
+                        <td class="ballot_candidate_photo">
+                            <img src="@Url.Content(Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidatePhoto)" />
+                        </td>
+                        <td class="ballot_candidate_name">
+                            @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].CandidateName)
+                        </td>
+                        <td class="ballot_candidate_party">
+                            @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].PartyName)
+                        </td>
+                        <td class="ballot_candidate_view">
+                            @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = listedCandidate.CandidateId }, new { target = "_blank" })
+                        </td>
+                    </tr>
+
+
+
+                    @* ** DISPLAY LISTED RUNNINGATE ** *@
+                    if (Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateId > 0)
+                    {
+                        @*
+                            Html.RenderPartial("_BallotListedRunningMate", Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j]);
+                        *@
+
+                        <tr class="ballot_runningmate ballot_listed_runningmate">
+                            <td>
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateFirstName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateMiddleName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateLastName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateSuffix)
+                            </td>
+                            <td class="ballot_runningmate_photo">
+                                <img src="@Url.Content(Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMatePhoto)" />
+                            </td>
+                            <td class="ballot_runningmate_name">
+                                @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotListedCandidatesViewModel[j].RunningMateName)
+                            </td>
+                            <td class="ballot_runningmate_party">
+                                &nbsp;
+                            </td>
+                            <td class="ballot_runningmate_view">
+                                @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = listedCandidate.RunningMateId }, new { target = "_blank" })
+                            </td>
+                        </tr>
+                    } @* ** END DISPLAY LISTED RUNNINGATE ** *@
+                    } @* ** END DISPLAY LISTED CANDIDATE ** *@
+                </table>
+            } @* ** END LISTED CANDIDATES GO HERE ** *@
+
+            @* ** WRITE-IN CANDIDATES GO HERE ** *@
+            @if (Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel.Count > 0)
+            {
+
+                <div class="ballot_writein_candidate_buttons">
+                    <button type="button" id="show_writein_candidate_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="btn panel-main-btn show_writein_candidate"
+                            onclick="showWriteInCandidates(@Model.BallotOfficeViewModel[i].ElectionOfficeId)">
+                        Show Write-in Candidates
+                    </button>
+                    <button type="button" id="hide_writein_candidate_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="btn panel-main-btn hide_writein_candidate"
+                            onclick="hideWriteInCandidates(@Model.BallotOfficeViewModel[i].ElectionOfficeId)">
+                        Hide Write-in Candidates
+                    </button>
+                </div>
+
+                <table id="ballot_writein_candidate_office_@Model.BallotOfficeViewModel[i].ElectionOfficeId" class="ballot_candidate_group ballot_Writein_candidate_group ">
+
+                    @* ** DISPLAY EACH WRITE-IN CANDIDATE ** *@
+                    @for (int j = 0; j < Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel.Count(); j++)
+                    {
+                        @*
+                            ViewBag.OfficeCandidateId = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].ElectionCandidateId;
+                            ViewBag.ElectionOfficeId = office.ElectionOfficeId;
+                            ViewBag.class_Office_id = class_Office_id;
+                            ViewBag.NumberOfSeatsForOffice = Model.BallotOfficeViewModel[i].NumberOfSeats;
+                            Html.RenderPartial("_BallotWriteInCandidate", Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j]);
+                        *@
+
+                    var writeinCandidate = Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j];
+
+                    // get the candidateId for each candidate listed for current office
+                    id_OfficeCandidiate = "id_office_" + office.ElectionOfficeId + "_candidate_" + Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].ElectionCandidateId;
+
+                    <tr class="ballot_candidate ballot_writein_candidate">
+                        <td class="ballot_candidate_selected">
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].ElectionCandidateId)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateFirstName)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateMiddleName)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateLastName)
+                            @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateSuffix)
+
+                            @Html.CheckBoxFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].IsSelected,
+                                                 new
+                                                 {
+                                                     @id = id_OfficeCandidiate,
+                                                     @class = class_Office_id,
+                                                     @name = id_OfficeCandidiate,
+                                                     @onclick = "ballotOfficeCandidateSelection('" + office.ElectionOfficeId + "', '" + class_Office_id + "', '" + id_OfficeCandidiate + "', " + Model.BallotOfficeViewModel[i].NumberOfSeats + ", $('." + class_Office_id + ":checked').size() )"
+                                                 })
+                        </td>
+
+                        <td class="ballot_candidate_photo">
+                            <img src="@Url.Content(Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidatePhoto)" />
+                        </td>
+                        <td class="ballot_candidate_name">
+                            @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].CandidateName)
+                        </td>
+                        <td class="ballot_candidate_party">
+                            @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].PartyName)
+                        </td>
+                        <td class="ballot_candidate_view">
+                            @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = writeinCandidate.CandidateId }, new { target = "_blank" })
+                        </td>
+                    </tr>
+
+
+
+                    @* ** DISPLAY EACH WRITE-IN RUNNINGATE ** *@
+                    if (Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateId > 0)
+                    {
+                        @*
+                            Html.RenderPartial("_BallotWriteInRunningMate", Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j]);
+                        *@
+
+                        <tr class="ballot_runningmate ballot_writein_runningmate">
+                            <td>
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateId)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateFirstName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateMiddleName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateLastName)
+                                @Html.HiddenFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateSuffix)
+                            </td>
+                            <td class="ballot_runningmate_photo">
+                                <img src="@Url.Content(Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMatePhoto)" />
+                            </td>
+                            <td class="ballot_runningmate_name">
+                                @Html.DisplayFor(x => Model.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel[j].RunningMateName)
+                            </td>
+                            <td class="ballot_runningmate_party">
+                                &nbsp;
+                            </td>
+                            <td class="ballot_runningmate_view">
+                                @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = writeinCandidate.RunningMateId }, new { target = "_blank" })
+                            </td>
+                        </tr>
+                    } @* ** END DISPLAY EACH WRITE-IN RUNNINGATE ** *@
+                    } @* ** END DISPLAY EACH WRITE-IN CANDIDATE ** *@
+
+                </table>
+            } @* ** END WRITE-IN CANDIDATES/RUNNINGMATES GO HERE ** *@
+
+        </div>
+        @* ** END INDIVIDUAL OFFICES ** *@
+
+    </div>
+} @* ** END DISPLAY OFFICE ** *@
+} @* *** END LIST OFFICES ON BALLOT *** *@
+
+
+
+    @* *** LIST ISSUES *** *@
+if (Model.BallotIssueViewModel != null)
+{
+    for (int i = 0; i < Model.BallotIssueViewModel.Count; i++)
+    {
+        var issue = Model.BallotIssueViewModel[i];
+
+        <div class="panel panel-group panel-main panel-main-group ballot_issue">
+            <div class="panel-title panel-main-title ballot_issue_title">
+                <div>
+                    <img src="~/Content/images/box_checked.png" id="img_selected_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="img_ballot_issue"
+                         style="@(Model.BallotIssueViewModel[i].OptionChecked > 0 ? "display:inline-block" : "display:none")" />
+                    <img src="~/Content/images/box_unchecked.png" id="img_notselected_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="img_ballot_issue"
+                         style="@(Model.BallotIssueViewModel[i].OptionChecked > 0 ? "display:none" : "display:inline-block")" />
+                </div>
+                <div>
+                    <button type="button" id="btn_show_ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="btn panel-main-btn show_ballot_issue"
+                            onclick="showBallotIssue(@Model.BallotIssueViewModel[i].ElectionIssueId)">
+                        Show
+                    </button>
+
+                    <button type="button" id="btn_hide_ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="btn panel-main-btn hide_ballot_issue"
+                            onclick="hideBallotIssue(@Model.BallotIssueViewModel[i].ElectionIssueId)">
+                        Hide
+                    </button>
+                </div>
+                <div>
+                    @Html.HiddenFor(x => Model.BallotIssueViewModel[i].ElectionIssueId)
+                    <p>@Model.BallotIssueViewModel[i].Title</p>
+                </div>
+            </div>
+
+
+            <div id="ballot_issue_@Model.BallotIssueViewModel[i].ElectionIssueId" class="panel-body panel-main-body ballot_issue_information">
+                @*
+                    @{ Html.RenderPartial("_BallotIssue", Model.BallotIssueViewModel[i]);}
+                *@
+
+                <p>
+                    @Html.HiddenFor(x => Model.BallotIssueViewModel[i].ElectionIssueId)
+                    @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Title)
+                    @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Option1Value)
+                    @Html.HiddenFor(x => Model.BallotIssueViewModel[i].Option2Value)
+                    <i>@Html.DisplayFor(x => Model.BallotIssueViewModel[i].Requirement)</i> <br /><br />
+                    @Html.DisplayFor(x => Model.BallotIssueViewModel[i].Details)
+
+                    @{if (Model.BallotIssueViewModel[i].FullTextUrl != null && Model.BallotIssueViewModel[i].FullTextUrl != "")
+                        {
+                            <br />
+                            @Html.ActionLink("View Full Text", "ViewIssue", "Ballot", new { fileName = Model.BallotIssueViewModel[i].FullTextUrl }, new { target = "_blank" })
+                        }
+                    }
+                </p>
+                <p>
+                    @{if (Model.BallotIssueViewModel[i].OptionChecked == 0)
+                        {
+                            @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" }) <span>&nbsp;</span> @Model.BallotIssueViewModel[i].Option1Value <br />
+                            @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')" }) <span>&nbsp;</span> @Model.BallotIssueViewModel[i].Option2Value
+                        }
+                        else if (Model.BallotIssueViewModel[i].OptionChecked == 1)
+                        {
+                            @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')", @checked = "checked" }) <span>&nbsp;</span> @Model.BallotIssueViewModel[i].Option1Value <br />
+                            @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')" }) <span>&nbsp;</span> @Model.BallotIssueViewModel[i].Option2Value
+
+                        }
+                        else if (Model.BallotIssueViewModel[i].OptionChecked == 2)
+                        {
+                            @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option1Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '1')" }) <span>&nbsp;</span> @Model.BallotIssueViewModel[i].Option1Value <br />
+                            @Html.RadioButtonFor(x => Model.BallotIssueViewModel[i].SelectedValue, Model.BallotIssueViewModel[i].Option2Value, new { @onchange = "BallotIssueSelection('" + issue.ElectionIssueId + "', '2')", @checked = "checked" }) <span>&nbsp;</span> @Model.BallotIssueViewModel[i].Option2Value
+                        }
+                    }
+                </p>
+
+            </div>
+
+        </div>
+                        }
+                        @* *** END LIST EACH Issue ON BALLOT *** *@
+                            }
+                        }
+
+
+@section scripts{
+    <script>
+        @* allow user to show/hide offices on the ballot *@
+        function showBallotOffice(id) {
+            document.getElementById('btn_show_ballot_office_' + id).style.display = 'none';
+            document.getElementById('btn_hide_ballot_office_' + id).style.display = 'inline-block';
+            document.getElementById('ballot_candidates_office_' + id).style.display = 'inline-block';
+        };
+        function hideBallotOffice(id) {
+            document.getElementById('btn_show_ballot_office_' + id).style.display = 'inline-block';
+            document.getElementById('btn_hide_ballot_office_' + id).style.display = 'none';
+            document.getElementById('ballot_candidates_office_' + id).style.display = 'none';
+        };
+
+        @* allow user to show/hide write in candidates on the ballot *@
+        function showWriteInCandidates(id) {
+            document.getElementById('show_writein_candidate_office_' + id).style.display = 'none';
+            document.getElementById('hide_writein_candidate_office_' + id).style.display = 'inline-block';
+            document.getElementById('ballot_writein_candidate_office_' + id).style.display = 'inline-block';
+        }
+        function hideWriteInCandidates(id) {
+            document.getElementById('show_writein_candidate_office_' + id).style.display = 'inline-block';
+            document.getElementById('hide_writein_candidate_office_' + id).style.display = 'none';
+            document.getElementById('ballot_writein_candidate_office_' + id).style.display = 'none';
+        }
+
+        @* make sure the correct number of candidates are selected for each office on the ballot *@
+        function ballotOfficeCandidateSelection(officeId, className, idName, maxSelection, numSelected) {
+            // are there more than one possible candidate that can be selected?
+            if (maxSelection > 1 && numSelected > maxSelection) {
+                // YES. don't allow any more than max. number to be selected
+                document.getElementById(idName).checked = false;
+                alert("Only " + maxSelection + " candidates can be selected for this office.");
+            }
+            else if (numSelected > maxSelection) {
+                var candidateNames = document.getElementsByClassName(className);
+                for (var i = 0; i < candidateNames.length; i++) {
+                    var candidate = candidateNames[i];
+                    candidate.checked = false;
+                }
+                document.getElementById(idName).checked = true;
+            }
+
+            // has a candidate been selected for office?
+            if (numSelected == "0") {
+                document.getElementById("img_selected_office_" + officeId).style.display = 'none';
+                document.getElementById("img_notselected_office_" + officeId).style.display = 'inline-block';
+            }
+            else {
+                document.getElementById("img_selected_office_" + officeId).style.display = 'inline-block';
+                document.getElementById("img_notselected_office_" + officeId).style.display = 'none';
+            }
+        }
+
+        @* allow user to show/hide issues on the ballot *@
+        function showBallotIssue(id) {
+            document.getElementById('btn_show_ballot_issue_' + id).style.display = 'none';
+            document.getElementById('btn_hide_ballot_issue_' + id).style.display = 'inline-block';
+            document.getElementById('ballot_issue_' + id).style.display = 'inline-block';
+        };
+        function hideBallotIssue(id) {
+            document.getElementById('btn_show_ballot_issue_' + id).style.display = 'inline-block';
+            document.getElementById('btn_hide_ballot_issue_' + id).style.display = 'none';
+            document.getElementById('ballot_issue_' + id).style.display = 'none';
+        };
+
+        @* let user know when issue selected on ballot *@
+        function BallotIssueSelection(id, optionSelected) {
+            if (optionSelected == "0") {
+                document.getElementById("img_selected_issue_" + id).style.display = 'none';
+                document.getElementById("img_notselected_issue_" + id).style.display = 'inline-block';
+            }
+            else {
+                document.getElementById("img_selected_issue_" + id).style.display = 'inline-block';
+                document.getElementById("img_notselected_issue_" + id).style.display = 'none';
+            }
+        }
+
+    </script>
+}

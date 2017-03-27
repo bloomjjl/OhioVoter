@@ -1,0 +1,44 @@
+﻿@model OhioVoter.ViewModels.Ballot.BallotCandidateViewModel
+
+@{ 
+    var writeinCandidate = Model;
+
+    // get the candidateId for each candidate listed for current office
+    var id_OfficeCandidiate = ViewBag.OfficeCandidateId;
+    var id_ElectionOffice = ViewBag.ElectionOfficeId;
+    var class_Office_id = ViewBag.class_Office_id;
+    var numberOfSeatsForOffice = ViewBag.NumberOfSeatsForOffice;
+}
+
+
+<tr class="ballot_candidate ballot_writein_candidate">
+    <td class="ballot_candidate_selected">
+        @Html.HiddenFor(x => Model.ElectionCandidateId)
+        @Html.HiddenFor(x => Model.CandidateFirstName)
+        @Html.HiddenFor(x => Model.CandidateMiddleName)
+        @Html.HiddenFor(x => Model.CandidateLastName)
+        @Html.HiddenFor(x => Model.CandidateSuffix)
+
+        @Html.CheckBoxFor(x => Model.IsSelected,
+                                    new
+                                    {
+                                        @id = id_OfficeCandidiate,
+                                        @class = class_Office_id,
+                                        @name = id_OfficeCandidiate,
+                                        @onclick = "ballotOfficeCandidateSelection('" + id_ElectionOffice + "', '" + class_Office_id + "', '" + id_OfficeCandidiate + "', " + numberOfSeatsForOffice + ", $('." + class_Office_id + ":checked').size() )"
+                                    })
+    </td>
+
+    <td class="ballot_candidate_photo">
+        <img src="@Url.Content(Model.CandidatePhoto)" />
+    </td>
+    <td class="ballot_candidate_name">
+        @Html.DisplayFor(x => Model.CandidateName)
+    </td>
+    <td class="ballot_candidate_party">
+        @Html.DisplayFor(x => Model.PartyName)
+    </td>
+    <td class="ballot_candidate_view">
+        @Html.ActionLink("Candidate Info", "Index", "Candidate", new { candidateId = writeinCandidate.CandidateId }, new { target = "_blank" })
+    </td>
+</tr>
