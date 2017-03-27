@@ -410,6 +410,16 @@ hr {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 10px;
+    min-width: 80%;
+    max-width: 80%;
+    vertical-align: top;
+}
+
+#candidate_summary_candidate_with_runningmate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
     min-width: 40%;
     max-width: 40%;
     vertical-align: top;

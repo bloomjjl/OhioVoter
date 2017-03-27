@@ -17,26 +17,26 @@
 
             <hr />
 
-            <div id="candidate_summary_candidate">
-                @if (Model.CandidateSummary.CandidateId == Model.SelectedCandidateId)
+            @{ if (Model.RunningMateSummary.CandidateId > 0)
                 {
-                    <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img" /> <br />
-                }
-                else
-                {
-                    <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img_not_selected" /> <br />
-                }
-                @Model.CandidateSummary.FullName<br />
-                @Model.CandidateSummary.PartyName<br />
-                @Model.CandidateSummary.OfficeName
-                @Model.CandidateSummary.OfficeTerm<br />
-                @Model.CandidateSummary.OfficeHolderName
-            </div>
+                    <div id="candidate_summary_candidate_with_runningmate">
+                        @if (Model.CandidateSummary.CandidateId == Model.SelectedCandidateId)
+                        {
+                            <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img" /> <br />
+                        }
+                        else
+                        {
+                            <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img_not_selected" /> <br />
+                        }
+                        @Model.CandidateSummary.FullName<br />
+                        @Model.CandidateSummary.PartyName<br />
+                        @Model.CandidateSummary.OfficeName
+                        @Model.CandidateSummary.OfficeTerm<br />
+                        @Model.CandidateSummary.OfficeHolderName
+                    </div>
 
-            <div id="candidate_summary_runningmate">
-                @{ if (Model.RunningMateSummary.CandidateId > 0)
-                    {
-                        if (Model.RunningMateSummary.CandidateId == Model.SelectedCandidateId)
+                    <div id="candidate_summary_runningmate">
+                        @if (Model.RunningMateSummary.CandidateId == Model.SelectedCandidateId)
                         {
                             <img src="@Url.Content(@Model.RunningMateSummary.VoteSmartPhotoUrl)" alt="Running Mate" id="candidate_summary_img" /> <br />
                         }
@@ -48,9 +48,28 @@
                         @Model.RunningMateSummary.PartyName<br />
                         @Model.RunningMateSummary.OfficeName<br />
                         @Model.RunningMateSummary.OfficeHolderName
-                    }
+                    </div>
                 }
-            </div>
+                else
+                {
+                    <div id="candidate_summary_candidate">
+                        @if (Model.CandidateSummary.CandidateId == Model.SelectedCandidateId)
+                        {
+                            <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img" /> <br />
+                        }
+                        else
+                        {
+                            <img src="@Url.Content(Model.CandidateSummary.VoteSmartPhotoUrl)" alt="Candidate" id="candidate_summary_img_not_selected" /> <br />
+                        }
+                        @Model.CandidateSummary.FullName<br />
+                        @Model.CandidateSummary.PartyName<br />
+                        @Model.CandidateSummary.OfficeName
+                        @Model.CandidateSummary.OfficeTerm<br />
+                        @Model.CandidateSummary.OfficeHolderName
+                    </div>
+
+                }
+            }
 
         </div>
 

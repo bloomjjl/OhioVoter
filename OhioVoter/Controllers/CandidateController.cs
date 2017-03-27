@@ -569,6 +569,10 @@ namespace OhioVoter.Controllers
                     VoteSmartCandidateId = "0"
                 };
             }
+            else
+            {
+                runningMateId = summaryVM.RunningMateSummary.CandidateId;
+            }
 
             // validate votesmart candidate objects
             if (!string.IsNullOrEmpty(summaryVM.CandidateSummary.VoteSmartCandidateId))
