@@ -157,18 +157,41 @@ namespace OhioVoter.Controllers
 
 
 
-        public ActionResult RemoveFirst(int? firstCandidateId, int? secondCandidateId, int? candidateCount, int? dateId, int? officeId)
+        public ActionResult RemoveFirst(int? firstCandidateId, int? secondCandidateId, int? candidateCompareCount, int? dateId, int? officeId)
         {
             // validate values provided
             int suppliedFirstCandidateId = ValidateAndReturnInteger(firstCandidateId);
             int suppliedSecondCandidateId = ValidateAndReturnInteger(secondCandidateId);
-            int suppliedCandidateCompareCount = ValidateAndReturnInteger(candidateCount);
+            int suppliedCandidateCompareCount = ValidateAndReturnInteger(candidateCompareCount);
             int suppliedDateId = ValidateAndReturnInteger(dateId);
             int suppliedOfficeId = ValidateAndReturnInteger(officeId);
 
-            return RedirectToAction("Compare", "Candidate", new { firstCandidateId = suppliedSecondCandidateId, secondCandidateId = 0, dateId = suppliedDateId, officeId = suppliedOfficeId });
-        }
+            // first candidate removed
+            if (suppliedCandidateCompareCount > 1)
+            {
+                // clear message
+                TempData["CandidateMessage"] = string.Empty;
 
+                // move secondCandidateId to first and clear candidateSecondId to display dropdownlist
+                return RedirectToAction("Compare", "Candidate", new { firstCandidateId = suppliedSecondCandidateId, secondCandidateId = 0, dateId = suppliedDateId, officeId = suppliedOfficeId });
+            }
+            else if (suppliedCandidateCompareCount == 1)
+            {
+                // store message to display to user
+                TempData["CandidateMessage"] = "Only two candidates are running for this office";
+
+                // display secondCandidateId
+                return RedirectToAction("Index", "Candidate", new { candidateId = suppliedSecondCandidateId });
+            }
+            else
+            {
+                // store message to display to user
+                TempData["CandidateMessage"] = "No other candidates to display";
+
+                // display secondCandidateId
+                return RedirectToAction("Index", "Candidate", new { candidateId = suppliedSecondCandidateId });
+            }
+        }
 
 
         public ActionResult RemoveSecond(int? firstCandidateId, int? secondCandidateId, int? candidateCompareCount, int? dateId, int? officeId)
@@ -180,14 +203,29 @@ namespace OhioVoter.Controllers
             int suppliedDateId = ValidateAndReturnInteger(dateId);
             int suppliedOfficeId = ValidateAndReturnInteger(officeId);
 
-            // displayed candidate removed from list
+            // second candidate removed
             if (suppliedCandidateCompareCount > 1)
             {
+                // clear message
+                TempData["CandidateMessage"] = string.Empty;
+
                 // clear candidateSecondId to display dropdownlist
                 return RedirectToAction("Compare", "Candidate", new { firstCandidateId = suppliedFirstCandidateId, secondCandidateId = 0, dateId = dateId, officeId = officeId });
             }
+            else if (suppliedCandidateCompareCount == 1)
+            {
+                // store message to display to user
+                TempData["CandidateMessage"] = "Only two candidates are running for this office";
+
+                // display firstCandidateId
+                return RedirectToAction("Index", "Candidate", new { candidateId = suppliedFirstCandidateId });
+            }
             else
             {
+                // store message to display to user
+                TempData["CandidateMessage"] = "No other candidates to display";
+
+                // display firstCandidateId
                 return RedirectToAction("Index", "Candidate", new { candidateId = suppliedFirstCandidateId });
             }
         }
@@ -557,10 +595,22 @@ namespace OhioVoter.Controllers
             string voteSmartCandidateId = "0";
             string voteSmartRunningMateId = "0";
 
+            int votingdateId = GetCurrentVotingDateIdfromDatabase();
+
             // Get candidate/running mate objects for view model
-            CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(candidateLookUpId);
+            CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(candidateLookUpId, votingdateId);
             if (summaryVM == null || summaryVM.CandidateSummary == null) { return new CandidateDisplayViewModel(); }
             int candidateId = ValidateAndReturnInteger(summaryVM.CandidateSummary.CandidateId);
+
+            if (summaryVM.CandidateCount == 1)
+            {
+                TempData["CandidateMessage"] = "Only one candidate is running for this office.";
+            }
+            else
+            {
+                //TempData["CandidateMessage"] = string.Empty;
+            }
+
             if (summaryVM.RunningMateSummary == null)
             {
                 summaryVM.RunningMateSummary = new RunningMateSummary()
@@ -600,16 +650,46 @@ namespace OhioVoter.Controllers
         }
 
 
-
-
-        public CandidateSummaryViewModel GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(int candidateLookUpId)
+        public int GetNumberOfCandidatesRunningForCurrentElectionOfficeFromDatabase(int candidateId, int votingDateId)
         {
+            // validate parameters
+            int intCandidateId = ValidateAndReturnInteger(candidateId);
+            int intVotingDateId = ValidateAndReturnInteger(votingDateId);
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                // get list of offices for election
+                List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == intVotingDateId).ToList();
+                if (dbCandidates == null) { return 0; }
+
+                // get office for candidate
+                Models.ElectionCandidate officeDTO = dbCandidates.FirstOrDefault(x => x.CandidateId == intCandidateId);
+                if (officeDTO == null) { return 0; }
+
+                // count number of candidates running for office
+                List<Models.ElectionCandidate> candidateDTO = dbCandidates.Where(x => x.ElectionOfficeId == officeDTO.ElectionOfficeId).ToList();
+                if (candidateDTO == null) { return 0; }
+
+                return candidateDTO.Count;
+            }
+        }
+
+
+
+        public CandidateSummaryViewModel GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(int candidateLookUpId, int votingDateId)
+        {
+            // validate parameters
+            int intCandidateLookUpId = ValidateAndReturnInteger(candidateLookUpId);
+
+            // get number of candidates running for same election office as candidateId
+            int candidateCount = GetNumberOfCandidatesRunningForCurrentElectionOfficeFromDatabase(intCandidateLookUpId, votingDateId);
+
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
                 CandidateSummaryViewModel candidateSummaryVM = new CandidateSummaryViewModel();
 
                 // get candidate LookUp info from database
-                Models.ElectionCandidate electionRunningMateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.RunningMateId == candidateLookUpId);
+                Models.ElectionCandidate electionRunningMateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.RunningMateId == intCandidateLookUpId);
 
                 // is candidate LookUp a runningmate?
                 if (electionRunningMateLookUpDTO != null)
@@ -617,14 +697,14 @@ namespace OhioVoter.Controllers
                     // candidateLookUp == runningmate
                     Models.ElectionCandidate electionCandidateDTO = electionRunningMateLookUpDTO;
                     // get runningmate info from database
-                    Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
+                    Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == intCandidateLookUpId);
                     // convert to ViewModel
-                    candidateSummaryVM = new CandidateSummaryViewModel(electionRunningMateDTO, electionCandidateDTO, electionRunningMateDTO);
+                    candidateSummaryVM = new CandidateSummaryViewModel(electionRunningMateDTO, candidateCount, electionCandidateDTO, electionRunningMateDTO);
                 }
                 else
                 {
                     // get candidate/runningmate info
-                    Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == candidateLookUpId);
+                    Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == intCandidateLookUpId);
                     if (electionCandidateLookUpDTO == null)
                     {
                         // candidateLookUp == NOT FOUND
@@ -638,13 +718,13 @@ namespace OhioVoter.Controllers
                             // get runningmate info from datase
                             Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == electionCandidateLookUpDTO.RunningMateId);
                             // convert to ViewModel
-                            candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, electionCandidateLookUpDTO, electionRunningMateDTO);
+                            candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, candidateCount, electionCandidateLookUpDTO, electionRunningMateDTO);
                         }
                         else
                         {
                             // NO runningmate
                             // convert to ViewModel
-                            candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, electionCandidateLookUpDTO);
+                            candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, candidateCount, electionCandidateLookUpDTO);
                         }
                     }
                 }
@@ -1094,7 +1174,7 @@ namespace OhioVoter.Controllers
         public CandidateCompareSummaryFirstViewModel GetCandidateCompareSummaryFirstViewModel(CandidateCompareDisplayViewModel viewModel, int totalNumberOfCandidates)
         {
             // Get candidate/running mate objects for view model
-            CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(viewModel.CandidateFirstDisplayId);
+            CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(viewModel.CandidateFirstDisplayId, viewModel.VotingDateId);
             if (summaryVM == null || summaryVM.CandidateSummary == null) { return new CandidateCompareSummaryFirstViewModel(); }
 
             int candidateId = ValidateAndReturnInteger(summaryVM.CandidateSummary.CandidateId);
@@ -1122,7 +1202,7 @@ namespace OhioVoter.Controllers
             }
 
             // Get candidate/running mate objects for view model
-            CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(viewModel.CandidateSecondDisplayId);
+            CandidateSummaryViewModel summaryVM = GetCandidateAndRunningMateForCurrentElectionDateFromDatabase(viewModel.CandidateSecondDisplayId, viewModel.VotingDateId);
 
             if (summaryVM == null || summaryVM.CandidateSummary == null)
             {
@@ -1845,6 +1925,20 @@ namespace OhioVoter.Controllers
                 return date;
             }
 
+        }
+
+
+        private int GetCurrentVotingDateIdfromDatabase()
+        {
+            using (Models.OhioVoterDbContext context = new OhioVoterDbContext())
+            {
+                List<Models.ElectionVotingDate> dbDates = context.ElectionVotingDates.Where(x => x.Active == true).OrderBy(x => x.Date).ToList();
+                if (dbDates == null) { return 0; }
+
+                if (dbDates.Count == 0) { return 0; }
+
+                return dbDates[0].Id;
+            }
         }
 
 

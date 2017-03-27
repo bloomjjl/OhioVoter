@@ -11,10 +11,11 @@ namespace OhioVoter.ViewModels.Candidate
     {
         public CandidateSummaryViewModel() { }
 
-        public CandidateSummaryViewModel(Models.ElectionCandidate selectedCandidateDTO, Models.ElectionCandidate candidateDTO)
+        public CandidateSummaryViewModel(Models.ElectionCandidate selectedCandidateDTO, int candidateListCount, Models.ElectionCandidate candidateDTO)
         {
             VotingDate = selectedCandidateDTO.ElectionVotingDate.Date.ToShortDateString();
             VotingDateId = selectedCandidateDTO.ElectionVotingDate.Id;
+            CandidateCount = candidateListCount;
             SelectedCandidateId = selectedCandidateDTO.Candidate.Id;
             SelectedCandidateOfficeId = selectedCandidateDTO.ElectionOfficeId;
 
@@ -34,10 +35,11 @@ namespace OhioVoter.ViewModels.Candidate
             };
         }
 
-        public CandidateSummaryViewModel(Models.ElectionCandidate SelectedCandidateDTO, Models.ElectionCandidate candidateDTO, Models.ElectionCandidate runingMateDTO)
+        public CandidateSummaryViewModel(Models.ElectionCandidate SelectedCandidateDTO, int candidateListCount, Models.ElectionCandidate candidateDTO, Models.ElectionCandidate runingMateDTO)
         {
             VotingDate = SelectedCandidateDTO.ElectionVotingDate.Date.ToShortDateString();
             VotingDateId = SelectedCandidateDTO.ElectionVotingDate.Id;
+            CandidateCount = candidateListCount;
             SelectedCandidateId = SelectedCandidateDTO.Candidate.Id;
             SelectedCandidateOfficeId = SelectedCandidateDTO.ElectionOfficeId;
 
@@ -74,6 +76,7 @@ namespace OhioVoter.ViewModels.Candidate
 
         public int VotingDateId { get; set; }
         public string VotingDate { get; set; }
+        public int CandidateCount { get; set; }
         public int SelectedCandidateId { get; set; }
         public int SelectedCandidateOfficeId { get; set; }
         public CandidateSummary CandidateSummary { get; set; }

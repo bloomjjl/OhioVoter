@@ -405,6 +405,10 @@ hr {
     text-align: center;
 }
 
+#candidate_summary_message {
+    text-align: left;
+}
+
 #candidate_summary_candidate {
     display: inline-block;
     margin-left: auto;
@@ -525,6 +529,17 @@ hr {
 
 #candidate_compare_summary_first_candidate,
 #candidate_compare_summary_second_candidate {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    min-width: 90%;
+    max-width: 90%;
+    vertical-align: top;
+}
+
+#candidate_compare_summary_first_candidate_with_runningmate,
+#candidate_compare_summary_second_candidate_with_runningmate {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;

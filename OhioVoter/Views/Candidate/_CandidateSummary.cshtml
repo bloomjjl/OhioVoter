@@ -17,6 +17,14 @@
 
             <hr />
 
+            @{ if (TempData["CandidateMessage"] != null && TempData["CandidateMessage"].ToString() != string.Empty)
+                {
+                    <div id="candidate_summary_message" class="alert alert-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                        @TempData["CandidateMessage"].ToString()
+                    </div>
+                }
+            }
             @{ if (Model.RunningMateSummary.CandidateId > 0)
                 {
                     <div id="candidate_summary_candidate_with_runningmate">
@@ -68,14 +76,18 @@
                         @Model.CandidateSummary.OfficeHolderName
                     </div>
 
-                }
+                    }
             }
 
         </div>
 
         <div id="candidate_summary_btn">
             @Html.ActionLink("Change Candidate", "Index", "Candidate", new { candidateId = 0 }, new { @id = "candidate_summary_new_btn", @class = "btn btn-block panel-main-btn" })
-            @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { firstCandidateId = Model.SelectedCandidateId, secondCandidateId = 0, dateId = Model.VotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id = "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
+            @{ if (Model.CandidateCount > 1)
+                {
+                    @Html.ActionLink("Compare Second Candidate", "Compare", "Candidate", new { firstCandidateId = Model.SelectedCandidateId, secondCandidateId = 0, dateId = Model.VotingDateId, officeId = Model.SelectedCandidateOfficeId }, new { @id = "candidate_summary_compare_btn", @class = "btn btn-block panel-main-btn" })
+                }
+            }
         </div>
 
     </div>

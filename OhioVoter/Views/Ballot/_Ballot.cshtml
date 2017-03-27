@@ -24,17 +24,17 @@
             {
                 if (TempData["EmailBallotMessage"].ToString() == "SUCCESS")
                 {
-            <div class="alert alert-success">
-                <span class="glyphicon glyphicon-ok-circle"></span>
-                BALLOT HAS BEEN EMAILED
-            </div>
+                    <div class="alert alert-success">
+                        <span class="glyphicon glyphicon-ok-circle"></span>
+                        BALLOT HAS BEEN EMAILED
+                    </div>
                 }
                 else if (TempData["EmailBallotMessage"].ToString() != "")
                 {
-            <div class="alert alert-danger">
-                <span class="glyphicon glyphicon-remove-circle"></span>
-                @TempData["EmailBallotMessage"].ToString()
-            </div>
+                    <div class="alert alert-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                        @TempData["EmailBallotMessage"].ToString()
+                    </div>
                 }
             }
             @*
