@@ -93,7 +93,7 @@ namespace OhioVoter.Services
 
             try
             {
-                /*
+                
                 // *********************************
                 // setup amazon email transfer for website
                 System.Net.Mail.SmtpClient smtpWebsiteClient = new System.Net.Mail.SmtpClient()
@@ -107,9 +107,10 @@ namespace OhioVoter.Services
                 // Send Message
                 smtpWebsiteClient.Send(email);
                 // *********************************
-                */
+                
 
 
+                /*
                 // *********************************
                 // setup email transfer for test
                 System.Net.Mail.SmtpClient smtpTestClient = new System.Net.Mail.SmtpClient()
@@ -119,6 +120,7 @@ namespace OhioVoter.Services
                 // Send Message
                 smtpTestClient.Send(email);
                 // *********************************
+                */
 
                 return true;
             }
