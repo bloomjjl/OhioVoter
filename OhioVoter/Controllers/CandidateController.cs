@@ -248,7 +248,7 @@ namespace OhioVoter.Controllers
                 CandidateDisplayViewModel candidateDisplayVM = GetCandidateDisplayViewModel(model.CandidateId);
                 return PartialView("_CandidateDisplay", candidateDisplayVM);
             }
-
+            
             // Election Date to display
             Models.ElectionVotingDate date = GetOldestVotingDate();
 
@@ -311,10 +311,10 @@ namespace OhioVoter.Controllers
             {
                 // no office provided
                 // display all candidates for current election
-                //return GetListOfCandidatesForCurrentElectionFromDatabase(electionDateId, candidateLookUpName);
+                return GetListOfCandidatesForCurrentElectionFromDatabase(electionDateId, candidateLookUpName);
 
                 // improve performance by displaying smaller list of candidates
-                return new List<CandidateListViewModel>();
+                //return new List<CandidateListViewModel>();
             }
             else if (electionOfficeId == 0)
             {
@@ -339,11 +339,7 @@ namespace OhioVoter.Controllers
             {
                 List<ElectionCandidate> dbCandidates = null;
 
-                // get info from database
-                dbCandidates = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
-                                                            .OrderBy(x => x.Candidate.FirstName)
-                                                            .OrderBy(x => x.Candidate.LastName)
-                                                            .ToList();
+               
 
                 // is a candidate being looked up?
                 if (!string.IsNullOrEmpty(candidateLookUpName))
@@ -351,8 +347,19 @@ namespace OhioVoter.Controllers
                     // remove candidates from list if don't contain matching string in first or last name
                     candidateLookUpName = candidateLookUpName.ToLower();
 
-                    dbCandidates = dbCandidates.Where(c => candidateLookUpName.Any(ec => c.Candidate.CandidateFirstLastName.ToLower().Contains(candidateLookUpName)))
-                                               .ToList();
+                    dbCandidates = context.ElectionCandidates.Include("Candidate").Include("ElectionOffice").Include("Party").Include("ElectionOffice.Office")
+                                                            .Where(x => x.ElectionVotingDateId == dateId && (x.Candidate.FirstName + " " + x.Candidate.LastName).Contains(candidateLookUpName))
+                                                            .OrderBy(x => x.Candidate.FirstName)
+                                                            .OrderBy(x => x.Candidate.LastName)
+                                                            .ToList();
+                } else
+                {
+                     // get info from database
+                dbCandidates = context.ElectionCandidates.Include("Candidate").Include("ElectionOffice").Include("Party").Include("ElectionOffice.Office")
+                                                            .Where(x => x.ElectionVotingDateId == dateId)
+                                                            .OrderBy(x => x.Candidate.FirstName)
+                                                            .OrderBy(x => x.Candidate.LastName)
+                                                            .ToList();
                 }
 
                 if (dbCandidates == null || dbCandidates.Count == 0) { return new List<CandidateListViewModel>(); }
@@ -2105,7 +2112,7 @@ namespace OhioVoter.Controllers
                 List<SelectListItem> electionOffices = new List<SelectListItem>();
 
                 // get list of offices with candidates for election
-                List<ElectionCandidate> dbElectionCandidateOffices = context.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
+                List<ElectionCandidate> dbElectionCandidateOffices = context.ElectionCandidates.Include("ElectionOffice.Office").Where(x => x.ElectionVotingDateId == dateId)
                                                                                                .ToArray()
                                                                                                .GroupBy(x => x.ElectionOfficeId)
                                                                                                .Select(g => g.First())

@@ -32,11 +32,12 @@
             }
 
         </table>
-
+        
         <p>
             <a href="~/Content/images/2017_OhioElectionCalendar.pdf" target="_blank" id="calender_btn" class="btn panel-main-btn">View all the dates for current election year &raquo;</a><br />
+            @Html.ActionLink("Full Election Calender", "ElectionCalendar", "Home", new { target = "_blank", id = "calender_btn", @class = "btn btn-block panel-main-btn" })
             <br />
-            <a href="#"> Sign up to receive emailed reminders </a>
+            @Html.ActionLink("Sign up for emailed reminders", "EmailSignUp", "Home")
         </p>
 
     </div>

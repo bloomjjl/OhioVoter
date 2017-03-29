@@ -16,14 +16,14 @@ namespace OhioVoter.Services
 
         public Email()
         {
-            _amazonSMTP_Host = getAmazonHostFromDatabase("OhioVoter.org");
+            _amazonSMTP_Host = GetAmazonHostFromDatabase("OhioVoter.org");
             _amazonSMTP_UserName = GetAmazonUserNameFromDatabase("OhioVoter.org");
             _amazonSMTP_Password = GetAmazonPasswordFromDatabase(_amazonSMTP_UserName);
             _amazonSMTP_Port = 587;
         }
 
 
-        public string getAmazonHostFromDatabase(string website)
+        public string GetAmazonHostFromDatabase(string website)
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
@@ -129,6 +129,91 @@ namespace OhioVoter.Services
                 return false;
             }
         }
+
+
+
+        public bool SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(string emailAddress)
+        {
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                List<Models.EmailList> dbEmailAddress = context.EmailLists.ToList();
+                // make sure database connection is good
+                if (dbEmailAddress == null) { return false; }
+
+                Models.EmailList emailAddressDTO = dbEmailAddress.FirstOrDefault(x => x.EmailAddress == emailAddress);
+
+                // new email?
+                if (emailAddressDTO == null)
+                {
+                    return AddEmailToEmailListInDatabase(emailAddress);
+                }
+
+                // inactive email?
+                if (emailAddressDTO.IsActive == false || emailAddressDTO.IsVerified == false)
+                {
+                    return UpdateEmailInEmailListInDatabase(emailAddress);
+                }
+
+                return false;
+            }
+        }
+
+
+        public bool AddEmailToEmailListInDatabase(string emailAddress)
+        {
+            bool isAdded = false;
+
+            // vaidate parameter
+            if (string.IsNullOrEmpty(emailAddress)) { return isAdded; }
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                Models.EmailList emailDTO = new Models.EmailList()
+                {
+                    EmailAddress = emailAddress,
+                    DateCreated = DateTime.Now,
+                    DateModified = DateTime.Now,
+                    IsVerified = true,
+                    IsActive = true
+                };
+
+                context.EmailLists.Add(emailDTO);
+
+                context.SaveChanges();
+
+                isAdded = true;
+            }
+
+            return isAdded;
+        }
+
+
+        public bool UpdateEmailInEmailListInDatabase(string emailAddress)
+        {
+            bool isUpdated = false;
+
+            // vaidate parameter
+            if (string.IsNullOrEmpty(emailAddress)) { return isUpdated; }
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                Models.EmailList emailDTO = context.EmailLists.FirstOrDefault(x => x.EmailAddress == emailAddress);
+                if (emailDTO == null) { return isUpdated; }
+
+                emailDTO.DateModified = DateTime.Now;
+                emailDTO.IsVerified = true;
+                emailDTO.IsActive = true;
+
+                emailDTO = context.EmailLists.Add(emailDTO);
+
+                context.SaveChanges();
+
+                isUpdated = true;
+            }
+
+            return isUpdated;
+        }
+
 
     }
 }

@@ -124,6 +124,26 @@ namespace OhioVoter.Services
         }
 
 
+        public Models.RegisterViewModel GetRegistrationLocationFromSession()
+        {
+            // make sure session exists
+            if (System.Web.HttpContext.Current.Session == null)
+            {
+                return new Models.RegisterViewModel();
+            }
+            else if (System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] == null ||
+                     System.Web.HttpContext.Current.Session[VoterLocationZipCode] == null)
+            {
+                return new Models.RegisterViewModel();
+            }
+
+            return new Models.RegisterViewModel()
+            {
+                StreetAddress = System.Web.HttpContext.Current.Session[VoterLocationStreetAddress] as string,
+                ZipCode = System.Web.HttpContext.Current.Session[VoterLocationZipCode] as string
+            };
+        }
+
 
         /// <summary>
         /// get the voter location information from the session
@@ -137,7 +157,7 @@ namespace OhioVoter.Services
                 UpdateDefaultSessionItemsForVoterLocation();
             }
             else if (System.Web.HttpContext.Current.Session[VoterLocationStatus] == null ||
-                System.Web.HttpContext.Current.Session[VoterLocationStatus] as string == "")
+                     System.Web.HttpContext.Current.Session[VoterLocationStatus] as string == "")
             {
                 UpdateDefaultSessionItemsForVoterLocation();
             }

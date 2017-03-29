@@ -13,6 +13,9 @@ namespace OhioVoter.Controllers
 {
     public class HomeController : Controller
     {
+        private static string _controllerName = "Home";
+
+
         /// <summary>
         /// get the information to display on page
         /// </summary>
@@ -21,12 +24,11 @@ namespace OhioVoter.Controllers
         {
             LocationController location = new LocationController();
 
-            string controllerName = "Home";
-            UpdateSessionWithNewControllerNameForSideBar(controllerName);
+            UpdateSessionWithNewControllerNameForSideBar(_controllerName);
 
             HomeViewModel viewModel = new HomeViewModel()
             {
-                ControllerName = controllerName,
+                ControllerName = _controllerName,
                 Calendar = GetCalendarViewModel(),
                 Poll = GetPollResultsViewModel(),
                 RssFeeds = GetRssFeedViewModel()
@@ -36,6 +38,141 @@ namespace OhioVoter.Controllers
         }
 
 
+        [HttpGet]
+        public ActionResult EmailSignUp()
+        {
+            UpdateSessionWithNewControllerNameForSideBar(_controllerName);
+
+            // display form for user to fill out
+            return View("EmailSignUp", new EmailSignUpViewModel(_controllerName));
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EmailSignup(string emailAddress)
+        {
+            // validate email format
+            if (string.IsNullOrEmpty(emailAddress))
+            {
+                ModelState.AddModelError("", "Email Address is required");
+                return View("EmailSignUp");
+            }
+
+            // update database to start sending email correspondence
+            Services.Email email = new Services.Email();
+            bool isSetUp = email.SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(emailAddress);
+
+            // present user with view to verify email supplied
+            if (isSetUp)
+            {
+                return View("EmailSetUp");
+            }
+            else
+            {
+                ModelState.AddModelError("", "There was a problem. Check your Email Address is required");
+                return View("EmailSignUp");
+            }
+        }
+
+
+
+
+
+
+        public void SendEmailToUserForVerification(string emailAddress, bool isSetUp)
+        {
+            Services.Email email = new Services.Email();
+            bool isEmailSent = false;
+            string subject = string.Format("{0}", "Email Verification");
+            string body = string.Format("{0} {1}\r\n\r\n{2}{3}\r\n\r\n{4}\r\n\r\n{5}\r\n\r\n{6}\r\n\r\n{7}",
+                "We have received a request to authorize this email address to receive monthly correspondence from OhioVoter.org about upcoming election dates.",
+                "If you requested this verification, please go to the following URL to confirm that you are authorized to use this email address:",
+                "https://ohiovoter.org/home/emailverification?emailAddress=",
+                emailAddress,
+                "Your request will not be processed unless you confirm the address using this URL. This link expires 24 hours after your original verification request.",
+                "If you did NOT request to verify this email address, do not click on the link.",
+                "Sincerely",
+                "The OhioVoter.org Team");
+
+
+            if (isSetUp)
+            {
+                // send email address initial email to verify ownership
+                isEmailSent = email.SendEmail(emailAddress, subject, body);
+                // display message to check inbox to validate supplied email
+            }
+            else
+            {
+                // display message that encountered a problem setting up email check email address and try again.
+            }
+        }
+
+
+
+
+
+
+        public ActionResult EmailVerification(string emailAddress)
+        {
+            // validate parameter
+            if (string.IsNullOrEmpty(emailAddress))
+            {
+                // no email provided to check
+            }
+
+            // update email list
+            bool isUpdated = UpdateEmailVerificationInEmailListInDatabase(emailAddress);
+            string messageHeader;
+            string messageBody;
+
+            if (isUpdated)
+            {
+                messageHeader = "SUCCESS!";
+                messageBody = "Your email has been verified.";
+            }
+            else
+            {
+                messageHeader = "PROBLEM!";
+                messageBody = string.Format("{0}", 
+                    "Your email was not verified. Please click the following link to resend a verification email.");
+            }
+            // send email verifying update
+            return View();
+        }
+
+
+
+        public bool UpdateEmailVerificationInEmailListInDatabase(string emailAddress)
+        {
+            bool isUpdated = false;
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                Models.EmailList emailDTO = context.EmailLists.FirstOrDefault(x => x.EmailAddress == emailAddress);
+                if (emailDTO == null) { return isUpdated; }
+
+                if (emailDTO.IsActive)
+                {
+                    // make sure updated within time constraint
+                    int hourResponseMax = 24;
+                    DateTime beginDate = emailDTO.DateModified;
+
+
+                    if (DateTime.Now.CompareTo(beginDate.AddHours(hourResponseMax)) <= 0)
+                    {
+                        emailDTO.IsVerified = true;
+
+                        context.SaveChanges();
+
+                        isUpdated = true;
+                    }
+                }
+            }
+
+            return isUpdated;
+        }
 
 
         private void UpdateSessionWithNewControllerNameForSideBar(string controllerName)

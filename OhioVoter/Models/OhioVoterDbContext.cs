@@ -23,6 +23,7 @@ namespace OhioVoter.Models
         public DbSet<ElectionIssuePrecinct> ElectionIssuePrecincts { get; set; }
         public DbSet<ElectionOffice> ElectionOffices { get; set; }
         public DbSet<ElectionVotingDate> ElectionVotingDates { get; set; }
+        public DbSet<EmailList> EmailLists { get; set; }
         public DbSet<EmailServer> EmailServers { get; set; }
         public DbSet<HamiltonOhioVoter> HamiltonOhioVoters { get; set; }
         public DbSet<OfficeHolder> OfficeHolders { get; set; }

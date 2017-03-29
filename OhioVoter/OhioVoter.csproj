@@ -201,6 +201,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BallotController.cs" />
     <Compile Include="Controllers\CandidateController.cs" />
+    <Compile Include="ViewModels\Home\EmailVerificationViewModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Models\BallotOffice.cs" />
     <Compile Include="Models\Candidate.cs" />
     <Compile Include="Models\CertifiedCandidate.cs" />
+    <Compile Include="Models\EmailList.cs" />
     <Compile Include="Models\EmailServer.cs" />
     <Compile Include="Models\StateBoardOfEducation.cs" />
     <Compile Include="Models\ElectionDate.cs" />
@@ -301,6 +303,7 @@
     <Compile Include="ViewModels\Candidate\CandidateProfessionalViewModel.cs" />
     <Compile Include="ViewModels\Google\Representatives.cs" />
     <Compile Include="ViewModels\Home\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\Home\EmailSignUpViewModel.cs" />
     <Compile Include="ViewModels\Home\PollViewModel.cs" />
     <Compile Include="ViewModels\Google\Address.cs" />
     <Compile Include="ViewModels\Google\CivicInfo.cs" />
@@ -468,6 +471,8 @@
     <Content Include="Views\Ballot\_BallotWriteInRunningMate.cshtml" />
     <Content Include="Views\Ballot\_Ballot_OLD.cshtml" />
     <Content Include="Views\Ballot\_Ballot_CandidateIssueViews.cshtml" />
+    <Content Include="Views\Home\EmailSignUp.cshtml" />
+    <Content Include="Views\Home\EmailVerification.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

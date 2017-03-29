@@ -88,6 +88,9 @@ namespace OhioVoter.Models
         [StringLength(5, ErrorMessage = "The zip code must be a set of 5 numbers.")]
         [DataType(DataType.PostalCode)]
         public string ZipCode { get; set; }
+
+        [Display(Name = "Receive Email Reminders?")]
+        public bool ReceiveEmailReminder { get; set; }
     }
 
     public class ResetPasswordViewModel

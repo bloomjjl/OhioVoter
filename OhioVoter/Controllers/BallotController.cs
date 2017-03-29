@@ -615,6 +615,8 @@ namespace OhioVoter.Controllers
                 // get office information for voter from databse
                 List<BallotOfficeViewModel> collectionBallotOfficeVM = GetListOfOfficesAndCandidatesForBallot(intDateId, ballotVoterVM, listSelectedCandidatesOnBallot);
 
+                // performance 739 ms
+
                 // get issue information for voter from database
                 List<BallotIssueViewModel> collectionBallotIssueVM = GetListOfIssuesForBallot(ballotVoterVM, listSelectedIssuesOnBallot);
 
@@ -880,7 +882,7 @@ namespace OhioVoter.Controllers
             // get list of all offices for current election date
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
-                List<Models.ElectionOffice> dbOffices = context.ElectionOffices.Where(x => x.ElectionVotingDateId == dateId)
+                List<Models.ElectionOffice> dbOffices = context.ElectionOffices.Include("Office").Where(x => x.ElectionVotingDateId == dateId)
                                                                                        .Distinct()
                                                                                        .OrderBy(x => x.Office.OfficeSortOrder)
                                                                                        .ToList();
@@ -1049,7 +1051,8 @@ namespace OhioVoter.Controllers
                     string currentOfficeTerm = ballotOfficesVM[i].OfficeTerm;
 
                     // get election candidate/runningmate for office ID
-                    List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == currentOfficeId)
+                    List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates.Include("CertifiedCandidate").Include("Candidate").Include("Party")
+                                                                                            .Where(x => x.ElectionOfficeId == currentOfficeId)
                                                                                             .OrderBy(x => x.Candidate.FirstName)
                                                                                             .OrderBy(x => x.Candidate.LastName)
                                                                                             .ToList();

@@ -151,7 +151,11 @@ namespace OhioVoter.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            // get user address and zip code if provided in sidebar
+            Services.SessionExtensions session = new Services.SessionExtensions();
+            RegisterViewModel model = session.GetRegistrationLocationFromSession();
+
+            return View("Register", model);
         }
 
         //
@@ -170,8 +174,15 @@ namespace OhioVoter.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     StreetAddress = model.StreetAddress,
-                    ZipCode = model.ZipCode
+                    ZipCode = model.ZipCode,
                 };
+
+                // Add user to email list?
+                if (model.ReceiveEmailReminder)
+                {
+                    Services.Email email = new Services.Email();
+                    email.SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(model.Email);
+                }
 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -192,6 +203,10 @@ namespace OhioVoter.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+
+
+
 
 
         //

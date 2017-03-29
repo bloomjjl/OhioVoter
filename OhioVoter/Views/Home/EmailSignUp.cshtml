@@ -1,0 +1,66 @@
+﻿@model OhioVoter.ViewModels.Home.EmailSignUpViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "EmailReminder";
+}
+
+
+<div class="row">
+
+    <div id="side-bar" class="col-sm-4">
+        @{Html.RenderAction("DisplaySideBar", "Location");}
+    </div>
+
+    <div class="col-sm-8">
+
+        <div class="panel-page-group">
+            <h2><p class="panel-page-title">Email Sign Up</p></h2>
+        </div>
+
+        <div class="panel panel-group panel-main panel-main-group">
+
+            <div class="panel-title panel-main-title">
+                <p>Sign Up For Monthly Reminders</p>
+            </div>
+
+            <div class="panel-body panel-main-body">
+
+
+                @using (Html.BeginForm("EmailSignUp", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EmailAddress, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.EmailAddress, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.EmailAddress, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Sign Up" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div>
+                    @Html.ActionLink("Cancel", "Index", "Home")
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

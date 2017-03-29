@@ -479,39 +479,60 @@ namespace OhioVoter.Controllers
                 // only storing OHIO addresses in database 
                 string stateAbbreviation = "OH";
 
-                //for (int i = 0; i < dbLocations.Count(); i++)
-                foreach (var locationDTO in dbLocations)
+                var matched = dbLocations.Where(x => (x.AddressNumber + " " + x.AddressStreet) == capsStreetAddress || 
+                    (x.AddressNumber + " " + x.AddressStreet + " " + x.AddressSuffix_Short) == capsStreetAddress ||
+                    (x.AddressNumber + " " + x.AddressStreet + " " + x.AddressSuffix_Long) == capsStreetAddress ||
+                    (x.AddressNumber + " " + x.AddressPreDirectional_Short + " " + x.AddressStreet + " " + x.AddressSuffix_Short) == capsStreetAddress ||
+                    (x.AddressNumber + " " + x.AddressPreDirectional_Long + " " + x.AddressStreet + " " + x.AddressSuffix_Short) == capsStreetAddress ||
+                    (x.AddressNumber + " " + x.AddressPreDirectional_Short + " " + x.AddressStreet + " " + x.AddressSuffix_Long) == capsStreetAddress ||
+                    (x.AddressNumber + " " + x.AddressPreDirectional_Long + " " + x.AddressStreet + " " + x.AddressSuffix_Long) == capsStreetAddress).FirstOrDefault();
+                if (matched != null)
                 {
-                    if (capsStreetAddress == string.Format("{0} {1}", locationDTO.AddressNumber, locationDTO.AddressStreet))
+                    if (!capsStreetAddress.EndsWith(matched.AddressSuffix_Short))
                     {
-                        string address_short = string.Format("{0} {1}", capsStreetAddress, locationDTO.AddressSuffix_Short);
-                        return new VoterLocationViewModel(locationDTO, address_short.ToUpper(), stateAbbreviation);
+                        capsStreetAddress = capsStreetAddress + " " + matched.AddressSuffix_Short;
                     }
-                    else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
-                    {
-                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
-                    }
-                    else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
-                    {
-                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
-                    }
-                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
-                    {
-                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
-                    }
-                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
-                    {
-                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
-                    }
-                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
-                    {
-                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
-                    }
-                    else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
-                    {
-                        return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
-                    }
+                    return new VoterLocationViewModel(matched, capsStreetAddress, stateAbbreviation);
                 }
+                else
+                {
+                    return new VoterLocationViewModel();
+                }
+
+
+                    //for (int i = 0; i < dbLocations.Count(); i++)
+                    foreach (var locationDTO in dbLocations)
+                    {
+                        if (capsStreetAddress == string.Format("{0} {1}", locationDTO.AddressNumber, locationDTO.AddressStreet))
+                        {
+                            string address_short = string.Format("{0} {1}", capsStreetAddress, locationDTO.AddressSuffix_Short);
+                            return new VoterLocationViewModel(locationDTO, address_short.ToUpper(), stateAbbreviation);
+                        }
+                        else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
+                        {
+                            return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
+                        }
+                        else if (capsStreetAddress == string.Format("{0} {1} {2}", locationDTO.AddressNumber, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
+                        {
+                            return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
+                        }
+                        else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
+                        {
+                            return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
+                        }
+                        else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Short))
+                        {
+                            return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
+                        }
+                        else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Short, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
+                        {
+                            return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
+                        }
+                        else if (capsStreetAddress == string.Format("{0} {1} {2} {3}", locationDTO.AddressNumber, locationDTO.AddressPreDirectional_Long, locationDTO.AddressStreet, locationDTO.AddressSuffix_Long))
+                        {
+                            return new VoterLocationViewModel(locationDTO, capsStreetAddress, stateAbbreviation);
+                        }
+                    }
 
                 return new VoterLocationViewModel();
             }
