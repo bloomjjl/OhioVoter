@@ -17,12 +17,16 @@
             </div>
 
             <div class="rss-feed">
-                @foreach (var item in Model.CnbcRssFeed.Items)
-                {
-                    <div class="rss-feed-title"><a href="@item.Element.Link_0" target="_blank">@item.Element.Title</a></div>
-                    <div class="rss-feed-pubdate">@item.Element.PubDate</div>
-                    <div class="rss-feed-description">@item.Element.Summary</div>
-                    <br />
+                @{if (Model.CnbcRssFeed != null)
+                    {
+                        foreach (var item in Model.CnbcRssFeed.Items)
+                        {
+                            <div class="rss-feed-title"><a href="@item.Element.Link_0" target="_blank">@item.Element.Title</a></div>
+                            <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                            <div class="rss-feed-description">@item.Element.Summary</div>
+                            <br />
+                        }
+                    }
                 }
             </div>
 
@@ -39,13 +43,17 @@
             </div>
 
             <div class="rss-feed">
-                @foreach (var item in Model.CnnRssFeed.Items)
-                {
-                    <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
-                    <div class="rss-feed-pubdate">@item.Element.PubDate</div>
-                    <div class="rss-feed-description">@item.Element.Summary</div>
-                    <br />
-                }
+                @{if (Model.CnnRssFeed.Items != null)
+                    {
+                        foreach (var item in Model.CnnRssFeed.Items)
+                        {
+                        <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                        <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                        <div class="rss-feed-description">@item.Element.Summary</div>
+                        <br />
+                        }
+                    }
+                    }
             </div>
 
         </div>
@@ -61,16 +69,49 @@
             </div>
 
             <div class="rss-feed">
-                @foreach (var item in Model.FoxNewsRssFeed.Items)
-                {
-                    <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
-                    <div class="rss-feed-pubdate">@item.Element.PubDate</div>
-                    <div class="rss-feed-description">@item.Element.Summary</div>
-                    <br />
+                @{if (Model.FoxNewsRssFeed.Items != null)
+                    {
+                        foreach (var item in Model.FoxNewsRssFeed.Items)
+                        {
+                            <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                            <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                            <div class="rss-feed-description">@item.Element.Summary</div>
+                            <br />
+                        }
+                    }
                 }
             </div>
 
         </div>
+
+        <hr />
+
+        <div class="rss-group">
+
+            <div class="rss-channel">
+                <a href="@Model.OhioSecretaryOfStateRssFeed.Channel.Element.Link_0" target="_blank">
+                    <img src="@Model.OhioSecretaryOfStateRssFeed.Channel.Element.Image" alt="Ohio Secretary Of State News" />
+                </a>
+            </div>
+
+            <div class="rss-feed">
+                @{if (Model.OhioSecretaryOfStateRssFeed.Items != null)
+                    {
+                        foreach (var item in Model.OhioSecretaryOfStateRssFeed.Items)
+                        {
+                            <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                            <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                            <div class="rss-feed-description">@item.Element.Summary</div>
+                            <br />
+                        }
+                    }
+                }
+            </div>
+
+        </div>
+
+
+
 
     </div>
 

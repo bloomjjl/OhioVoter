@@ -186,7 +186,7 @@ namespace OhioVoter.Controllers
                 StateAbbreviation = "OH",
                 ZipCode = "43215",
                 ZipCodeSuffix = "3726",
-                Website = "http://www.sos.state.oh.us/"
+                Website = "https://www.sos.state.oh.us/"
             };
         }
 

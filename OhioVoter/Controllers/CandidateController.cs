@@ -80,8 +80,6 @@ namespace OhioVoter.Controllers
             if (viewModel.CandidateSecondCompareCount == 0)
             {
                 // no additional candidates found to display
-                // John Barnes is only candidate running for office
-                // TODO: add error message "no other candidates are running for this office"
                 return RedirectToAction("Index", "Candidate", new { candidateId = suppliedFirstCandidateId });
             }
 
@@ -347,19 +345,27 @@ namespace OhioVoter.Controllers
                     // remove candidates from list if don't contain matching string in first or last name
                     candidateLookUpName = candidateLookUpName.ToLower();
 
-                    dbCandidates = context.ElectionCandidates.Include("Candidate").Include("ElectionOffice").Include("Party").Include("ElectionOffice.Office")
-                                                            .Where(x => x.ElectionVotingDateId == dateId && (x.Candidate.FirstName + " " + x.Candidate.LastName).Contains(candidateLookUpName))
-                                                            .OrderBy(x => x.Candidate.FirstName)
-                                                            .OrderBy(x => x.Candidate.LastName)
-                                                            .ToList();
+                    dbCandidates = context.ElectionCandidates
+                        .Include("ElectionOffice")
+                        .Include("ElectionOffice.Office")
+                        .Include("Candidate")
+                        .Include("Party")
+                        .Where(x => x.ElectionVotingDateId == dateId && (x.Candidate.FirstName + " " + x.Candidate.LastName).Contains(candidateLookUpName))
+                        .OrderBy(x => x.Candidate.FirstName)
+                        .OrderBy(x => x.Candidate.LastName)
+                        .ToList();
                 } else
                 {
                      // get info from database
-                dbCandidates = context.ElectionCandidates.Include("Candidate").Include("ElectionOffice").Include("Party").Include("ElectionOffice.Office")
-                                                            .Where(x => x.ElectionVotingDateId == dateId)
-                                                            .OrderBy(x => x.Candidate.FirstName)
-                                                            .OrderBy(x => x.Candidate.LastName)
-                                                            .ToList();
+                dbCandidates = context.ElectionCandidates
+                        .Include("ElectionOffice")
+                        .Include("ElectionOffice.Office")
+                        .Include("Candidate")
+                        .Include("Party")
+                        .Where(x => x.ElectionVotingDateId == dateId)
+                        .OrderBy(x => x.Candidate.FirstName)
+                        .OrderBy(x => x.Candidate.LastName)
+                        .ToList();
                 }
 
                 if (dbCandidates == null || dbCandidates.Count == 0) { return new List<CandidateListViewModel>(); }
@@ -396,10 +402,15 @@ namespace OhioVoter.Controllers
                 List<ElectionCandidate> dbCandidates = null;
 
                 // get info from database
-                dbCandidates = context.ElectionCandidates.Where(x => x.ElectionOfficeId == intOfficeId)
-                                                            .OrderBy(x => x.Candidate.FirstName)
-                                                            .OrderBy(x => x.Candidate.LastName)
-                                                            .ToList();
+                dbCandidates = context.ElectionCandidates
+                    .Include("ElectionOffice")
+                    .Include("ElectionOffice.Office")
+                    .Include("Candidate")
+                    .Include("Party")
+                    .Where(x => x.ElectionOfficeId == intOfficeId)
+                    .OrderBy(x => x.Candidate.FirstName)
+                    .OrderBy(x => x.Candidate.LastName)
+                    .ToList();
 
                 // is a candidate being looked up?
                 if (!string.IsNullOrEmpty(candidateLookUpName))
@@ -426,20 +437,6 @@ namespace OhioVoter.Controllers
                         candidateVM[i].VoteSmartPhotoUrl = candidateVM[i].GenderPhotoUrl;
                     }
                 }
-
-                /*
-                foreach (var candidateDTO in dbCandidates)
-                {
-                    candidateVM.Add(new CandidateListViewModel(candidateDTO));
-
-                    if (candidateDTO.Candidate.VoteSmartPhotoUrl == null || candidateDTO.Candidate.VoteSmartPhotoUrl == "")
-                    {
-                        candidateDTO.Candidate.VoteSmartPhotoUrl = GetGenderImageLocationToDisplay(candidateDTO.Candidate.Gender);
-                    }
-
-                    candidateVM.Add(new CandidateListViewModel(candidateDTO));
-                }
-                */
 
                 return candidateVM;
             }
@@ -696,22 +693,40 @@ namespace OhioVoter.Controllers
                 CandidateSummaryViewModel candidateSummaryVM = new CandidateSummaryViewModel();
 
                 // get candidate LookUp info from database
-                Models.ElectionCandidate electionRunningMateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.RunningMateId == intCandidateLookUpId);
+                Models.ElectionCandidate electionRunningMateLookUpDTO = context.ElectionCandidates
+                    .Include("ElectionOffice")
+                    .Include("ElectionOffice.Office")
+                    .Include("Candidate")
+                    .Include("Party")
+                    .FirstOrDefault(x => x.RunningMateId == intCandidateLookUpId);
 
                 // is candidate LookUp a runningmate?
                 if (electionRunningMateLookUpDTO != null)
                 {
                     // candidateLookUp == runningmate
                     Models.ElectionCandidate electionCandidateDTO = electionRunningMateLookUpDTO;
+
                     // get runningmate info from database
-                    Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == intCandidateLookUpId);
+                    Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates
+                        .Include("ElectionOffice")
+                        .Include("ElectionOffice.Office")
+                        .Include("Candidate")
+                        .Include("Party")
+                        .FirstOrDefault(x => x.CandidateId == intCandidateLookUpId);
+
                     // convert to ViewModel
                     candidateSummaryVM = new CandidateSummaryViewModel(electionRunningMateDTO, candidateCount, electionCandidateDTO, electionRunningMateDTO);
                 }
                 else
                 {
                     // get candidate/runningmate info
-                    Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == intCandidateLookUpId);
+                    Models.ElectionCandidate electionCandidateLookUpDTO = context.ElectionCandidates
+                        .Include("ElectionOffice")
+                        .Include("ElectionOffice.Office")
+                        .Include("Candidate")
+                        .Include("Party")
+                        .FirstOrDefault(x => x.CandidateId == intCandidateLookUpId);
+
                     if (electionCandidateLookUpDTO == null)
                     {
                         // candidateLookUp == NOT FOUND
@@ -723,7 +738,13 @@ namespace OhioVoter.Controllers
                         if (electionCandidateLookUpDTO.RunningMateId != 0)
                         {
                             // get runningmate info from datase
-                            Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates.FirstOrDefault(x => x.CandidateId == electionCandidateLookUpDTO.RunningMateId);
+                            Models.ElectionCandidate electionRunningMateDTO = context.ElectionCandidates
+                                .Include("ElectionOffice")
+                                .Include("ElectionOffice.Office")
+                                .Include("Candidate")
+                                .Include("Party")
+                                .FirstOrDefault(x => x.CandidateId == electionCandidateLookUpDTO.RunningMateId);
+
                             // convert to ViewModel
                             candidateSummaryVM = new CandidateSummaryViewModel(electionCandidateLookUpDTO, candidateCount, electionCandidateLookUpDTO, electionRunningMateDTO);
                         }
@@ -1976,7 +1997,10 @@ namespace OhioVoter.Controllers
         {
             using (OhioVoterDbContext db = new OhioVoterDbContext())
             {
-                return db.ElectionVotingDates.Find(dateId);
+
+                Models.ElectionVotingDate dbDate = db.ElectionVotingDates.Find(dateId);
+                if (dbDate == null) { return new Models.ElectionVotingDate(); }
+                return dbDate;
             }
         }
 
@@ -2177,17 +2201,18 @@ namespace OhioVoter.Controllers
 
             using (OhioVoterDbContext db = new OhioVoterDbContext())
             {
-                dbCandidates = db.ElectionCandidates.Where(x => x.ElectionVotingDateId == dateId)
-                                                                    .Where(x => x.ElectionOfficeId == officeId)
-                                                                    .ToList();
-            }
+                dbCandidates = db.ElectionCandidates
+                    .Where(x => x.ElectionVotingDateId == dateId)
+                    .Where(x => x.ElectionOfficeId == officeId)
+                    .ToList();
 
-            if (dbCandidates == null)
-            {
-                return new List<int>();
-            }
+                if (dbCandidates == null) { return new List<int>(); }
 
-            return dbCandidates.Select(x => x.CandidateId).Distinct().ToList();
+                List<int> listCandidateId = dbCandidates.Select(x => x.CandidateId).Distinct().ToList();
+                if (listCandidateId == null) { return new List<int>(); }
+
+                return listCandidateId;
+            }
         }
 
 
@@ -2207,9 +2232,17 @@ namespace OhioVoter.Controllers
 
             using (OhioVoterDbContext db = new OhioVoterDbContext())
             {
-                dbCandidates = db.Candidates.ToList();
-            }
+                dbCandidates = db.Candidates
+                    .Where(x => candidateIds.Contains(x.Id))
+                    .OrderBy(x => x.MiddleName)
+                    .OrderBy(x => x.FirstName)
+                    .OrderBy(x => x.LastName)
+                    .ToList();
 
+                if (dbCandidates == null) { return new List<Models.Candidate>(); }
+                return dbCandidates;
+            }
+            /*
             for (int i = 0; i < candidateIds.Count; i++)
             {
                 for (int j = 0; j < dbCandidates.Count; j++)
@@ -2229,6 +2262,7 @@ namespace OhioVoter.Controllers
             }
 
             return candidatesDTO.OrderBy(x => x.MiddleName).OrderBy(x => x.FirstName).OrderBy(x => x.LastName).ToList();
+            */
         }
 
 

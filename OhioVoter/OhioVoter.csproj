@@ -346,11 +346,11 @@
     <Content Include="Content\images\2016November_Hamilton_Issue01.pdf" />
     <Content Include="Content\images\2016November_Hamilton_Issue07.pdf" />
     <Content Include="Content\images\2016November_Hamilton_Issue08.pdf" />
-    <Content Include="Content\images\2016November_Hamilton_Issue29.pdf" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\VoteSmart\Index.cshtml" />
+    <Content Include="Content\images\2016November_Hamilton_Issue29.pdf" />
     <None Include="Properties\PublishProfiles\OhioVoterWebsite.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -473,6 +473,8 @@
     <Content Include="Views\Ballot\_Ballot_CandidateIssueViews.cshtml" />
     <Content Include="Views\Home\EmailSignUp.cshtml" />
     <Content Include="Views\Home\EmailVerification.cshtml" />
+    <Content Include="Views\Home\_PollGraph.cshtml" />
+    <Content Include="Views\Home\_PollGraphEmpty.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

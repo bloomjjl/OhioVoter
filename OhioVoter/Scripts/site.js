@@ -41,70 +41,121 @@ $(function () {
 
 
 
+    // update Poll Office/Candidates displayed
+    var $pollGraphOfficeLookup = $('#poll_graph_office_lookup');
+    var $pollGraphCandidates = $('#poll-graph-candidates');
+    var $pollGraphEmpty = $('_PollGraphEmpty');
+    var selectedElectionOfficeId = $('#poll_graph_office_lookup').val();
+
+    $pollGraphOfficeLookup.on('change', function () {
+        if ($pollGraphOfficeLookup.val() != selectedElectionOfficeId) {
+            selectedElectionOfficeId = $pollGraphOfficeLookup.val();
+            $.ajax({
+                url: '/Home/UpdatePollGraph',
+                type: 'POST',
+                cache: false,
+                data: { selectedElectionOfficeId: selectedElectionOfficeId },
+                success: function (data) {
+                    if (data == "")
+                    {
+                        $pollGraphCandidates.hide();
+                        $pollGraphEmpty.show();
+                    }
+                    $pollGraphEmpty.hide();
+                    $pollGraphCandidates.show();
+                    $pollGraphCandidates.html(data);
+                },
+                error: function (e) {
+                    $pollGraphCandidates.hide();
+                    $pollGraphEmpty.show();
+                }
+            });
+        }
+    });
+
+
+
+
+
+
+
     // Candidate Lookup
+    var $candidateListSelect = $('#candidate_list_select');
+    var $candidateListSearch = $('#candidate_list_search');
+    var $candidateListLoading = $('#candidate_list_loading');
     var selectedElectionOfficeId = $('#candidate_lookup_office').val();
-    var candidateLookUpName = $('#candidate_lookup_name').val();
+    var candidateSuppliedLookUpName = $('#candidate_lookup_name').val();
     var xhr;
 
     // update candidate list when user selects a new office
-    $('#candidate_lookup_office').on('change', function () {
-        if ($('#candidate_lookup_office').val() != selectedElectionOfficeId) {
+    var $candidateLookupOffice = $('#candidate_lookup_office');
+
+    $candidateLookupOffice.on('change', function () {
+        if ($candidateLookupOffice.val() != selectedElectionOfficeId) {
             if (xhr && xhr.readyState != 4) {
                 xhr.abort();
             }
-            $('#candidate_list_select').hide();
-            $('#candidate_list_search').hide();
-            $('#candidate_list_loading').show();
-            selectedElectionOfficeId = $('#candidate_lookup_office').val();
+            $candidateListSelect.hide();
+            $candidateListSearch.hide();
+            $candidateListLoading.show();
+            selectedElectionOfficeId = $candidateLookupOffice.val();
             xhr = $.ajax({
                 url: '/Candidate/UpdateCandidateLookUpList',
                 type: 'POST',
-                data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateLookUpName },
+                data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateSuppliedLookUpName },
                 success: function (data) {
-                    $('#candidate_list_loading').hide();
-                    $('#candidate_list_search').hide();
-                    $('#candidate_list_select').show();
-                    $('#candidate_list_select').html(data);
+                    $candidateListLoading.hide();
+                    $candidateListSearch.hide();
+                    $candidateListSelect.show();
+                    $candidateListSelect.html(data);
                 },
                 error: function (e) {
-                    $('#candidate_list_select').hide();
-                    $('#candidate_list_loading').hide();
-                    $('#candidate_list_search').hide();
+                    $candidateListSelect.hide();
+                    $candidateListLoading.hide();
+                    $candidateListSearch.hide();
                 }
             });
         }
     });
 
     // update candidate list when user enters a candidate's name
-    $('#candidate_lookup_name').keyup(function () {
-        if ($('#candidate_lookup_name').val() != candidateLookUpName) {
+    var $candidateLookupName = $('#candidate_lookup_name');
+
+    $candidateLookupName.keyup(function () {
+        if ($candidateLookupName.val() != candidateSuppliedLookUpName) {
             if (xhr && xhr.readyState != 4) {
                 xhr.abort();
                 console.log('old request has stopped to process new request')
             }
-            $('#candidate_list_select').hide();
-            $('#candidate_list_search').hide();
-            $('#candidate_list_loading').show();
-            candidateLookUpName = $('#candidate_lookup_name').val();
+            $candidateListSelect.hide();
+            $candidateListSearch.hide();
+            $candidateListLoading.show();
+            candidateSuppliedLookUpName = $candidateLookupName.val();
             xhr = $.ajax({
                 url: '/Candidate/UpdateCandidateLookUpList',
                 type: 'POST',
-                data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateLookUpName },
+                data: { electionOfficeId: selectedElectionOfficeId, candidateLookUpName: candidateSuppliedLookUpName },
                 success: function (data) {
                     console.log('data from server ' + data);
-                    $('#candidate_list_search').hide();
-                    $('#candidate_list_loading').hide();
-                    $('#candidate_list_select').show();
-                    $('#candidate_list_select').html(data);
+                    $candidateListSearch.hide();
+                    $candidateListLoading.hide();
+                    $candidateListSelect.show();
+                    $candidateListSelect.html(data);
                 },
                 error: function (e) {
-                    $('#candidate_list_select').hide();
-                    $('#candidate_list_loading').hide();
-                    $('#candidate_list_search').hide();
+                    $candidateListSelect.hide();
+                    $candidateListLoading.hide();
+                    $candidateListSearch.hide();
                 }
             });
         }
     });
+
+
+
+
+
+
 
 
 

@@ -20,5 +20,8 @@ namespace OhioVoter.Models
 
         [Required]
         public string PartyName { get; set; }
+
+        [Required]
+        public string PartyColor { get; set; }
     }
 }

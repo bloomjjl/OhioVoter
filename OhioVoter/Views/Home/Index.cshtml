@@ -13,20 +13,22 @@
 
     <div class="col-sm-8">
 
-        <div class="panel-page-group">
+        <div class="calendar-group">
             <h2><p class="panel-page-title"> Voter Bulletin Board </p></h2>
         </div>
 
         <div class="election-calendar">
-            @{Html.RenderPartial("_Calendar", Model.Calendar.ElectionDates);}
+            @{Html.RenderPartial("_Calendar", Model.CalendarViewModel);}
         </div>
 
         <div class="election-poll">
-            @{Html.RenderPartial("_Poll", Model.Poll);}
+            @{Html.RenderPartial("_Poll", Model.PollViewModel);}
         </div>
 
         <div class="rss-news">
-            @{Html.RenderPartial("_RssFeeds", Model.RssFeeds);}
+            @*
+                @{Html.RenderPartial("_RssFeeds", Model.RssFeedsViewModel);}
+            *@
         </div>
 
     </div>

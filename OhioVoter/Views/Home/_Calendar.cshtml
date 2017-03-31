@@ -1,4 +1,4 @@
-﻿@model IEnumerable<OhioVoter.ViewModels.Home.ElectionDate>
+﻿@model OhioVoter.ViewModels.Home.CalendarViewModel
 
 <div class="panel panel-group panel-main panel-main-group">
 
@@ -12,14 +12,14 @@
 
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Date)
+                    Date
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Description)
+                    Description
                 </th>
             </tr>
-
-            @foreach (var item in Model)
+            
+            @foreach (var item in Model.ElectionDates)
             {
                 <tr>
                     <td class="date">
@@ -34,10 +34,9 @@
         </table>
         
         <p>
-            <a href="~/Content/images/2017_OhioElectionCalendar.pdf" target="_blank" id="calender_btn" class="btn panel-main-btn">View all the dates for current election year &raquo;</a><br />
-            @Html.ActionLink("Full Election Calender", "ElectionCalendar", "Home", new { target = "_blank", id = "calender_btn", @class = "btn btn-block panel-main-btn" })
+            @Html.ActionLink("Full Election Calender", "ViewFullElectionCalendar", "Home", new { fileName = Model.FullElectionCalenderFile }, new { target = "_blank", id = "calender_btn", @class = "btn btn-block panel-main-btn" })
             <br />
-            @Html.ActionLink("Sign up for emailed reminders", "EmailSignUp", "Home")
+            @Html.ActionLink("Sign up for monthly reminders", "EmailSignUp", "Home")
         </p>
 
     </div>

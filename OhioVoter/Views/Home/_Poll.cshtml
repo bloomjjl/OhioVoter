@@ -1,40 +1,41 @@
 ﻿@model OhioVoter.ViewModels.Home.PollViewModel
 
-    <div class="panel panel-group panel-main panel-main-group">
+<div class="panel panel-group panel-main panel-main-group">
 
-        <div class="panel-title panel-main-title">
-            <p> OhioVoter.org Poll </p>
+    <div class="panel-title panel-main-title">
+        <p> OhioVoter.org Poll </p>
+    </div>
+
+    <div id="poll-graph" class="panel-body panel-main-body">
+
+        <input type="text" name="VotingDate" id="voting_date_id" value="@Model.ElectionDate" style="display: none;" />
+
+        <div id="poll-graph-title">
+            <table>
+                <tr>
+                    <td id="poll-graph-title-date"><b>Election Date:</b></td>
+                    <td>@Model.ElectionDate</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(x => x.SelectedElectionOfficeId, htmlAttributes: new { @class = "control-label" })</td>
+                    <td>@Html.DropDownListFor(x => x.SelectedElectionOfficeId, Model.ElectionOfficeNames, new { id = "poll_graph_office_lookup", @class = "form-control" })</td>
+                </tr>
+            </table>
         </div>
 
-        <div class="panel-body panel-main-body">
+        <hr />
 
-            <div class="graph-title">
-                <table>
-                    <tr>
-                        <td class="row-title"><b>Election Date:</b></td>
-                        <td>@Model.ElectionDate.Date.DayOfWeek - @Model.ElectionDate.Date.ToString("MMM dd, yyyy")</td>
-                    </tr>
-                    <tr>
-                        <td class="row-title"><b>Office:</b></td>
-                        <td>@Model.OfficeName</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="graph">
-
-                @foreach (var x in Model.CandidateVotes)
-                {
-                    <div class="graph-row">
-                        <div class="graph-row-img"><img src="@x.ImageUrl" /></div>
-                        <div class="graph-row-candidate-name">@x.Candidate</div>
-                        <div class="graph-row-vote-count">@x.VotePercent%</div>
-                        <div class="graph-row-bar" style="width:@x.VotePercent%; background-color:@x.PartyColor;"></div>
-                    </div>
-                }
-
-            </div>
-
+        <div id="poll-graph-candidates">
+            @if (Model.CandidateVotes.Count() > 0)
+            {
+                Html.RenderPartial("_PollGraph", Model.CandidateVotes);
+            }
+            else
+            {
+                Html.RenderPartial("_PollGraphEmpty", Model.CandidateVotes);
+            }
         </div>
 
     </div>
+
+</div>

@@ -1,7 +1,9 @@
-﻿using OhioVoter.ViewModels.Rss;
+﻿using Newtonsoft.Json.Linq;
+using OhioVoter.ViewModels.Rss;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -37,7 +39,7 @@ namespace OhioVoter.Services
 
                 return GetInformationFromRSSFeedToDisplay(feed, maxItemCount);
             }
-            catch
+            catch (Exception e)
             {
                 return new Feed();
             }

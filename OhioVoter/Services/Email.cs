@@ -132,13 +132,13 @@ namespace OhioVoter.Services
 
 
 
-        public bool SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(string emailAddress)
+        public string SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(string emailAddress)
         {
             using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
                 List<Models.EmailList> dbEmailAddress = context.EmailLists.ToList();
                 // make sure database connection is good
-                if (dbEmailAddress == null) { return false; }
+                if (dbEmailAddress == null) { return "Email Required"; }
 
                 Models.EmailList emailAddressDTO = dbEmailAddress.FirstOrDefault(x => x.EmailAddress == emailAddress);
 
@@ -154,51 +154,52 @@ namespace OhioVoter.Services
                     return UpdateEmailInEmailListInDatabase(emailAddress);
                 }
 
-                return false;
+                return "Already Setup";
             }
         }
 
 
-        public bool AddEmailToEmailListInDatabase(string emailAddress)
+        public string AddEmailToEmailListInDatabase(string emailAddress)
         {
-            bool isAdded = false;
-
             // vaidate parameter
-            if (string.IsNullOrEmpty(emailAddress)) { return isAdded; }
+            if (string.IsNullOrEmpty(emailAddress)) { return "Email Required"; }
 
-            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            try
             {
-                Models.EmailList emailDTO = new Models.EmailList()
+                using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
                 {
-                    EmailAddress = emailAddress,
-                    DateCreated = DateTime.Now,
-                    DateModified = DateTime.Now,
-                    IsVerified = true,
-                    IsActive = true
-                };
+                    Models.EmailList emailDTO = new Models.EmailList()
+                    {
+                        EmailAddress = emailAddress,
+                        DateCreated = DateTime.Now,
+                        DateModified = DateTime.Now,
+                        IsVerified = true,
+                        IsActive = true
+                    };
 
-                context.EmailLists.Add(emailDTO);
+                    context.EmailLists.Add(emailDTO);
 
-                context.SaveChanges();
+                    context.SaveChanges();
 
-                isAdded = true;
+                    return "Success";
+                }
             }
-
-            return isAdded;
+            catch
+            {
+                return "Problem";
+            }
         }
 
 
-        public bool UpdateEmailInEmailListInDatabase(string emailAddress)
+        public string UpdateEmailInEmailListInDatabase(string emailAddress)
         {
-            bool isUpdated = false;
-
             // vaidate parameter
-            if (string.IsNullOrEmpty(emailAddress)) { return isUpdated; }
+            if (string.IsNullOrEmpty(emailAddress)) { return "Email Required"; }
 
             using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
                 Models.EmailList emailDTO = context.EmailLists.FirstOrDefault(x => x.EmailAddress == emailAddress);
-                if (emailDTO == null) { return isUpdated; }
+                if (emailDTO == null) { return "Problem"; }
 
                 emailDTO.DateModified = DateTime.Now;
                 emailDTO.IsVerified = true;
@@ -208,10 +209,8 @@ namespace OhioVoter.Services
 
                 context.SaveChanges();
 
-                isUpdated = true;
+                return "Success";
             }
-
-            return isUpdated;
         }
 
 

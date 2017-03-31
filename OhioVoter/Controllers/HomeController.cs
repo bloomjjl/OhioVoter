@@ -25,17 +25,20 @@ namespace OhioVoter.Controllers
             LocationController location = new LocationController();
 
             UpdateSessionWithNewControllerNameForSideBar(_controllerName);
+            Models.ElectionVotingDate votingDate = GetOldestActiveElectionVotingDate();
+            int pollingElectionOfficeId = 0;
 
             HomeViewModel viewModel = new HomeViewModel()
             {
                 ControllerName = _controllerName,
-                Calendar = GetCalendarViewModel(),
-                Poll = GetPollResultsViewModel(),
-                RssFeeds = GetRssFeedViewModel()
+                CalendarViewModel = GetCalendarViewModel(),
+                PollViewModel = GetPollResultsViewModel(votingDate, pollingElectionOfficeId),
+                RssFeedsViewModel = GetRssFeedViewModel()
             };
 
             return View(viewModel);
         }
+
 
 
         [HttpGet]
@@ -62,16 +65,35 @@ namespace OhioVoter.Controllers
 
             // update database to start sending email correspondence
             Services.Email email = new Services.Email();
-            bool isSetUp = email.SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(emailAddress);
+            string result = email.SetUpSuppliedEmailAddressToReceiveEmailRemindersInDatabase(emailAddress);
 
             // present user with view to verify email supplied
-            if (isSetUp)
+            if (result == "Success")
             {
-                return View("EmailSetUp");
+                TempData["EmailSignUpMessage"] = "You have successfully signed up.";
+                return View("EmailSignUp");
+            }
+            else if (result == "Already Setup")
+            {
+                TempData["EmailSignUpMessage"] = "You have successfully signed up.";
+                return View("EmailSignUp");
+            }
+            else if (result == "Email Required")
+            {
+                TempData["EmailSignUpMessage"] = string.Empty;
+                ModelState.AddModelError("", "Check your Email Address");
+                return View("EmailSignUp");
+            }
+            else if (result == "Problem")
+            {
+                TempData["EmailSignUpMessage"] = string.Empty;
+                ModelState.AddModelError("", "We are unable to handle your request at this time. Please try again later.");
+                return View("EmailSignUp");
             }
             else
             {
-                ModelState.AddModelError("", "There was a problem. Check your Email Address is required");
+                TempData["EmailSignUpMessage"] = string.Empty;
+                ModelState.AddModelError("", "We are unable to handle your request at this time. Please try again later.");
                 return View("EmailSignUp");
             }
         }
@@ -202,9 +224,27 @@ namespace OhioVoter.Controllers
             {
                 StartDate = startDate,
                 EndDate = endDate,
+                FullElectionCalenderFile = "2017_OhioElectionCalendar.pdf",
                 ElectionDates = GetListOfUpcomingElectionDates(startDate, endDate)
             };
         }
+
+
+
+        public ActionResult ViewFullElectionCalendar(string fileName)
+        {
+            string filePath = Server.MapPath("~/Content/images/") + fileName;
+            Response.ClearContent();
+            Response.ClearHeaders();
+            Response.AddHeader("Content-Disposition", "inline;filename=" + filePath);
+            Response.ContentType = "application/pdf";
+            Response.WriteFile(filePath);
+            Response.Flush();
+            Response.Clear();
+            return View();
+        }
+
+
 
 
 
@@ -240,6 +280,18 @@ namespace OhioVoter.Controllers
         }
 
 
+        public Models.ElectionVotingDate GetOldestActiveElectionVotingDate()
+        {
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                List<Models.ElectionVotingDate> dbVotingDates = context.ElectionVotingDates.Where(x => x.Active == true).ToList();
+                if(dbVotingDates == null) { return new Models.ElectionVotingDate(); }
+
+                return dbVotingDates[0];
+            }
+        }
+
+
 
         public IEnumerable<ElectionDate> CopyElectionDatesToViewModel(List<Models.ElectionDate> electionDates)
         {
@@ -266,63 +318,191 @@ namespace OhioVoter.Controllers
         // Poll results from users filling out ballot
         // ********************************************
 
-        // TODO: set up database and retrieve polling data
-        // TODO: allow user to change the office if location provided
+
+            
+            // TODO: allow user to change the office if location provided
+
+
+
+        
+        public ActionResult UpdatePollGraph(int selectedElectionOfficeId)
+        {
+            Models.ElectionVotingDate votingDate = GetOldestActiveElectionVotingDate();
+            IEnumerable<CandidateVoteViewModel> candidateVotes = GetCandidateVotesFromBallotFromDatabase(votingDate.Id, selectedElectionOfficeId);
+            candidateVotes = GetListOfCandidatesForOfficeSortedByNumberOfVotes(candidateVotes);
+
+            if (candidateVotes.Count() > 0)
+            {
+                return PartialView("_PollGraph", candidateVotes);
+            }
+
+            return PartialView("_PollGraphEmpty");
+        }
+
+
 
         /// <summary>
         /// get polling information for users that have filled out the ballot from database
         /// sort and store the polling results to display on page
         /// </summary>
         /// <returns></returns>
-        private PollViewModel GetPollResultsViewModel()
+        private PollViewModel GetPollResultsViewModel(Models.ElectionVotingDate votingDate, int electionOfficeId)
         {
-            PollViewModel poll = new PollViewModel()
+            // check parameters
+            if (electionOfficeId <= 0) { electionOfficeId = 1; }
+
+            // get list of election offices on ballots
+            IEnumerable<SelectListItem> electionOfficeSelectList;
+
+            // get dropdownlist of election offices with electionOfficeId selected
+            electionOfficeSelectList = GetElectionOfficeListItems(votingDate.Id, electionOfficeId);
+
+            PollViewModel pollVM = new PollViewModel()
             {
-                ElectionDate = Convert.ToDateTime("11/08/2016"),
-                OfficeName = "President",
-                CandidateVotes = GetCandidateVotesFromBallot()
+                ElectionDate = votingDate.Date.ToShortDateString(),
+                //OfficeName = "President",
+                ElectionOfficeNames = electionOfficeSelectList,
+                CandidateVotes = GetCandidateVotesFromBallotFromDatabase(votingDate.Id, electionOfficeId)
             };
 
             // sort candidates by highest to lowest votes received and display if greater than 0.0
-            int totalVotesForOffice = GetTotalVotesForOfficeFromBallot(poll.CandidateVotes);
-            poll.CandidateVotes = GetPercentageOfVotesEachCandidateReceivedFromBallot(poll.CandidateVotes, totalVotesForOffice);
-            poll.CandidateVotes = RemoveCandidatesWithZeroVotesFromList(poll.CandidateVotes);
-            poll.CandidateVotes = poll.CandidateVotes.OrderByDescending(x => x.VoteCount).ToList();
-
-            return poll;
+            pollVM.CandidateVotes = GetListOfCandidatesForOfficeSortedByNumberOfVotes(pollVM.CandidateVotes);
+            
+            return pollVM;
         }
 
 
-        // ***************
-        // moch database
-        // ***************
-        private IEnumerable<CandidateVote> GetCandidateVotesFromBallot()
+
+        public IEnumerable<CandidateVoteViewModel> GetListOfCandidatesForOfficeSortedByNumberOfVotes(IEnumerable<CandidateVoteViewModel> candidateVotes)
         {
-            List<CandidateVote> candidateResults = new List<CandidateVote>()
+            // sort candidates by highest to lowest votes received and display if greater than 0.0
+            int totalVotesForOffice = GetTotalVotesForOfficeFromBallot(candidateVotes);
+            candidateVotes = GetPercentageOfVotesEachCandidateReceivedFromBallot(candidateVotes, totalVotesForOffice);
+            candidateVotes= RemoveCandidatesWithZeroVotesFromList(candidateVotes);
+            return candidateVotes.OrderByDescending(x => x.VoteCount).ToList();
+        }
+
+
+
+        public IEnumerable<SelectListItem> GetElectionOfficeListItems(int dateId, int selectedOfficeId)
+        {
+            // validate input values
+            if (dateId <= 0) { return new List<SelectListItem>(); }
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
-                new CandidateVote() { Candidate = "Hillary Clinton", CoCandidate = "", Party = "Democrat", PartyColor = "Blue", VoteCount = 2394164,  ImageUrl = "http://static.votesmart.org/canphoto/55463.jpg" },
-                new CandidateVote() { Candidate = "Gary Johnson", CoCandidate = "", Party = "Libertarian", PartyColor = "Yellow", VoteCount = 174498,  ImageUrl = "http://static.votesmart.org/canphoto/22377.jpg"  },
-                new CandidateVote() { Candidate = "Jill Stein", CoCandidate = "", Party = "Green", PartyColor = "Green", VoteCount = 46271,  ImageUrl = "http://static.votesmart.org/canphoto/35775.jpg"  },
-                new CandidateVote() { Candidate = "Donald Trump", CoCandidate = "", Party = "Republican", PartyColor = "Red", VoteCount = 2841005, ImageUrl = "http://static.votesmart.org/canphoto/15723.jpg" },
-                new CandidateVote() { Candidate = "Richard Duncan", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 24235,  ImageUrl = "http://static.votesmart.org/canphoto/65939.jpg"  },
-                new CandidateVote() { Candidate = "Evan McMullin", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 12574,  ImageUrl = "http://static.votesmart.org/canphoto/174905.jpg"  },
-                new CandidateVote() { Candidate = "Darrell Castle", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 1887,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Ben Hartnell", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 589,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Michael Maturen", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 552,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Tom Hoefling", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 268,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Chris Keniston", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 114,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Laurence Kotlikoff", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 90,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Joe Schriner", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 62,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Mike Smith", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 62,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Josiah Stroh", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 30,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Monica Moorehead", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 19,  ImageUrl = ""  },
-                new CandidateVote() { Candidate = "Joseph Maldonado", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 18,  ImageUrl = "" },
-                new CandidateVote() { Candidate = "Barry Kirschner", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 15,  ImageUrl = "" },
-                new CandidateVote() { Candidate = "James Bell", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 9,  ImageUrl = "" },
-                new CandidateVote() { Candidate = "Bruce Jaynes", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 8,  ImageUrl = "" },
-                new CandidateVote() { Candidate = "Michael Bickelmeyer", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 6,  ImageUrl = "" },
-                new CandidateVote() { Candidate = "Douglas Thomson", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 6,  ImageUrl = "" },
-                new CandidateVote() { Candidate = "Cherunda Fox", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 5,  ImageUrl = "" }
+                // create select list object
+                List<SelectListItem> electionOffices = new List<SelectListItem>();
+
+                // get list of offices with candidates for election
+                List<Models.ElectionCandidate> dbElectionCandidateOffices = context.ElectionCandidates
+                    .Include("ElectionOffice.Office")
+                    .Where(x => x.ElectionVotingDateId == dateId)
+                    .ToArray()
+                    .GroupBy(x => x.ElectionOfficeId)
+                    .Select(g => g.First())
+                    .ToList();
+
+                if (dbElectionCandidateOffices == null) { return new List<SelectListItem>(); }
+
+                for (int i = 0; i < dbElectionCandidateOffices.Count(); i++)
+                {
+                    string officeName;
+
+                    // add term to office if one is available
+                    if (!string.IsNullOrEmpty(dbElectionCandidateOffices[i].ElectionOffice.OfficeTerm))
+                    {
+                        officeName = string.Format("{0} ({1})", dbElectionCandidateOffices[i].ElectionOffice.Office.OfficeName.ToUpper(), dbElectionCandidateOffices[i].ElectionOffice.OfficeTerm.ToUpper());
+                    }
+                    else
+                    {
+                        officeName = dbElectionCandidateOffices[i].ElectionOffice.Office.OfficeName.ToUpper();
+                    }
+
+                    electionOffices.Add(new SelectListItem()
+                    {
+                        Value = dbElectionCandidateOffices[i].ElectionOfficeId.ToString(),
+                        Text = officeName,
+                        Selected = dbElectionCandidateOffices[i].ElectionOfficeId == selectedOfficeId
+                    });
+                }
+
+                return electionOffices;
+            }
+        }
+
+
+
+        public IEnumerable<CandidateVoteViewModel> GetCandidateVotesFromBallotFromDatabase(int votingDateId, int electionOfficeId)
+        {
+            // validate parameters
+            if (votingDateId <= 0) { return new List<CandidateVoteViewModel>(); }
+
+            using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
+            {
+                // get complete list of candidates for current election
+                List<Models.ElectionCandidate> dbElectionCandidates = context.ElectionCandidates
+                    .Include("Candidate")
+                    .Include("Party")
+                    .Where(x => x.ElectionOfficeId == electionOfficeId)
+                    .ToList();
+
+                if (dbElectionCandidates == null) { return new List<CandidateVoteViewModel>(); }
+
+                // get a list of candidates (by office) that were selected on any ballot emailed
+                List<Models.BallotCandidate> dbBallotCandidates = context.BallotCandidates
+                    .Include("BallotOffice")
+                    .Where(x => x.BallotOffice.ElectionOfficeId == electionOfficeId)
+                    .ToList();
+
+                if (dbBallotCandidates == null) { return new List<CandidateVoteViewModel>(); }
+
+                // convert database objects to ViewModel
+                List<CandidateVoteViewModel> candidateListVM = new List<CandidateVoteViewModel>();
+                for (int i = 0; i < dbElectionCandidates.Count(); i++)
+                {
+                    candidateListVM.Add(new CandidateVoteViewModel()
+                    {
+                        Candidate = dbElectionCandidates[i].Candidate.CandidateFirstLastName,
+                        Party = dbElectionCandidates[i].Party.PartyName,
+                        PartyColor = dbElectionCandidates[i].Party.PartyColor,
+                        VoteCount = dbBallotCandidates.Where(x => x.ElectionCandidateId == dbElectionCandidates[i].Id).Count(),
+                        ImageUrl = dbElectionCandidates[i].Candidate.VoteSmartPhotoUrl
+                    });
+                }
+
+                return candidateListVM;
+            }
+        }
+
+
+        private IEnumerable<CandidateVoteViewModel> GetCandidateVotesFromBallot()
+        {
+            List<CandidateVoteViewModel> candidateResults = new List<CandidateVoteViewModel>()
+            {
+                new CandidateVoteViewModel() { Candidate = "Hillary Clinton", CoCandidate = "", Party = "Democrat", PartyColor = "Blue", VoteCount = 2394164,  ImageUrl = "https://static.votesmart.org/canphoto/55463.jpg" },
+                new CandidateVoteViewModel() { Candidate = "Gary Johnson", CoCandidate = "", Party = "Libertarian", PartyColor = "Yellow", VoteCount = 174498,  ImageUrl = "https://static.votesmart.org/canphoto/22377.jpg"  },
+                new CandidateVoteViewModel() { Candidate = "Jill Stein", CoCandidate = "", Party = "Green", PartyColor = "Green", VoteCount = 46271,  ImageUrl = "https://static.votesmart.org/canphoto/35775.jpg"  },
+                new CandidateVoteViewModel() { Candidate = "Donald Trump", CoCandidate = "", Party = "Republican", PartyColor = "Red", VoteCount = 2841005, ImageUrl = "https://static.votesmart.org/canphoto/15723.jpg" },
+                new CandidateVoteViewModel() { Candidate = "Richard Duncan", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 24235,  ImageUrl = "https://static.votesmart.org/canphoto/65939.jpg"  },
+                new CandidateVoteViewModel() { Candidate = "Evan McMullin", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 12574,  ImageUrl = "https://static.votesmart.org/canphoto/174905.jpg"  },
+                new CandidateVoteViewModel() { Candidate = "Darrell Castle", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 1887,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Ben Hartnell", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 589,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Michael Maturen", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 552,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Tom Hoefling", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 268,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Chris Keniston", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 114,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Laurence Kotlikoff", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 90,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Joe Schriner", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 62,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Mike Smith", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 62,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Josiah Stroh", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 30,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Monica Moorehead", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 19,  ImageUrl = ""  },
+                new CandidateVoteViewModel() { Candidate = "Joseph Maldonado", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 18,  ImageUrl = "" },
+                new CandidateVoteViewModel() { Candidate = "Barry Kirschner", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 15,  ImageUrl = "" },
+                new CandidateVoteViewModel() { Candidate = "James Bell", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 9,  ImageUrl = "" },
+                new CandidateVoteViewModel() { Candidate = "Bruce Jaynes", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 8,  ImageUrl = "" },
+                new CandidateVoteViewModel() { Candidate = "Michael Bickelmeyer", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 6,  ImageUrl = "" },
+                new CandidateVoteViewModel() { Candidate = "Douglas Thomson", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 6,  ImageUrl = "" },
+                new CandidateVoteViewModel() { Candidate = "Cherunda Fox", CoCandidate = "", Party ="", PartyColor = "Gray", VoteCount = 5,  ImageUrl = "" }
             };
 
             return candidateResults;
@@ -335,11 +515,11 @@ namespace OhioVoter.Controllers
         /// </summary>
         /// <param name="candidateVotes"></param>
         /// <returns></returns>
-        private int GetTotalVotesForOfficeFromBallot(IEnumerable<CandidateVote> candidateVotes)
+        private int GetTotalVotesForOfficeFromBallot(IEnumerable<CandidateVoteViewModel> candidateVotes)
         {
             int count = 0;
 
-            foreach (CandidateVote candidate in candidateVotes)
+            foreach (CandidateVoteViewModel candidate in candidateVotes)
             {
                 if (candidate.VoteCount > 0)
                     count += candidate.VoteCount;
@@ -356,9 +536,9 @@ namespace OhioVoter.Controllers
         /// <param name="candidateVotes"></param>
         /// <param name="totalVotes"></param>
         /// <returns></returns>
-        private IEnumerable<CandidateVote> GetPercentageOfVotesEachCandidateReceivedFromBallot(IEnumerable<CandidateVote> candidateVotes, int totalVotes)
+        private IEnumerable<CandidateVoteViewModel> GetPercentageOfVotesEachCandidateReceivedFromBallot(IEnumerable<CandidateVoteViewModel> candidateVotes, int totalVotes)
         {
-            foreach (CandidateVote candidate in candidateVotes)
+            foreach (CandidateVoteViewModel candidate in candidateVotes)
             {
                 if (candidate.VoteCount > 0)
                 {
@@ -377,7 +557,7 @@ namespace OhioVoter.Controllers
         /// </summary>
         /// <param name="candidateVotes"></param>
         /// <returns></returns>
-        private IEnumerable<CandidateVote> RemoveCandidatesWithZeroVotesFromList(IEnumerable<CandidateVote> candidateVotes)
+        private IEnumerable<CandidateVoteViewModel> RemoveCandidatesWithZeroVotesFromList(IEnumerable<CandidateVoteViewModel> candidateVotes)
         {
             return candidateVotes.Where(c => c.VotePercent > 0.0m);
         }
@@ -404,6 +584,7 @@ namespace OhioVoter.Controllers
                 FoxNewsRssFeed = CopyFoxNewsRssPoliticalFeedToViewModel(),
                 CnbcRssFeed = CopyCnbcRssPoliticalFeedToViewModel(),
                 CnnRssFeed = CopyCnnRssPoliticalFeedToViewModel()
+                //OhioSecretaryOfStateRssFeed = CopyOhioSecretaryOfStateRssFeedToViewModel()
             };
         }
 
@@ -429,6 +610,13 @@ namespace OhioVoter.Controllers
         {
             RssManagement rssManager = new RssManagement();
             return CopyRssFeedToViewModel(rssManager.GetCnnRssPoliticalFeed());
+        }
+
+
+        public RssFeedViewModel CopyOhioSecretaryOfStateRssFeedToViewModel()
+        {
+            RssManagement rssManager = new RssManagement();
+            return CopyRssFeedToViewModel(rssManager.GetOhioSecretaryOfStateRssFeed());
         }
 
 

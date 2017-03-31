@@ -11,6 +11,7 @@ namespace OhioVoter.ViewModels.Home
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string FullElectionCalenderFile { get; set; }
         public IEnumerable<ElectionDate> ElectionDates { get; set; }
     }
 

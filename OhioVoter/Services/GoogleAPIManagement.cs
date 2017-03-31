@@ -33,14 +33,8 @@ namespace OhioVoter.Services
             {
                 Api dtoApi = context.Apis.FirstOrDefault(x => x.ApiUrl == _googleApiCivicInformation);
 
-                if (dtoApi == null)
-                {
-                    return string.Empty;
-                }
-                else
-                {
-                    return dtoApi.ApiKey;
-                }
+                if (dtoApi == null) { return string.Empty; }
+                else { return dtoApi.ApiKey; }
             }
         }
 
@@ -52,14 +46,8 @@ namespace OhioVoter.Services
             {
                 Api dtoApi = context.Apis.FirstOrDefault(x => x.ApiUrl == _googleApiStaticMap);
 
-                if (dtoApi == null)
-                {
-                    return string.Empty;
-                }
-                else
-                {
-                    return dtoApi.ApiKey;
-                }
+                if (dtoApi == null) { return string.Empty; }
+                else { return dtoApi.ApiKey; }
             }
         }
 
