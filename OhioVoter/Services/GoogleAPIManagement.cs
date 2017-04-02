@@ -15,7 +15,7 @@ namespace OhioVoter.Services
         private string _googleApiCivicInformationKey;
         private string _googleApiStaticMapKey;
         private static string _googleApiCivicInformation = "https://www.googleapis.com/civicinfo/v2/";
-        private static string _googleApiStaticMap = "http://maps.googleapis.com/maps/api/";
+        private static string _googleApiStaticMap = "https://maps.googleapis.com/maps/api/";
 
 
 
@@ -422,7 +422,7 @@ namespace OhioVoter.Services
             string key = _googleApiStaticMapKey;
             string andChar = "&";
 
-            return string.Concat(api, path, "center", voterLocation.FullAddress.ToString(),
+            return string.Concat(api, path, "center=", voterLocation.FullAddress.ToString(),
                                  andChar, "size=300x300",
                                  andChar, "maptype=roadmap",
                                  andChar, "markers=color:red%7Clabel:H%7C", voterLocation.FullAddress.ToString(),

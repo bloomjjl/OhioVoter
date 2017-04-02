@@ -19,7 +19,7 @@ namespace OhioVoter.Services
             _amazonSMTP_Host = GetAmazonHostFromDatabase("OhioVoter.org");
             _amazonSMTP_UserName = GetAmazonUserNameFromDatabase("OhioVoter.org");
             _amazonSMTP_Password = GetAmazonPasswordFromDatabase(_amazonSMTP_UserName);
-            _amazonSMTP_Port = 587;
+            _amazonSMTP_Port = 587; // 25, 465
         }
 
 
