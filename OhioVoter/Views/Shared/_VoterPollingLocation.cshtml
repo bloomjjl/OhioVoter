@@ -21,14 +21,20 @@
 
     <div id="results"></div>
 
-    <div id="voter-map" style="display:none">
-        <a href="https://www.google.com/maps/dir/ @Model.VoterFullAddress.ToString() / @Model.FullAddress.ToString()" target="_blank">
-            <img src="@Html.DisplayTextFor(x => x.GoogleLocationMapAPI)" alt="Voter Map" />
-        </a>
-    </div>
 
-    <button type="button" id="show-voter-map" class="btn btn-block panel-left-btn polling_map_show_btn"> View Map </button>
-    <button type="button" id="hide-voter-map" class="btn btn-block panel-left-btn polling_map_hide_btn" style="display:none"> Hide Map </button>
+    <a href="https://www.google.com/maps/dir/ @Model.VoterFullAddress.ToString() / @Model.FullAddress.ToString()" class="btn btn-block panel-left-btn polling_map_btn" target="_blank">View Map</a>
+    
+    @*
+
+        <div id="voter-map" style="display:none">
+            <a href="https://www.google.com/maps/dir/ @Model.VoterFullAddress.ToString() / @Model.FullAddress.ToString()" target="_blank">
+                <img src="@Html.DisplayTextFor(x => x.GoogleLocationMapAPI)" alt="Voter Map" />
+            </a>
+        </div>
+
+        <button type="button" id="show-voter-map" class="btn btn-block panel-left-btn polling_map_show_btn"> View Map </button>
+        <button type="button" id="hide-voter-map" class="btn btn-block panel-left-btn polling_map_hide_btn" style="display:none"> Hide Map </button>
+    *@
 
 </div>
 

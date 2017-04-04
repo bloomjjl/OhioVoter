@@ -124,7 +124,7 @@ hr {
 .panel-left #voter-map img {
     max-width: 100%;
     height: auto;
-    width: auto\9; /* ie8 */
+    width: auto; 
     margin-top: 5px;
     margin-bottom: 5px;
 }
@@ -783,6 +783,7 @@ hr {
 
 .ballot_location_form_btn, 
 .voter_location_update_btn, 
+.polling_map_btn, 
 .polling_map_show_btn, 
 .polling_map_hide_btn {
     width: 160px;
