@@ -3,6 +3,7 @@ using OhioVoter.ViewModels;
 using OhioVoter.ViewModels.Home;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -38,6 +39,20 @@ namespace OhioVoter.Controllers
 
             return View(viewModel);
         }
+
+
+
+
+        protected override void OnException(ExceptionContext filterContext)
+        {            
+            // set the result without redirection:
+            filterContext.Result = new ViewResult
+            {
+                ViewName = "~/Views/Error/Index.cshtml"
+            };            
+        }
+
+
 
 
 

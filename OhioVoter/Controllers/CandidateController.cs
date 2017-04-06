@@ -34,6 +34,17 @@ namespace OhioVoter.Controllers
 
 
 
+        protected override void OnException(ExceptionContext filterContext)
+        {
+            // set the result without redirection:
+            filterContext.Result = new ViewResult
+            {
+                ViewName = "~/Views/Error/Index.cshtml"
+            };
+        }
+
+
+
         public ActionResult Compare(int? firstCandidateId, int? secondCandidateId, int? dateId, int? officeId)
         {
             // validate values provided
