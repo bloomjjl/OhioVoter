@@ -42,6 +42,13 @@ namespace OhioVoter.Controllers
             }
         }
 
+
+        public ActionResult Index()
+        {
+            return RedirectToAction("Login");
+        }
+
+
         public ApplicationUserManager UserManager
         {
             get
