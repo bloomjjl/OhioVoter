@@ -568,7 +568,8 @@ namespace OhioVoter.Controllers
         public ActionResult DisplayBallotInformation(BallotViewModel ballotVM)
         {
             // set default values for ballot
-            //int intDateId = 1; // get next election date (testing with Nov 2016)
+            //int intDateId = 1; 
+            // get next election date (testing with Nov 2016)
             int intDateId = GetVotingDateForNextElectionFromDatabase();
             // make sure supplied dateId is a valid votingDateId
             //int votingDateId = GetVotingDateForNextElectionFromDatabase();
@@ -882,10 +883,12 @@ namespace OhioVoter.Controllers
             // get list of all offices for current election date
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
-                List<Models.ElectionOffice> dbOffices = context.ElectionOffices.Include("Office").Where(x => x.ElectionVotingDateId == dateId)
-                                                                                       .Distinct()
-                                                                                       .OrderBy(x => x.Office.OfficeSortOrder)
-                                                                                       .ToList();
+                List<Models.ElectionOffice> dbOffices = context.ElectionOffices
+                    .Include("Office")
+                    .Where(x => x.ElectionVotingDateId == dateId)
+                    .Distinct()
+                    .OrderBy(x => x.Office.OfficeSortOrder)
+                    .ToList();
 
                 if (dbOffices == null) { return officeVM; }
 
