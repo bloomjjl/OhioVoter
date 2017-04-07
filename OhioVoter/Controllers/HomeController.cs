@@ -370,8 +370,8 @@ namespace OhioVoter.Controllers
             IEnumerable<SelectListItem> electionOfficeSelectList;
 
             // get dropdownlist of election offices with electionOfficeId selected
-            electionOfficeSelectList = GetElectionOfficeListItems(votingDate.Id, electionOfficeId);
-
+            electionOfficeSelectList = GetElectionPollingOfficeListItems(votingDate.Id, electionOfficeId);                  
+                    
             PollViewModel pollVM = new PollViewModel()
             {
                 ElectionDate = votingDate.Date.ToShortDateString(),
@@ -399,7 +399,7 @@ namespace OhioVoter.Controllers
 
 
 
-        public IEnumerable<SelectListItem> GetElectionOfficeListItems(int dateId, int selectedOfficeId)
+        public IEnumerable<SelectListItem> GetElectionPollingOfficeListItems(int dateId, int selectedOfficeId)
         {
             // validate input values
             if (dateId <= 0) { return new List<SelectListItem>(); }
@@ -410,9 +410,14 @@ namespace OhioVoter.Controllers
                 List<SelectListItem> electionOffices = new List<SelectListItem>();
 
                 // get list of offices with candidates for election
+                // exclude runningmate offices from list (Vice President)
+                int vicePresident = 2;
+
                 List<Models.ElectionCandidate> dbElectionCandidateOffices = context.ElectionCandidates
+                    .Include("ElectionOffice")
                     .Include("ElectionOffice.Office")
                     .Where(x => x.ElectionVotingDateId == dateId)
+                    .Where(x => x.ElectionOffice.OfficeId != vicePresident)
                     .ToArray()
                     .GroupBy(x => x.ElectionOfficeId)
                     .Select(g => g.First())
