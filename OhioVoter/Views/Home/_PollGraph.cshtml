@@ -3,7 +3,7 @@
 @foreach (var candidate in Model)
 {
     <div class="poll-graph-candidates-row">
-        <div class="poll-graph-candidates-row-img"><img src="@candidate.ImageUrl" /></div>
+        <div class="poll-graph-candidates-row-img"><img src="@Url.Content(candidate.ImageUrl)" /></div>
         <div class="poll-graph-candidates-row-candidate-name">@candidate.Candidate</div>
         <div class="poll-graph-candidates-row-vote-count">@candidate.VotePercent%</div>
         <div class="poll-graph-candidates-row-bar" style="width:@candidate.VotePercent%; background-color:@candidate.PartyColor;"></div>
