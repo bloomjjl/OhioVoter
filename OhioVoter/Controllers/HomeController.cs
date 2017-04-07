@@ -481,19 +481,39 @@ namespace OhioVoter.Controllers
                 List<CandidateVoteViewModel> candidateListVM = new List<CandidateVoteViewModel>();
                 for (int i = 0; i < dbElectionCandidates.Count(); i++)
                 {
+                    string votesmartImageUrl = dbElectionCandidates[i].Candidate.VoteSmartPhotoUrl;
+                    string gender = dbElectionCandidates[i].Candidate.Gender;
+
                     candidateListVM.Add(new CandidateVoteViewModel()
                     {
                         Candidate = dbElectionCandidates[i].Candidate.CandidateFirstLastName,
                         Party = dbElectionCandidates[i].Party.PartyName,
                         PartyColor = dbElectionCandidates[i].Party.PartyColor,
                         VoteCount = dbBallotCandidates.Where(x => x.ElectionCandidateId == dbElectionCandidates[i].Id).Count(),
-                        ImageUrl = dbElectionCandidates[i].Candidate.VoteSmartPhotoUrl
+                        ImageUrl = GetValidImageLocationToDisplay(votesmartImageUrl, gender)
                     });
                 }
 
                 return candidateListVM;
             }
         }
+
+
+
+        public string GetValidImageLocationToDisplay(string voteSmartUrl, string gender)
+        {
+            if (!string.IsNullOrEmpty(voteSmartUrl)) { return voteSmartUrl; }
+
+            if (gender == "F" || gender == "Female")
+            {
+                return "~/Content/images/image_female.png";
+            }
+            else
+            {
+                return "~/Content/images/image_male.png";
+            }
+        }
+
 
 
         private IEnumerable<CandidateVoteViewModel> GetCandidateVotesFromBallot()
