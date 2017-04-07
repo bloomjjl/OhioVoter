@@ -25,6 +25,12 @@ namespace OhioVoter.Controllers
             // statusCode = "400" path = "Error" responseMode = "Redirect" />
             // statusCode = "401" prefixLanguageFilePath = "" path = "Error" responseMode = "ExecuteURL" />
             Response.StatusCode = 200;
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_GenericMessage");
+            }
+
             return View();
         }
 
@@ -46,6 +52,12 @@ namespace OhioVoter.Controllers
             // redirect = "~/Error/NotFound" statusCode = "404" />
             // statusCode = "404" subStatusCode = "0" path = "Error" responseMode = "ExecuteURL" />
             Response.StatusCode = 200;
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_GenericMessage");
+            }
+
             return View("Index");
         }
 
@@ -67,6 +79,12 @@ namespace OhioVoter.Controllers
             // statusCode = "500" path = "Error" responseMode = "Redirect" />
             // redirect = "~/Error/InternalServer" statusCode = "500" />
             Response.StatusCode = 200;
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_GenericMessage");
+            }
+
             return View("Index");
         }
 
