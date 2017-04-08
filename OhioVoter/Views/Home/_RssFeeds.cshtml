@@ -9,18 +9,28 @@
     <div class="panel-body panel-main-body">
 
         <div class="rss-group">
+            @*
 
-            <div class="rss-channel">
-                <a href="@Model.CnbcRssFeed.Channel.Element.Link_1" target="_blank">
-                    <img src="@Model.CnbcRssFeed.Channel.Element.Image" alt="CNBC Political News" />
-                </a>
-            </div>
+                <div class="rss-channel">
+                    <a href="@Model.CnbcRssFeed.Channel.Element.Link_1" target="_blank">
+                        <img src="@Model.CnbcRssFeed.Channel.Element.Image" alt="CNBC Political News" />
+                    </a>
+                </div>
+            *@
 
             <div class="rss-feed">
                 @{if (Model.CnbcRssFeed != null)
                     {
+                        int count = 0;
+
                         foreach (var item in Model.CnbcRssFeed.Items)
                         {
+                            if (count > 0)
+                            {
+                                <hr />
+                            }
+                            count = 1;
+
                             <div class="rss-feed-title"><a href="@item.Element.Link_0" target="_blank">@item.Element.Title</a></div>
                             <div class="rss-feed-pubdate">@item.Element.PubDate</div>
                             <div class="rss-feed-description">@item.Element.Summary</div>
@@ -32,83 +42,91 @@
 
         </div>
 
-        <hr />
+        @*
+            <hr />
 
-        <div class="rss-group">
+            <div class="rss-group">
 
-            <div class="rss-channel">
-                <a href="@Model.CnnRssFeed.Channel.Element.Link_0" target="_blank">
-                    <img src="@Model.CnnRssFeed.Channel.Element.Image" alt="CNN Political News" />
-                </a>
-            </div>
+                <div class="rss-channel">
+                    <a href="@Model.CnnRssFeed.Channel.Element.Link_0" target="_blank">
+                        <img src="@Model.CnnRssFeed.Channel.Element.Image" alt="CNN Political News" />
+                    </a>
+                </div>
 
-            <div class="rss-feed">
-                @{if (Model.CnnRssFeed.Items != null)
-                    {
-                        foreach (var item in Model.CnnRssFeed.Items)
+                <div class="rss-feed">
+                    @{if (Model.CnnRssFeed.Items != null)
                         {
-                        <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
-                        <div class="rss-feed-pubdate">@item.Element.PubDate</div>
-                        <div class="rss-feed-description">@item.Element.Summary</div>
-                        <br />
+                            foreach (var item in Model.CnnRssFeed.Items)
+                            {
+                                <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                                <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                                <div class="rss-feed-description">@item.Element.Summary</div>
+                                <br />
+                            }
                         }
                     }
-                    }
+                </div>
+
             </div>
+        *@
 
-        </div>
 
-        <hr />
+        @*
+            <hr />
 
-        <div class="rss-group">
+            <div class="rss-group">
 
-            <div class="rss-channel">
-                <a href="@Model.FoxNewsRssFeed.Channel.Element.Link_0" target="_blank">
-                    <img src="@Model.FoxNewsRssFeed.Channel.Element.Image" alt="Fox Political News" />
-                </a>
-            </div>
+                <div class="rss-channel">
+                    <a href="@Model.FoxNewsRssFeed.Channel.Element.Link_0" target="_blank">
+                        <img src="@Model.FoxNewsRssFeed.Channel.Element.Image" alt="Fox Political News" />
+                    </a>
+                </div>
 
-            <div class="rss-feed">
-                @{if (Model.FoxNewsRssFeed.Items != null)
-                    {
-                        foreach (var item in Model.FoxNewsRssFeed.Items)
+                <div class="rss-feed">
+                    @{if (Model.FoxNewsRssFeed.Items != null)
                         {
-                            <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
-                            <div class="rss-feed-pubdate">@item.Element.PubDate</div>
-                            <div class="rss-feed-description">@item.Element.Summary</div>
-                            <br />
+                            foreach (var item in Model.FoxNewsRssFeed.Items)
+                            {
+                                <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                                <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                                <div class="rss-feed-description">@item.Element.Summary</div>
+                                <br />
+                            }
                         }
                     }
-                }
+                </div>
+
             </div>
+        *@
 
-        </div>
 
-        <hr />
+        @*
+            <hr />
 
-        <div class="rss-group">
+            <div class="rss-group">
 
-            <div class="rss-channel">
-                <a href="@Model.OhioSecretaryOfStateRssFeed.Channel.Element.Link_0" target="_blank">
-                    <img src="@Model.OhioSecretaryOfStateRssFeed.Channel.Element.Image" alt="Ohio Secretary Of State News" />
-                </a>
-            </div>
+                <div class="rss-channel">
+                    <a href="@Model.OhioSecretaryOfStateRssFeed.Channel.Element.Link_0" target="_blank">
+                        <img src="@Model.OhioSecretaryOfStateRssFeed.Channel.Element.Image" alt="Ohio Secretary Of State News" />
+                    </a>
+                </div>
 
-            <div class="rss-feed">
-                @{if (Model.OhioSecretaryOfStateRssFeed.Items != null)
-                    {
-                        foreach (var item in Model.OhioSecretaryOfStateRssFeed.Items)
+                <div class="rss-feed">
+                    @{if (Model.OhioSecretaryOfStateRssFeed.Items != null)
                         {
-                            <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
-                            <div class="rss-feed-pubdate">@item.Element.PubDate</div>
-                            <div class="rss-feed-description">@item.Element.Summary</div>
-                            <br />
+                            foreach (var item in Model.OhioSecretaryOfStateRssFeed.Items)
+                            {
+                                <div class="rss-feed-title"><a href="@item.Element.Id" target="_blank">@item.Element.Title</a></div>
+                                <div class="rss-feed-pubdate">@item.Element.PubDate</div>
+                                <div class="rss-feed-description">@item.Element.Summary</div>
+                                <br />
+                            }
                         }
                     }
-                }
-            </div>
+                </div>
 
-        </div>
+            </div>
+        *@
 
 
 

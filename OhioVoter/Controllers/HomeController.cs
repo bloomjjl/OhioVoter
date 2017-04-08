@@ -224,8 +224,6 @@ namespace OhioVoter.Controllers
         // Calendar for upcoming election dates
         // ********************************************
 
-        // TODO: set up link to allow users to sign up for email reminders for upcoming election dates
-
         /// <summary>
         /// get the election date information to display on page
         /// </summary>
@@ -619,13 +617,60 @@ namespace OhioVoter.Controllers
         /// <returns></returns>
         public RssFeeds GetRssFeedViewModel()
         {
-            return new RssFeeds()
+            RssFeeds feeds = new RssFeeds()
             {
-                FoxNewsRssFeed = CopyFoxNewsRssPoliticalFeedToViewModel(),
+                //FoxNewsRssFeed = CopyFoxNewsRssPoliticalFeedToViewModel(),
                 CnbcRssFeed = CopyCnbcRssPoliticalFeedToViewModel(),
-                CnnRssFeed = CopyCnnRssPoliticalFeedToViewModel()
+                //CnnRssFeed = CopyCnnRssPoliticalFeedToViewModel()
                 //OhioSecretaryOfStateRssFeed = CopyOhioSecretaryOfStateRssFeedToViewModel()
             };
+
+            feeds.CnbcRssFeed = ConvertRssHttpLinkToHttps(feeds.CnbcRssFeed);
+            //feeds.CnnRssFeed = ConvertRssHttpLinkToHttps(feeds.CnnRssFeed);
+
+            return feeds;
+        }
+
+
+        public RssFeedViewModel ConvertRssHttpLinkToHttps(RssFeedViewModel feed)
+        {
+            if(feed.Channel.Element.Link_0 != null && feed.Channel.Element.Link_0.Contains("http:"))
+            {
+                string path = feed.Channel.Element.Link_0.Remove(0, 5);
+                feed.Channel.Element.Link_0 = string.Format("https:{0}", path);
+            }
+            if(feed.Channel.Element.Link_1 != null && feed.Channel.Element.Link_1.Contains("http:"))
+            {
+                string path = feed.Channel.Element.Link_1.Remove(0, 5);
+                feed.Channel.Element.Link_1 = string.Format("https:{0}", path);
+            }
+            if (feed.Channel.Element.Link_2 != null && feed.Channel.Element.Link_2.Contains("http:"))
+            {
+                string path = feed.Channel.Element.Link_2.Remove(0, 5);
+                feed.Channel.Element.Link_2 = string.Format("https:{0}", path);
+            }
+
+            foreach (var item in feed.Items)
+            {
+                if (item.Element.Link_0 != null && item.Element.Link_0.Contains("http:"))
+                {
+                    string path = item.Element.Link_0.Remove(0, 5);
+                    item.Element.Link_0 = string.Format("https:{0}", path);
+                }
+                if (item.Element.Link_1 != null && item.Element.Link_1.Contains("http:"))
+                {
+                    string path = item.Element.Link_1.Remove(0, 5);
+                    item.Element.Link_1 = string.Format("https:{0}", path);
+                }
+                if (item.Element.Link_2 != null && item.Element.Link_2.Contains("http:"))
+                {
+                    string path = item.Element.Link_2.Remove(0, 5);
+                    item.Element.Link_2 = string.Format("https:{0}", path);
+                }
+
+            }
+
+            return feed;
         }
 
 

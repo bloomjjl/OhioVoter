@@ -133,6 +133,7 @@ namespace OhioVoter.Services
         {
             try
             {
+                string imageUrl = feed.ImageUrl.AbsolutePath.ToString();
                 return feed.ImageUrl.OriginalString.ToString();
             }
             catch

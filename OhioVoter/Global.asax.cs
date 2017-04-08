@@ -44,12 +44,23 @@ namespace OhioVoter
                 lastErrorStackTrace = Context.Error.StackTrace;
             }
 
+            string userName;
+            if (User != null)
+            {
+                userName = User.Identity.Name;
+            }
+            else
+            {
+                userName = "";
+            }
+
+
             // send email with details
             string toAddress = "ohiovoter.org@yahoo.com";
             string subject = "An Error Has Occurred!";
             string body = string.Format("URL: {0}\r\n\r\nUser: {1}\r\n\r\nException Type: {2}\r\n\r\nMessage: {3}\r\n\r\nStack Trace: {4}", 
                 Request.RawUrl, 
-                User.Identity.Name,
+                userName,
                 lastErrorTypeName,
                 lastErrorMessage,
                 lastErrorStackTrace.Replace(Environment.NewLine, "\r\n"));

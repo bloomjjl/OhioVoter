@@ -9,7 +9,7 @@ namespace OhioVoter.Services
 {
     public class RssManagement
     {
-        private static int _maxItemCount = 3;
+        private static int _maxItemCount = 5;
 
 
 
