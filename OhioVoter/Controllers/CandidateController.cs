@@ -460,7 +460,6 @@ namespace OhioVoter.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // display???
                 return PartialView("_CandidateCompareSummaryLookUp", viewModel.CandidateCompareSummaryLookUpViewModel);
             }
 
@@ -506,45 +505,6 @@ namespace OhioVoter.Controllers
             SessionExtensions session = new SessionExtensions();
             session.UpdateVoterLocationWithNewControllerName(controllerName);
         }
-
-
-        /*
-        /// <summary>
-        /// Update page based on supplied candidate last name
-        /// </summary>
-        /// <param name="lastName"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Name(CandidateLookUpViewModel model)
-        //public ActionResult Name(string selectedCandidateId)
-        {
-            // validate model
-            if (!ModelState.IsValid)
-            {
-                return RedirectToAction("Index", new { candidateId = 0 });
-            }
-
-            // get selected OfficeID
-            // get list of candidates for selected OfficeId
-            // display new list of candidates
-
-            *
-            // validate selectededCandidateId
-            int candidateId;
-            if (int.TryParse(model.SelectedCandidateId, out candidateId))
-            {
-                candidateId = int.Parse(model.SelectedCandidateId);
-            }
-            else
-            {
-                candidateId = 0;
-            }
-            *
-
-            return RedirectToAction("Index", new { candidateId = candidateId });
-        }
-        */
 
 
 
@@ -1158,18 +1118,6 @@ namespace OhioVoter.Controllers
             // get votesmart info for both groups of candidates/runningmates
             List<ViewModels.VoteSmart.CandidateBio> firstVoteSmartCandidateSummary = GetCompareFirstCandidateAndRunningMateInformationFromVoteSmart(compareSummaryVM.CandidateCompareSummaryFirstViewModel);
             List<ViewModels.VoteSmart.CandidateBio> secondVoteSmartCandidateSummary = GetCompareSecondCandidateAndRunningMateInformationFromVoteSmart(compareSummaryVM.CandidateCompareSummarySecondViewModel);
-
-            compareSummaryVM.CandidateCompareSummaryFirstViewModel.CandidateCompareSummaryFirst.VoteSmartCandidateId = firstVoteSmartCandidateSummary[0].CandidateId;
-            compareSummaryVM.CandidateCompareSummaryFirstViewModel.CandidateCompareSummaryFirst.VoteSmartPhotoUrl = firstVoteSmartCandidateSummary[0].Photo;
-            compareSummaryVM.CandidateCompareSummaryFirstViewModel.RunningMateCompareSummaryFirst.VoteSmartCandidateId = firstVoteSmartCandidateSummary[1].CandidateId;
-            compareSummaryVM.CandidateCompareSummaryFirstViewModel.RunningMateCompareSummaryFirst.VoteSmartPhotoUrl = firstVoteSmartCandidateSummary[1].Photo;
-            if (compareSummaryVM.CandidateCompareSummarySecondViewModel.CandidateCompareSummarySecond != null)
-            {
-                compareSummaryVM.CandidateCompareSummarySecondViewModel.CandidateCompareSummarySecond.VoteSmartCandidateId = secondVoteSmartCandidateSummary[0].CandidateId;
-                compareSummaryVM.CandidateCompareSummarySecondViewModel.CandidateCompareSummarySecond.VoteSmartPhotoUrl = secondVoteSmartCandidateSummary[0].Photo;
-                compareSummaryVM.CandidateCompareSummarySecondViewModel.RunningMateCompareSummarySecond.VoteSmartCandidateId = secondVoteSmartCandidateSummary[1].CandidateId;
-                compareSummaryVM.CandidateCompareSummarySecondViewModel.RunningMateCompareSummarySecond.VoteSmartPhotoUrl = secondVoteSmartCandidateSummary[1].Photo;
-            }
 
             // OfficeSummaryViewModel
             displayViewModel.CandidateCompareSummaryViewModel = compareSummaryVM;
