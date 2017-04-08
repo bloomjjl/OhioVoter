@@ -559,7 +559,11 @@ namespace OhioVoter.Controllers
         {
             using (Models.OhioVoterDbContext context = new Models.OhioVoterDbContext())
             {
-                List<Models.OhioLocal> dboCommunities = context.OhioLocals.Where(x => x.OhioCountyId == countyId).ToList();
+                // only get communities below county level
+                List<Models.OhioLocal> dboCommunities = context.OhioLocals
+                    .Where(x => x.OhioCountyId == countyId)
+                    .Where(x => x.LocalType != "COUNTY")
+                    .ToList();
 
                 if (dboCommunities == null)
                 {
