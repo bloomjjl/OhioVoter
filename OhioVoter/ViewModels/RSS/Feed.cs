@@ -39,7 +39,7 @@ namespace OhioVoter.ViewModels.Rss
         public string Id { get; set; }
         public string Image { get; set; }
         public string Language { get; set; }
-        public DateTime PubDate { get; set; }
+        public string PubDate { get; set; }
         public string Summary { get; set; }
     }
 

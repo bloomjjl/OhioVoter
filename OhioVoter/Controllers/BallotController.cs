@@ -706,9 +706,11 @@ namespace OhioVoter.Controllers
         {
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
-                List<Models.ElectionVotingDate> votingDateDTO = context.ElectionVotingDates.OrderBy(x => x.Date)
-                                                                                           .Where(x => x.Active == true)
-                                                                                           .ToList();
+                List<Models.ElectionVotingDate> votingDateDTO = context.ElectionVotingDates
+                    .OrderBy(x => x.Date)
+                    .Where(x => x.Active == true)
+                    .ToList();
+
                 if (votingDateDTO == null) { return 0; }
 
                 return votingDateDTO[0].Id;
@@ -787,7 +789,10 @@ namespace OhioVoter.Controllers
                 // voter address already checked
                 // use voterId?
                 // check most precise address
-                Models.HamiltonOhioVoter hamiltonOhioVoterDTO = context.HamiltonOhioVoters.FirstOrDefault(x => x.Id == intLocationId);
+                Models.HamiltonOhioVoter hamiltonOhioVoterDTO = context.HamiltonOhioVoters
+                    .Include("OhioPrecinct")
+                    .Include("OhioCounty")
+                    .FirstOrDefault(x => x.Id == intLocationId);
 
                 if (hamiltonOhioVoterDTO == null) { return new BallotVoterViewModel(); }
 
@@ -1054,11 +1059,14 @@ namespace OhioVoter.Controllers
                     string currentOfficeTerm = ballotOfficesVM[i].OfficeTerm;
 
                     // get election candidate/runningmate for office ID
-                    List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates.Include("CertifiedCandidate").Include("Candidate").Include("Party")
-                                                                                            .Where(x => x.ElectionOfficeId == currentOfficeId)
-                                                                                            .OrderBy(x => x.Candidate.FirstName)
-                                                                                            .OrderBy(x => x.Candidate.LastName)
-                                                                                            .ToList();
+                    //.Include("CertifiedCandidate")
+                    List<Models.ElectionCandidate> dbCandidates = context.ElectionCandidates
+                        .Include("Candidate")
+                        .Include("Party")
+                        .Where(x => x.ElectionOfficeId == currentOfficeId)
+                        .OrderBy(x => x.Candidate.FirstName)
+                        .OrderBy(x => x.Candidate.LastName)
+                        .ToList();
 
                     List<BallotCandidateViewModel> collectionListedCandidateVM = new List<BallotCandidateViewModel>();
                     List<BallotCandidateViewModel> collectionWriteInCandidateVM = new List<BallotCandidateViewModel>();
@@ -1159,33 +1167,6 @@ namespace OhioVoter.Controllers
         }
 
 
-
-
-        /*
-        private List<BallotIssueViewModel> GetListOfIssuesForBallotFromDatabase(List<BallotIssueViewModel> ballotIssueVM)
-        {
-            if (ballotIssueVM == null) { return new List<BallotIssueViewModel>(); }
-
-            using (OhioVoterDbContext context = new OhioVoterDbContext())
-            {
-                List<BallotIssueViewModel> issueVM = new List<BallotIssueViewModel>();
-
-                for (int i = 0; i < ballotIssueVM.Count(); i++)
-                {
-                    List<Models.ElectionIssuePrecinct> dbIssuePrecinct = context.ElectionIssuePrecincts.ToList();
-                    Models.ElectionIssuePrecinct issueDTO = dbIssuePrecinct.FirstOrDefault(x => x.ElectionIssue.Id == ballotIssueVM[i].ElectionIssueId);
-
-                    if (issueDTO != null)
-                    {
-                        issueVM.Add(new BallotIssueViewModel(issueDTO));
-                    }
-                }
-
-                return issueVM;
-            }
-        }
-
-    */
 
         public string GetCandidateImageFromDatabase(int candidateId)
         {
@@ -1401,7 +1382,12 @@ namespace OhioVoter.Controllers
             using (OhioVoterDbContext context = new OhioVoterDbContext())
             {
                 // get all issues for current precinct
-                List<Models.ElectionIssuePrecinct> dbIssuesPrecincts = context.ElectionIssuePrecincts.Where(x => x.OhioPrecinctId == ballotVoterVM.OhioPrecinctId).ToList();
+                List<Models.ElectionIssuePrecinct> dbIssuesPrecincts = context.ElectionIssuePrecincts
+                    .Include("ElectionIssue")
+                    .Include("ElectionIssue.ElectionVotingDate")
+                    .Include("ElectionIssue.OhioCounty")
+                    .Where(x => x.OhioPrecinctId == ballotVoterVM.OhioPrecinctId)
+                    .ToList();
 
                 if (dbIssuesPrecincts == null) { return new List<BallotIssueViewModel>(); }
 

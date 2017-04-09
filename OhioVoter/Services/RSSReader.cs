@@ -155,7 +155,7 @@ namespace OhioVoter.Services
         {
             try
             {
-                return feed.Links[index].Uri.AbsoluteUri.ToString();
+                return ConvertHttpLinkToHttps(feed.Links[index].Uri.AbsoluteUri.ToString());
             }
             catch
             {
@@ -163,6 +163,22 @@ namespace OhioVoter.Services
                 return string.Empty;
             }
         }
+
+
+
+        public string ConvertHttpLinkToHttps(string Uri)
+        {
+            if (Uri != null && Uri.Contains("http:"))
+            {
+                // remove "http:"
+                string path = Uri.Remove(0, 5);
+                Uri = string.Format("https:{0}", path);
+            }
+
+            return Uri;
+        }
+
+
 
 
 
@@ -290,16 +306,20 @@ namespace OhioVoter.Services
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private DateTime GetPublishDateFromItemElement(SyndicationItem item)
+        //private DateTime GetPublishDateFromItemElement(SyndicationItem item)
+        private string GetPublishDateFromItemElement(SyndicationItem item)
         {
             try
             {
-                return item.PublishDate.LocalDateTime;
+                return string.Format("{0}, {1} | {2}",
+                    item.PublishDate.UtcDateTime.DayOfWeek,
+                    item.PublishDate.Date.ToShortDateString(),
+                    item.PublishDate.UtcDateTime.ToShortTimeString());
             }
             catch
             {
                 // catch if value is null
-                return Convert.ToDateTime("1/01/1900");
+                return Convert.ToDateTime("1/01/1900").ToShortDateString();
             }
         }
 
@@ -335,7 +355,7 @@ namespace OhioVoter.Services
         {
             try
             {
-                return item.Links[index].Uri.AbsoluteUri.ToString();
+                return ConvertHttpLinkToHttps(item.Links[index].Uri.AbsoluteUri.ToString());
             }
             catch
             {

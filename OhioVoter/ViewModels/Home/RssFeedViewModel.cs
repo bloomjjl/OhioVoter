@@ -7,6 +7,7 @@ namespace OhioVoter.ViewModels.Home
 {
     public class RssFeedViewModel
     {
+
         public Channel Channel { get; set; }
         public IEnumerable<Item> Items { get; set; }
     }
@@ -39,7 +40,7 @@ namespace OhioVoter.ViewModels.Home
         public string Id { get; set; }
         public string Image { get; set; }
         public string Language { get; set; }
-        public DateTime PubDate { get; set; }
+        public string PubDate { get; set; }
         public string Summary { get; set; }
     }
 

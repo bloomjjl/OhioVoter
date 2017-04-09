@@ -625,7 +625,7 @@ namespace OhioVoter.Controllers
                 //OhioSecretaryOfStateRssFeed = CopyOhioSecretaryOfStateRssFeedToViewModel()
             };
 
-            feeds.CnbcRssFeed = ConvertRssHttpLinkToHttps(feeds.CnbcRssFeed);
+            //feeds.CnbcRssFeed = ConvertRssHttpLinkToHttps(feeds.CnbcRssFeed);
             //feeds.CnnRssFeed = ConvertRssHttpLinkToHttps(feeds.CnnRssFeed);
 
             return feeds;
@@ -674,13 +674,13 @@ namespace OhioVoter.Controllers
         }
 
 
-
+        /*
         public RssFeedViewModel CopyFoxNewsRssPoliticalFeedToViewModel()
         {
             RssManagement rssManager = new RssManagement();
             return CopyRssFeedToViewModel(rssManager.GetFoxNewsRssPoliticalFeed());
         }
-
+        */
 
 
         public RssFeedViewModel CopyCnbcRssPoliticalFeedToViewModel()
@@ -690,22 +690,23 @@ namespace OhioVoter.Controllers
         }
 
 
-
+        /*
         public RssFeedViewModel CopyCnnRssPoliticalFeedToViewModel()
         {
             RssManagement rssManager = new RssManagement();
             return CopyRssFeedToViewModel(rssManager.GetCnnRssPoliticalFeed());
         }
+        */
 
-
+        /*
         public RssFeedViewModel CopyOhioSecretaryOfStateRssFeedToViewModel()
         {
             RssManagement rssManager = new RssManagement();
             return CopyRssFeedToViewModel(rssManager.GetOhioSecretaryOfStateRssFeed());
         }
+        */
 
-
-
+        
         public RssFeedViewModel CopyRssFeedToViewModel(ViewModels.Rss.Feed feed)
         {
             return new RssFeedViewModel()
@@ -715,9 +716,9 @@ namespace OhioVoter.Controllers
             };
 
         }
+        
 
-
-
+        
         public Channel CopyRssChannelToViewModel(ViewModels.Rss.Feed feed)
         {
             return new Channel()
@@ -725,9 +726,9 @@ namespace OhioVoter.Controllers
                     Element = CopyElementForChannel(feed)
                 };
         }
+        
 
-
-
+        
         public Element CopyElementForChannel(ViewModels.Rss.Feed feed)
         {
             return new Element()
@@ -739,9 +740,9 @@ namespace OhioVoter.Controllers
                 Title = feed.Channel.Element.Title
             };
         }
+        
 
-
-
+        
         public IEnumerable<Item> CopyAllItemsToViewModel(ViewModels.Rss.Feed feed)
         {
             List<Item> items = new List<Item>();
@@ -753,9 +754,9 @@ namespace OhioVoter.Controllers
 
             return items;
         }
+        
 
-
-
+        
         public Item CopyCurrentItemToViewModel(ViewModels.Rss.Item item)
         {
             return new Item()
@@ -763,9 +764,9 @@ namespace OhioVoter.Controllers
                 Element = CopyElementforItem(item)
             };
         }
+        
 
-
-
+        
         private Element CopyElementforItem(ViewModels.Rss.Item item)
         {
             Element element = new Element()
@@ -779,7 +780,7 @@ namespace OhioVoter.Controllers
 
             return element;
         }
-
+        
 
 
 
