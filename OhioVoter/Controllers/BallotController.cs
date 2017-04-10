@@ -106,7 +106,7 @@ namespace OhioVoter.Controllers
 
                 // save ballot 
                 int newBallotHeaderId = CreateNewBallotInDatabase(ballotWithSelections, userId);
-
+                
                 // add offices and selected candidates to saved ballot
                 if (ballotWithSelections.BallotOfficeViewModel.Count > 0)
                 {
@@ -115,7 +115,8 @@ namespace OhioVoter.Controllers
                         int newBallotOfficeId = AddElectionOfficesWithSelectedCandidatesToNewBallotInDatabase(ballotWithSelections.BallotOfficeViewModel[i], newBallotHeaderId);
                         if (newBallotOfficeId > 0)
                         {
-                            bool ballotListedCandidatesAdded = AddSelectedListedCandidatesToOfficesOnNewBallotInDatabase(ballotWithSelections.BallotOfficeViewModel[i].BallotListedCandidatesViewModel, newBallotOfficeId);
+                            bool ballotListedCandidatesAdded = AddSelectedCandidatesToOfficesOnNewBallotInDatabase(ballotWithSelections.BallotOfficeViewModel[i].BallotListedCandidatesViewModel, newBallotOfficeId);
+                            bool ballotWriteInCandidatesAdded = AddSelectedCandidatesToOfficesOnNewBallotInDatabase(ballotWithSelections.BallotOfficeViewModel[i].BallotwriteInCandidatesViewModel, newBallotOfficeId);
                         }
                     }
                 }
@@ -376,7 +377,7 @@ namespace OhioVoter.Controllers
 
 
 
-        private bool AddSelectedListedCandidatesToOfficesOnNewBallotInDatabase(List<BallotCandidateViewModel> ballotListedCandidates, int newBallotOfficeId)
+        private bool AddSelectedCandidatesToOfficesOnNewBallotInDatabase(List<BallotCandidateViewModel> ballotListedCandidates, int newBallotOfficeId)
         {
             // validate supplied values
             if (ballotListedCandidates.Count == 0) { return false; }
