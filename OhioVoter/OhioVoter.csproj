@@ -358,6 +358,7 @@
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\VoteSmart\Index.cshtml" />
     <Content Include="Content\images\2016November_Hamilton_Issue29.pdf" />
+    <Content Include="ConnectionStrings.config" />
     <None Include="Properties\PublishProfiles\OhioVoterWebsite.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
